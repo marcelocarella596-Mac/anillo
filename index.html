@@ -1,37 +1,24 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FITRING - Smart Ring Fitness</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0a0a0b;--card:#17171a;--card2:#222226;--accent:#E8D44D;--accent2:#00ff88;--text:#fff;--muted:#9a9aa0;--border:#2a2a2e}
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,sans-serif}
-body{background:var(--bg);color:var(--text);padding-bottom:90px;-webkit-font-smoothing:antialiased}
-.header{padding:18px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:rgba(10,10,11,.92);backdrop-filter:blur(20px);z-index:10;border-bottom:1px solid var(--border)}
-.logo{font-weight:900;letter-spacing:3px;font-size:18px}
-.badge{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px}
-.ring{display:flex;gap:8px;align-items:center;background:var(--card);padding:6px 12px;border-radius:20px;border:1px solid var(--border)}
-.dot{width:8px;height:8px;background:var(--accent2);border-radius:50%;box-shadow:0 0 10px var(--accent2);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.readiness{margin:16px;background:var(--card);border-radius:24px;padding:20px;border:1px solid var(--border);text-align:center}
-.circle-wrap{width:110px;height:110px;margin:0 auto 12px;position:relative;border-radius:50%;background:conic-gradient(var(--accent) 82%, #222 0);padding:4px}
-.circle-in{width:100%;height:100%;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column}
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
-.m-card{background:linear-gradient(145deg,var(--card),var(--card2));border-radius:20px;padding:14px;border:1px solid var(--border)}
-.m-card h4{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
-.m-card .val{font-size:22px;font-weight:900}.m-card .sub{font-size:10px;color:var(--accent2);margin-top:4px}
-.tabs{display:flex;gap:8px;padding:14px 16px;overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:9px 16px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
-.tab.active{background:var(--text);color:var(--bg);border-color:var(--text)}
-.search{width:calc(100% - 32px);margin:0 16px 12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;color:#fff;outline:none}
-.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
-.ex-card{background:var(--card);border-radius:18px;padding:10px;border:1px solid var(--border);position:relative;cursor:pointer}
-.ex-card img{width:100%;height:96px;object-fit:cover;border-radius:12px;background:#222}
-.ex-card h3{font-size:11px;margin:8px 0 2px;text-transform:uppercase;font-weight:800}
-.ex-card p{font-size:9px;color:var(--muted)}
-.add-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:var(--accent);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px}
-.builder{margin:16px;background:var(--card);border-radius:24px;padding:16px;border:1px dashed #333}
-.builder h2{font-size:13px;margin
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FITRING</title><style>body{margin:0;background:#0a0a0b;color:#fff;font-family:sans-serif;padding-bottom:80px}header{padding:16px;display:flex;justify-content:space-between;background:#111;border-bottom:1px solid #222;position:sticky;top:0}.logo{font-weight:900;letter-spacing:2px}.badge{font-size:9px;color:#888}.dot{width:8px;height:8px;background:#0f8;border-radius:50%;display:inline-block}.card{margin:12px;background:#17171a;border-radius:20px;padding:16px;border:1px solid #222;text-align:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px}.item{background:#1e1e22;border-radius:16px;padding:10px;border:1px solid #2a2a2e}.item h3{font-size:10px;margin:6px 0}.btn{width:100%;background:#E8D44D;color:#000;border:0;padding:14px;border-radius:14px;font-weight:900;margin-top:10px}.tabs{display:flex;gap:6px;overflow:auto;padding:10px 12px}.tab{padding:8px 14px;border-radius:20px;background:#222;border:1px solid #333;font-size:11px;white-space:nowrap}.tab.a{background:#fff;color:#000}.list{padding:0 12px}.row{display:flex;justify-content:space-between;background:#222;padding:10px;border-radius:12px;margin:6px 0}.timer{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:99}.timer.on{display:flex}.circ{width:160px;height:160px;border-radius:50%;border:6px solid #222;border-top-color:#E8D44D;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:900}nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}</style></head><body>
+<header><div><div class="logo">FITRING</div><div class="badge">LITTLE MEATBALL • CONECTADO</div></div><div><span class="dot"></span> 87%</div></header>
+<div class="card"><div style="font-size:32px;font-weight:900">82</div><div>Readiness • Listo</div><div style="font-size:11px;color:#888;margin-top:4px">Anillo • Gestos ON</div></div>
+<div class="grid"><div class="item"><div id="hr">❤️ 78 BPM</div><small style="color:#0f8">Normal</small></div><div class="item">🔥 420 kcal<br><small>70%</small></div><div class="item">👣 7321 pasos<br><small>73%</small></div><div class="item">😴 7h 42m<br><small>Profundo</small></div></div>
+<div style="padding:16px 12px 6px;font-weight:800">Biblioteca</div>
+<div class="tabs" id="tabs"></div>
+<div class="grid" id="exGrid"></div>
+<div class="card"><div style="text-align:left;font-weight:800">📋 MI RUTINA (<span id="c">0</span>)</div><div id="workoutList" style="margin-top:10px;color:#888;font-size:12px">Toca + para armar</div><button class="btn" onclick="start()">▶ INICIAR RUTINA</button></div>
+<div class="timer" id="timer"><div id="tName" style="font-size:20px;font-weight:800;margin-bottom:16px">Press</div><div class="circ" id="tCirc">60</div><div id="tInfo" style="margin-top:12px;color:#888"></div><div style="display:flex;gap:10px;margin-top:20px"><button class="btn" style="width:auto" onclick="go(-1)">👋 Atrás</button><button class="btn" style="width:auto" onclick="go(1)">Siguiente 👋</button></div><button onclick="closeT()" style="margin-top:20px;background:none;border:none;color:#888">✕ CERRAR</button></div>
+<nav><button>🏠 Inicio</button><button>📊</button><button>📷</button><button>📚</button><button>👤</button></nav>
+<script>
+C=['todos','pecho','espalda','pierna','core','cardio'];E=[['Press Banca','pecho'],['Flexiones','pecho'],['Dominadas','espalda'],['Remo','espalda'],['Sentadilla','pierna'],['Peso Muerto','pierna'],['Plancha','core'],['Burpees','cardio'],['Mountain','cardio'],['Curl','pecho']];let f='todos',R=[],tI=0,tS=60,tInt=null;
+const tabs=document.getElementById('tabs');C.forEach(x=>{let b=document.createElement('div');b.className='tab'+(x=='todos'?' a':'');b.textContent=x.toUpperCase();b.onclick=()=>{f=x;document.querySelectorAll('.tab').forEach(z=>z.classList.remove('a'));b.classList.add('a');render()};tabs.appendChild(b)});
+function render(){let g=document.getElementById('exGrid');g.innerHTML='';E.filter(e=>f=='todos'||e[1]==f).forEach(e=>{let d=document.createElement('div');d.className='item';d.innerHTML=`<div style="font-weight:800;font-size:12px">${e[0]}</div><small>${e[1]}</small><button onclick="add('${e[0]}')" style="float:right;background:#E8D44D;border:0;border-radius:50%;width:24px;height:24px;font-weight:900">+</button>`;g.appendChild(d)})}
+function add(n){R.push({n:n,s:3,r:12,d:60});upd()}
+function upd(){document.getElementById('c').textContent=R.length;let l=document.getElementById('workoutList');if(!R.length){l.textContent='Toca + para armar';return}l.innerHTML='';R.forEach((x,i)=>{let r=document.createElement('div');r.className='row';r.innerHTML=`<div><b style="font-size:12px">${x.n}</b><br><small>3x12 • 60s</small></div><button onclick="R.splice(${i},1);upd()" style="background:#333;color:#fff;border:0;border-radius:8px;padding:4px 8px">✕</button>`;l.appendChild(r)})}
+function start(){if(!R.length){alert('Arma rutina primero');return}tI=0;document.getElementById('timer').classList.add('on');show()}
+function show(){let r=R[tI];document.getElementById('tName').textContent=r.n;document.getElementById('tInfo').textContent=`Ej ${tI+1} de ${R.length} • 3x12`;tS=r.d;document.getElementById('tCirc').textContent=tS;clearInterval(tInt);tInt=setInterval(()=>{tS--;document.getElementById('tCirc').textContent=tS;if(tS<=0)go(1)},1000)}
+function go(d){tI+=d;if(tI>=R.length){closeT();alert('¡Completada! 🔥');return}if(tI<0)tI=0;show()}
+function closeT(){document.getElementById('timer').classList.remove('on');clearInterval(tInt)}
+setInterval(()=>{let b=Math.floor(72+Math.random()*8);let el=document.getElementById('hr');if(el)el.textContent='❤️ '+b+' BPM'},3000);
+render();upd();
+</script></body></html>
