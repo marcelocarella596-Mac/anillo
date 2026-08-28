@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BITÁCORA - Ring Signal</title>
+<style>body{background:#000;color:#fff;font-family:system-ui;text-align:center;padding:20px}.ring{width:120px;height:120px;border:4px solid #E8D44D;border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:50px;animation:pulse 1s infinite} @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}}.card{background:#1a1a1a;border-radius:16px;padding:16px;margin:10px 0;text-align:left} button{background:#E8D44D;color:#000;border:0;padding:14px 20px;border-radius:12px;font-weight:bold;width:100%;font-size:16px}</style>
+</head><body>
+<h2>💍 Señal recibida del anillo</h2>
+<div class="ring">🎙️</div>
+<p id="status">Esperando gesto del anillo...</p>
+<div id="wave" style="height:40px;background:linear-gradient(90deg,#E8D44D 50%,#333 50%);border-radius:8px;display:none"></div>
+<p id="transcript" style="font-size:18px;margin:20px 0;min-height:40px"></p>
+<button id="btn" onclick="simularGesto()">👋 SIMULAR DOBLE TOQUE DEL ANILLO</button>
+<div id="lista"></div>
+<script>
+let rec, recognition;
+let notas = JSON.parse(localStorage.getItem('bitacora')||'[]');
+function mostrar(){lista.innerHTML=notas.map(n=>`<div class=card><small>${n.fecha}</small><br>${n.texto}</div>`).join('')}
+mostrar();
+
+function simularGesto(){
+  status.innerText="🎙️ GRABANDO... hablá ahora (10s)";
+  wave.style.display='block';
+  btn.style.display='none';
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    // Grabación
+    rec = new MediaRecorder(stream);
+    rec.start();
+    // Voz a texto
+    const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(SR){
+      recognition=new SR(); recognition.lang='es-AR'; recognition.interimResults=true;
+      recognition.onresult=e=>{transcript.innerText=e.results[0][0].transcript}
+      recognition.start();
+    }else{transcript.innerText="(tu navegador graba audio pero no transcribe, igual se guarda)"}
+
+    setTimeout(()=>{
+      rec.stop(); if(recognition) recognition.stop();
+      status.innerText="✅ Guardado en Bitácora";
+      let txt = transcript.innerText || "Nota de voz - "+new Date().toLocaleTimeString();
+      notas.unshift({fecha:new Date().toLocaleString('es-AR'), texto: txt});
+      localStorage.setItem('bitacora',JSON.stringify(notas));
+      mostrar();
+      wave.style.display='none'; btn.style.display='block'; btn.innerText="👋 NUEVO GESTO DEL ANILLO";
+      stream.getTracks().forEach(t=>t.stop());
+    },10000);
+  }).catch(()=>{alert('Tenés que darle permiso al micrófono')})
+}
+// Auto-inicia si viene con?autostart=1 (lo que mandaría el anillo)
+if(location.search.includes('autostart')) setTimeout(simularGesto,1000);
+</script></body></html>
