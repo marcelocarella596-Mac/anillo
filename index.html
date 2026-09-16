@@ -1,78 +1,78 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>FITRING • Hub de Prueba</title><style>*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif}body{background:#0e1217;color:#d7e2ec}.header{height:56px;background:#151b23;border-bottom:1px solid #1f2a38;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10}.logo{color:#4DD3FF;font-weight:900}.layout{display:flex}.sidebar{width:210px;background:#111821;border-right:1px solid #1f2a38;min-height:100vh;padding:12px}.nav{padding:12px;border-radius:10px;color:#8aa0b6;font-size:13px;margin-bottom:4px;cursor:pointer;display:flex;gap:8px;align-items:center}.nav.active{background:#00D1FF;color:#000;font-weight:900}.main{flex:1;padding:16px}.mode-view{display:none}.mode-view.active{display:block}.grid4{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:#151b23;border:1px solid #1f2a38;border-radius:14px;padding:16px;cursor:pointer;transition:.2s}.stat:hover{border-color:#00D1FF;transform:translateY(-2px)}.stat b{font-size:20px;color:#fff}.stat.sel{border-color:#00D1FF;background:#0e1e2a}.card{background:#151b23;border:1px solid #1f2a38;border-radius:16px;padding:16px;margin-top:14px}.btn{padding:12px 18px;border-radius:10px;border:0;font-weight:800;font-size:12px;cursor:pointer}.btn.cyan{background:#00E5FF;color:#000}.btn.dark{background:#1f2a38;color:#8aa0b6;border:1px solid #2a3a4d;width:100%;margin-top:8px}.pill{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:900;border:1px solid}.respi{background:#00D1FF22;color:#00D1FF;border-color:#00D1FF55}.calma{background:#B18CFF22;color:#B18CFF;border-color:#B18CFF55}.fit{background:#8cff0022;color:#8cff00;border-color:#8cff0055}@media(max-width:800px){.grid4{grid-template-columns:1fr}.sidebar{display:none}}</style></head><body>
-<div class="header"><div class="logo">🌀 FITRING • HUB</div><div style="font-size:11px;background:#1a242f;padding:8px 12px;border-radius:10px;border:1px solid #2a3a4d">🧪 Modo Laboratorio • Villa Lugano 13°C</div></div>
-<div class="layout">
-<div class="sidebar">
-<div style="font-size:9px;color:#5a6c80;margin:10px 8px;font-weight:800">MODOS DE PRUEBA</div>
-<div class="nav active" id="nav-respira" onclick="abrirModo('respira')">🌬️ Respiración</div>
-<div class="nav" id="nav-calma" onclick="abrirModo('calma')">💜 Calma</div>
-<div class="nav" id="nav-fitness" onclick="abrirModo('fitness')">🏃 Fitness</div>
-<div class="nav" id="nav-sueno" onclick="abrirModo('sueno')">😴 Sueño</div>
-<div style="margin-top:20px;padding:12px;background:#121a23;border-radius:12px;border:1px solid #1f2a38"><div style="font-size:10px;color:#5a6c80">OBJETIVO</div><div style="font-size:11px;color:#8aa0b6;margin-top:4px">Probar los 3 dashboards desde acá y luego generar un HTML específico por medición.</div></div>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FITRING HUB v6 - sin generar</title><style>*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial}body{background:#0a0e13;color:#d7e2ec}.h{height:56px;background:#151b23;border-bottom:1px solid #1f2a38;display:flex;align-items:center;justify-content:space-between;padding:0 16px}.logo{color:#4DD3FF;font-weight:900}.lay{display:flex}.side{width:200px;background:#111821;border-right:1px solid #1f2a38;padding:10px;min-height:100vh}.nav{padding:11px;border-radius:10px;color:#8aa0b6;font-size:13px;margin-bottom:4px;cursor:pointer}.nav.active{background:#00D1FF;color:#000;font-weight:900}.main{flex:1;padding:12px}.view{display:none}.view.on{display:block}.top{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.tc{background:#151b23;border:1px solid #1f2a38;border-radius:12px;padding:10px;cursor:pointer;font-size:11px}.tc.on{border-width:2px}.card{background:#151b23;border:1px solid #1f2a38;border-radius:16px;padding:14px;margin-top:12px}.v{background:#0d141e;border:1px solid #1e2d40;border-radius:8px;padding:8px;margin:5px 0;font-size:11px;display:flex;justify-content:space-between}.v b{color:#4DD3FF}.f{background:#0e1a0e;border:1px dashed #2a5a2a;border-radius:8px;padding:8px;margin:6px 0;font-size:10px;color:#7CFF9D}.btn{width:100%;padding:14px;border-radius:12px;border:0;font-weight:900;cursor:pointer;margin-top:8px;background:#00E5FF;color:#000}.inp{width:70px;background:#0a0e13;border:1px solid #2a3a4d;border-radius:6px;padding:5px;color:#fff;text-align:center}.circ{width:100px;height:100px;border-radius:50%;margin:12px auto;display:grid;place-items:center;font-size:28px;transition:.8s}</style></head><body>
+<div class="h"><div class="logo">🌀 FITRING • HUB v6</div><div style="font-size:10px;background:#1a242f;padding:6px 10px;border-radius:8px">SIN BOTON GENERAR • Variables visibles</div></div>
+<div class="lay">
+<div class="side">
+<div style="font-size:9px;color:#5a6c80;margin:8px 0">MODOS</div>
+<div class="nav active" id="n-respira" onclick="om('respira')">🌬️ Respiración</div>
+<div class="nav" id="n-manejo" onclick="om('manejo')">🚛 Manejo + Somnolencia</div>
+<div class="nav" id="n-calma" onclick="om('calma')">💜 Calma</div>
+<div class="nav" id="n-fitness" onclick="om('fitness')">🏃 Fitness</div>
+<div class="nav" id="n-sueno" onclick="om('sueno')">😴 Sueño</div>
 </div>
 <div class="main">
-
-<!-- SELECTOR RAPIDO -->
-<div class="grid4" style="margin-bottom:14px">
-<div class="stat sel" id="card-respira" onclick="abrirModo('respira')"><div style="font-size:11px">🌬️ MODO</div><b style="color:#00D1FF">RESPIRACIÓN</b><div style="font-size:10px;color:#5a6c80;margin-top:4px">Sistema: Respiración (ex-EPOC)</div><div style="margin-top:8px"><span class="pill respi">72 bpm • 96% SpO2</span></div></div>
-<div class="stat" id="card-calma" onclick="abrirModo('calma')"><div style="font-size:11px">💜 MODO</div><b style="color:#B18CFF">CALMA</b><div style="font-size:10px;color:#5a6c80;margin-top:4px">Sistema: Calma (ex-ESTRES)</div><div style="margin-top:8px"><span class="pill calma">68 bpm • Pausa 4-7-8</span></div></div>
-<div class="stat" id="card-fitness" onclick="abrirModo('fitness')"><div style="font-size:11px">🏃 MODO</div><b style="color:#8cff00">FITNESS</b><div style="font-size:10px;color:#5a6c80;margin-top:4px">Sistema: Fitness</div><div style="margin-top:8px"><span class="pill fit">110 bpm • 310 kcal</span></div></div>
+<div class="top">
+<div class="tc on" id="t-respira" onclick="om('respira')" style="border-color:#00D1FF"><b style="color:#00D1FF">RESPIRACIÓN</b><br>72 bpm • 96%</div>
+<div class="tc" id="t-manejo" onclick="om('manejo')" style="border-color:#FFD93D"><b style="color:#FFD93D">MANEJO</b><br>Alerta volante</div>
+<div class="tc" id="t-calma" onclick="om('calma')" style="border-color:#B18CFF"><b style="color:#B18CFF">CALMA</b><br>4-7-8</div>
+<div class="tc" id="t-fitness" onclick="om('fitness')" style="border-color:#8cff00"><b style="color:#8cff00">FITNESS</b><br>110 bpm</div>
+<div class="tc" id="t-sueno" onclick="om('sueno')" style="border-color:#7c5cff"><b style="color:#7c5cff">SUEÑO</b><br>Delta</div>
 </div>
 
-<!-- VISTA RESPIRACION -->
-<div id="view-respira" class="mode-view active">
-<div class="card" style="border-color:#00D1FF44"><div style="display:flex;justify-content:space-between;align-items:center"><div><b style="font-size:18px;color:#00D1FF">🌬️ DASHBOARD RESPIRACIÓN</b><div style="font-size:11px;color:#5a6c80">Modo Respiración • Prueba nasal 4-4-4-4 • Aire Villa Lugano</div></div><span class="pill respi">TEST-R01 • ONLINE</span></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
-<div style="background:#0a1a1e;border:1px solid #00D1FF33;border-radius:12px;padding:14px"><div style="font-size:10px;color:#00D1FF">SpO2 CORREGIDO</div><b style="font-size:28px">96%</b><div style="font-size:11px;color:#7CFF9D">Aire estable 13°C • 1020 hPa</div></div>
-<div style="background:#0a1a1e;border:1px solid #00D1FF33;border-radius:12px;padding:14px"><div style="font-size:10px;color:#00D1FF">SUGERENCIA AIRE</div><b style="font-size:14px">Aire fresco - bufanda liviana</b><div style="font-size:11px;color:#8aa0b6">Humedad 70% • Viento leve</div></div>
-</div>
-<div style="margin-top:12px;display:flex;gap:8px"><button class="btn cyan" onclick="generarHTML('respira')">📄 Generar respira.html</button><button class="btn dark" onclick="alert('Iniciando test respiración 4-4-4-4')">▶ Probar Respiración</button></div>
-</div>
-</div>
-
-<!-- VISTA CALMA -->
-<div id="view-calma" class="mode-view">
-<div class="card" style="border-color:#B18CFF44;background:#f8f5ff"><div style="display:flex;justify-content:space-between"><div><b style="font-size:18px;color:#6b5b8a">💜 DASHBOARD CALMA</b><div style="font-size:11px;color:#9b8ab8">Modo Calma • Pausita 4-7-8 • 2 minutos</div></div><span class="pill calma">TEST-C02 • ONLINE</span></div>
-<div style="background:#fff;border-radius:16px;padding:16px;margin-top:12px;text-align:center"><div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e8e0ff,#ffe0f0);margin:auto;display:grid;place-items:center;font-size:32px">🧘‍♀️</div><div style="margin-top:8px;color:#6b5b8a">Respiración consciente</div></div>
-<div style="margin-top:12px;display:flex;gap:8px"><button class="btn cyan" style="background:#a89bc7;color:#fff" onclick="generarHTML('calma')">📄 Generar calma.html</button><button class="btn dark" onclick="alert('Pausita 4-7-8')">▶ Probar Calma</button></div>
+<!-- RESPIRA -->
+<div id="v-respira" class="view on">
+<div class="card" style="border-color:#00D1FF66">
+<b style="color:#00D1FF">🌬️ DASHBOARD RESPIRACIÓN - Variables de medición</b>
+<div class="v"><span>hr_raw (anillo QRing)</span><b><input class="inp" id="hr" value="72" oninput="u()"> bpm</b></div>
+<div class="v"><span>spo2_raw (sensor)</span><b><input class="inp" id="spo2r" value="94" oninput="u()"> %</b></div>
+<div class="v"><span>temp_amb / hPa / humedad</span><b>13°C / 1020 / 70%</b></div>
+<div class="f">function calcularSpO2Corregido(){ return spo2_raw + correccion(13°C,1020hPa) }<br>=> spo2_corregido = <b id="spo2c" style="color:#fff">96%</b></div>
+<div class="f">function sugerenciaAire(){ if(temp<14 && hPa>1015) return "Aire fresco - bufanda liviana" }<br>=> <b id="sug" style="color:#fff">Aire fresco - bufanda liviana</b></div>
+<div class="circ" id="cResp" style="background:#00D1FF22;border:3px solid #00D1FF">🌬️</div>
+<div id="tResp" style="text-align:center;font-size:12px">Listo para test nasal 4-4-4-4</div>
+<button class="btn" onclick="testR()">▶ Probar Respiración 4-4-4-4</button>
 </div>
 </div>
 
-<!-- VISTA FITNESS -->
-<div id="view-fitness" class="mode-view">
-<div class="card" style="border-color:#8cff0044"><div style="display:flex;justify-content:space-between"><div><b style="font-size:18px;color:#8cff00">🏃 DASHBOARD FITNESS</b><div style="font-size:11px;color:#5a6c80">Modo Fitness • Box 4-4-4-4 • Calorías</div></div><span class="pill fit">TEST-F03 • ONLINE</span></div>
-<div style="background:#0a1a0a;border:1px solid #8cff0033;border-radius:12px;padding:14px;margin-top:12px"><b style="color:#8cff00">FITNESS BOX 4-4-4-4 NASAL</b><div style="font-size:12px;margin-top:6px">110 bpm • 4.2km • 310 kcal hoy</div></div>
-<div style="margin-top:12px;display:flex;gap:8px"><button class="btn cyan" style="background:#8cff00;color:#000" onclick="generarHTML('fitness')">📄 Generar fitness.html</button><button class="btn dark" onclick="alert('Box breathing')">▶ Probar Fitness</button></div>
+<!-- MANEJO CON SOMNOLENCIA -->
+<div id="v-manejo" class="view">
+<div class="card" style="border-color:#FFD93D66;background:#16160f">
+<b style="color:#FFD93D">🚛 DASHBOARD MANEJO - Variables ideales + Somnolencia</b>
+<div class="v"><span>hr_ideal = 65-85 bpm</span><b id="hrM">76 bpm</b></div>
+<div class="v"><span>estres_qring (ideal <30)</span><b><input class="inp" id="est" value="24" oninput="uM()"> %</b></div>
+<div class="v"><span>spo2_ideal >95%</span><b id="oxM">96%</b></div>
+<div class="v"><span>tiempo_volante (max 120m)</span><b><input class="inp" id="tvol" value="102" oninput="uM()"> min</b></div>
+<div class="v"><span>hidratacion / postura</span><b id="hid">250ml hace 30m</b></div>
+<div class="f">function detectarSomnolencia(hr,estres,tiempo){<br>if(estres>50 && tiempo>90) return "FATIGA";<br>if(hr<62 && tiempo>60) return "SOMNOLENCIA";<br>return "OK";}<br>=> <b id="fat" style="color:#7CFF9D">OK • Alerta tranquila</b></div>
+<div class="f">function esIdealParaManejar(){ return hr in 65-85 && estres<30 && spo2>95 && fatiga==OK }</div>
+<button class="btn" style="background:#FFD93D" onclick="evalM()">🔍 Evaluar si estoy ideal + Vibrar alerta</button>
+<div id="resM" style="text-align:center;margin-top:8px;font-size:12px"></div>
 </div>
 </div>
 
-<!-- VISTA SUEÑO -->
-<div id="view-sueno" class="mode-view">
-<div class="card" style="border-color:#7c5cff44"><b style="color:#7c5cff">😴 DASHBOARD SUEÑO</b><div style="font-size:11px;color:#5a6c80;margin-top:4px">Ondas Delta 4h + Método N.O.C.H.E.</div><div style="margin-top:12px"><button class="btn cyan" style="background:#7c5cff;color:#fff" onclick="generarHTML('sueno')">📄 Generar sueno.html</button></div></div>
+<!-- CALMA SIN GENERAR -->
+<div id="v-calma" class="view">
+<div class="card" style="background:#fff;color:#5b4c7a">
+<b>💜 DASHBOARD CALMA - Variables</b>
+<div class="v" style="background:#f5f0ff"><span>estres / hrv / metodo</span><b style="color:#6b5b8a">24% / 42ms / 4-7-8</b></div>
+<div class="f" style="color:#6b5b8a;border-color:#d8c8ff;background:#f9f6ff">function pausaConsciente(){ inhala(4s) -> reten(7s) -> exhala(8s) } // baja cortisol</div>
+<div class="circ" id="cCalma" style="background:linear-gradient(135deg,#e8e0ff,#ffe0f0)">🧘</div>
+<div id="tCalma" style="text-align:center">Respiración consciente • 6 ciclos</div>
+<button class="btn" style="background:#a89bc7;color:#fff" onclick="testC()">▶ Probar Calma 4-7-8 (sin generar HTML)</button>
 </div>
+</div>
+
+<div id="v-fitness" class="view"><div class="card" style="border-color:#8cff00"><b style="color:#8cff00">🏃 FITNESS - zonas HR, kcal, VO2, recovery</b><div class="f">boxBreathing() 4-4-4-4 x4 vueltas</div><button class="btn" style="background:#8cff00;color:#000" onclick="alert('Box 4-4-4-4 x4 listo')">▶ Probar Fitness</button></div></div>
+<div id="v-sueno" class="view"><div class="card"><b style="color:#7c5cff">😴 SUEÑO - metodo N.O.C.H.E., onda Delta, ritual 21 noches</b><br><a href="https://youtu.be/-YgA6CVvrY0" target="_blank" style="color:#7c5cff;font-weight:800">Ver ritual</a></div></div>
 
 </div>
 </div>
 <script>
-function abrirModo(m){
- document.querySelectorAll('.mode-view').forEach(e=>e.classList.remove('active'));
- document.getElementById('view-'+m).classList.add('active');
- document.querySelectorAll('.nav').forEach(e=>e.classList.remove('active'));
- document.getElementById('nav-'+m).classList.add('active');
- document.querySelectorAll('.stat').forEach(e=>e.classList.remove('sel'));
- document.getElementById('card-'+m)?.classList.add('sel');
-}
-function generarHTML(modo){
- const plantillas={
-  respira:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Respiración</title><style>body{background:#000;color:#00D1FF;font-family:sans-serif;padding:20px}.card{background:#151515;border:1px solid #00D1FF;padding:20px;border-radius:16px}</style></head><body><div class="card"><h1>🌬️ MODO RESPIRACIÓN</h1><p>SpO2 96% • 13°C Villa Lugano • Test R01</p><p>Método nasal 4-4-4-4</p></div></body></html>`,
-  calma:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calma</title><style>body{background:#f8f5ff;color:#6b5b8a;font-family:sans-serif;padding:20px}.card{background:#fff;padding:20px;border-radius:24px}</style></head><body><div class="card"><h1>💜 MODO CALMA</h1><p>Pausita 4-7-8 • 2 minutos • 68 bpm</p></div></body></html>`,
-  fitness:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fitness</title><style>body{background:#000;color:#8cff00;font-family:sans-serif;padding:20px}.card{background:#111;border:1px solid #8cff00;padding:20px;border-radius:16px}</style></head><body><div class="card"><h1>🏃 MODO FITNESS</h1><p>Box 4-4-4-4 • 110 bpm • 310 kcal</p></div></body></html>`,
-  sueno:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sueño</title><style>body{background:#12121f;color:#fff;font-family:sans-serif;padding:20px}.card{background:#1a1a2e;padding:20px;border-radius:16px}</style></head><body><div class="card"><h1>🌙 BAJAR UN CAMBIO</h1><p>Ondas Delta 4h + Meditación 6 min • Método N.O.C.H.E.</p><a href="https://youtu.be/-YgA6CVvrY0" style="color:#7c5cff">Iniciar Ritual</a></div></body></html>`
- };
- let html=plantillas[modo];
- let blob=new Blob([html],{type:'text/html'});
- let url=URL.createObjectURL(blob);
- let a=document.createElement('a');a.href=url;a.download=modo+'.html';a.click();
- alert('✅ '+modo+'.html generado y descargado. Subilo a GitHub como '+modo+'.html para tener link propio');
-}
+function om(m){document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));document.getElementById('v-'+m).classList.add('on');document.querySelectorAll('.nav').forEach(e=>e.classList.remove('active'));document.getElementById('n-'+m)?.classList.add('active');document.querySelectorAll('.tc').forEach(e=>e.classList.remove('on'));document.getElementById('t-'+m)?.classList.add('on');}
+function u(){let raw=parseInt(document.getElementById('spo2r').value)||94; let hr=parseInt(document.getElementById('hr').value)||72; let c=raw+2; document.getElementById('spo2c').textContent=c+'%'; document.getElementById('oxM').textContent=c+'%'; document.getElementById('hrM').textContent=hr+' bpm';}
+function uM(){let t=parseInt(document.getElementById('tvol').value)||0; let e=parseInt(document.getElementById('est').value)||24; let hr=parseInt(document.getElementById('hr').value)||76; let f=document.getElementById('fat'); if(e>50&&t>90){f.textContent='⚠️ FATIGA - Pausa ya'; f.style.color='#FF8A2A'; if(navigator.vibrate) navigator.vibrate([100,50,100]);} else if(hr<62&&t>60){f.textContent='😴 SOMNOLENCIA - Ventana + agua'; f.style.color='#FF6B6B'; if(navigator.vibrate) navigator.vibrate([200,100,200]);} else {f.textContent='OK • Alerta tranquila'; f.style.color='#7CFF9D';}}
+function testR(){let t=document.getElementById('tResp'), c=document.getElementById('cResp'), f=['Inhala 4s','Retén 4s','Exhala 4s','Retén 4s']; let i=0; t.textContent=f[0]; c.style.transform='scale(1.3)'; let iv=setInterval(()=>{i++; if(i>=12){clearInterval(iv); t.textContent='✔ Completado SpO2 '+document.getElementById('spo2c').textContent; c.style.transform='scale(1)'; return;} t.textContent=f[i%4]+' '+(Math.floor(i/4)+1)+'/3'; c.style.transform=i%2==0?'scale(1.3)':'scale(0.85)'; if(navigator.vibrate&&i%4==0) navigator.vibrate(40);},1000);}
+function evalM(){u(); uM(); let hr=parseInt(document.getElementById('hr').value)||76; let est=parseInt(document.getElementById('est').value)||24; let spo2=parseInt(document.getElementById('spo2c').textContent)||96; let ideal=hr>=65&&hr<=85&&est<30&&spo2>95; document.getElementById('resM').innerHTML=ideal?'✅ IDEAL - 18m más + micro-pausa hombros':'⚠️ PAUSA 2m - cervical, 4-4-4-4, hidratar'; if(!ideal&&navigator.vibrate) navigator.vibrate([120,60,120]); else if(navigator.vibrate) navigator.vibrate(50);}
+function testC(){let t=document.getElementById('tCalma'), c=document.getElementById('cCalma'), f=['Inhala 4s','Retén 7s','Exhala 8s']; let i=0; let iv=setInterval(()=>{t.textContent=f[i%3]+' '+(i+1)+'/6'; c.style.transform=i%3==0?'scale(1.25)':i%3==1?'scale(1.1)':'scale(0.9)'; i++; if(i>=6){clearInterval(iv); t.textContent='✔ Pausita OK Estrés 24→18%'; c.style.transform='scale(1)';} if(navigator.vibrate&&i%3==0) navigator.vibrate(30);},1000);}
+u(); uM();
 </script>
 </body></html>
