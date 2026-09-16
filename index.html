@@ -1,24 +1,87 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FITRING</title><style>body{margin:0;background:#0a0a0b;color:#fff;font-family:sans-serif;padding-bottom:80px}header{padding:16px;display:flex;justify-content:space-between;background:#111;border-bottom:1px solid #222;position:sticky;top:0}.logo{font-weight:900;letter-spacing:2px}.badge{font-size:9px;color:#888}.dot{width:8px;height:8px;background:#0f8;border-radius:50%;display:inline-block}.card{margin:12px;background:#17171a;border-radius:20px;padding:16px;border:1px solid #222;text-align:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px}.item{background:#1e1e22;border-radius:16px;padding:10px;border:1px solid #2a2a2e}.item h3{font-size:10px;margin:6px 0}.btn{width:100%;background:#E8D44D;color:#000;border:0;padding:14px;border-radius:14px;font-weight:900;margin-top:10px}.tabs{display:flex;gap:6px;overflow:auto;padding:10px 12px}.tab{padding:8px 14px;border-radius:20px;background:#222;border:1px solid #333;font-size:11px;white-space:nowrap}.tab.a{background:#fff;color:#000}.list{padding:0 12px}.row{display:flex;justify-content:space-between;background:#222;padding:10px;border-radius:12px;margin:6px 0}.timer{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:99}.timer.on{display:flex}.circ{width:160px;height:160px;border-radius:50%;border:6px solid #222;border-top-color:#E8D44D;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:900}nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}</style></head><body>
-<header><div><div class="logo">FITRING</div><div class="badge">LITTLE MEATBALL • CONECTADO</div></div><div><span class="dot"></span> 87%</div></header>
-<div class="card"><div style="font-size:32px;font-weight:900">82</div><div>Readiness • Listo</div><div style="font-size:11px;color:#888;margin-top:4px">Anillo • Gestos ON</div></div>
-<div class="grid"><div class="item"><div id="hr">❤️ 78 BPM</div><small style="color:#0f8">Normal</small></div><div class="item">🔥 420 kcal<br><small>70%</small></div><div class="item">👣 7321 pasos<br><small>73%</small></div><div class="item">😴 7h 42m<br><small>Profundo</small></div></div>
-<div style="padding:16px 12px 6px;font-weight:800">Biblioteca</div>
-<div class="tabs" id="tabs"></div>
-<div class="grid" id="exGrid"></div>
-<div class="card"><div style="text-align:left;font-weight:800">📋 MI RUTINA (<span id="c">0</span>)</div><div id="workoutList" style="margin-top:10px;color:#888;font-size:12px">Toca + para armar</div><button class="btn" onclick="start()">▶ INICIAR RUTINA</button></div>
-<div class="timer" id="timer"><div id="tName" style="font-size:20px;font-weight:800;margin-bottom:16px">Press</div><div class="circ" id="tCirc">60</div><div id="tInfo" style="margin-top:12px;color:#888"></div><div style="display:flex;gap:10px;margin-top:20px"><button class="btn" style="width:auto" onclick="go(-1)">👋 Atrás</button><button class="btn" style="width:auto" onclick="go(1)">Siguiente 👋</button></div><button onclick="closeT()" style="margin-top:20px;background:none;border:none;color:#888">✕ CERRAR</button></div>
-<nav><button>🏠 Inicio</button><button>📊</button><button>📷</button><button>📚</button><button>👤</button></nav>
-<script>
-C=['todos','pecho','espalda','pierna','core','cardio'];E=[['Press Banca','pecho'],['Flexiones','pecho'],['Dominadas','espalda'],['Remo','espalda'],['Sentadilla','pierna'],['Peso Muerto','pierna'],['Plancha','core'],['Burpees','cardio'],['Mountain','cardio'],['Curl','pecho']];let f='todos',R=[],tI=0,tS=60,tInt=null;
-const tabs=document.getElementById('tabs');C.forEach(x=>{let b=document.createElement('div');b.className='tab'+(x=='todos'?' a':'');b.textContent=x.toUpperCase();b.onclick=()=>{f=x;document.querySelectorAll('.tab').forEach(z=>z.classList.remove('a'));b.classList.add('a');render()};tabs.appendChild(b)});
-function render(){let g=document.getElementById('exGrid');g.innerHTML='';E.filter(e=>f=='todos'||e[1]==f).forEach(e=>{let d=document.createElement('div');d.className='item';d.innerHTML=`<div style="font-weight:800;font-size:12px">${e[0]}</div><small>${e[1]}</small><button onclick="add('${e[0]}')" style="float:right;background:#E8D44D;border:0;border-radius:50%;width:24px;height:24px;font-weight:900">+</button>`;g.appendChild(d)})}
-function add(n){R.push({n:n,s:3,r:12,d:60});upd()}
-function upd(){document.getElementById('c').textContent=R.length;let l=document.getElementById('workoutList');if(!R.length){l.textContent='Toca + para armar';return}l.innerHTML='';R.forEach((x,i)=>{let r=document.createElement('div');r.className='row';r.innerHTML=`<div><b style="font-size:12px">${x.n}</b><br><small>3x12 • 60s</small></div><button onclick="R.splice(${i},1);upd()" style="background:#333;color:#fff;border:0;border-radius:8px;padding:4px 8px">✕</button>`;l.appendChild(r)})}
-function start(){if(!R.length){alert('Arma rutina primero');return}tI=0;document.getElementById('timer').classList.add('on');show()}
-function show(){let r=R[tI];document.getElementById('tName').textContent=r.n;document.getElementById('tInfo').textContent=`Ej ${tI+1} de ${R.length} • 3x12`;tS=r.d;document.getElementById('tCirc').textContent=tS;clearInterval(tInt);tInt=setInterval(()=>{tS--;document.getElementById('tCirc').textContent=tS;if(tS<=0)go(1)},1000)}
-function go(d){tI+=d;if(tI>=R.length){closeT();alert('¡Completada! 🔥');return}if(tI<0)tI=0;show()}
-function closeT(){document.getElementById('timer').classList.remove('on');clearInterval(tInt)}
-setInterval(()=>{let b=Math.floor(72+Math.random()*8);let el=document.getElementById('hr');if(el)el.textContent='❤️ '+b+' BPM'},3000);
-render();upd();
-</script></body></html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FITRING - Anillo | Sueño Profundo</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a12;color:#e0e0ff;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;min-height:100vh}
+  header{padding:24px 20px;text-align:center;border-bottom:1px solid #1e1e32}
+  header h1{font-size:22px;letter-spacing:2px;color:#fff}
+  header p{color:#8b8ba7;font-size:12px;margin-top:6px;letter-spacing:1px}
+  .container{max-width:400px;margin:0 auto;padding:20px}
+  .card{background:#12121f;border:1px solid #2a2a40;border-radius:24px;overflow:hidden;margin-bottom:20px}
+  .card img{width:100%;display:block}
+  .card-content{padding:20px}
+  h2{color:#fff;font-size:18px;margin-bottom:8px}
+  .muted{color:#8b8ba7;font-size:11px;letter-spacing:1px;margin-bottom:12px}
+  .desc{color:#c2c2d6;font-size:14px;line-height:1.5;margin-bottom:18px}
+  .btn{display:block;background:#7c5cff;color:#fff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;font-size:14px}
+  .btn-outline{display:block;text-align:center;margin-top:12px;color:#8b8ba7;font-size:12px;text-decoration:none}
+  .badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);color:#fff;padding:5px 10px;border-radius:20px;font-size:11px}
+  .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-size:24px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+  .img-wrap{position:relative}
+  footer{text-align:center;padding:30px;color:#444;font-size:11px}
+  nav{display:flex;gap:10px;justify-content:center;margin-top:16px}
+  nav a{color:#7c5cff;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #2a2a40;border-radius:20px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>FITRING • ANILLO</h1>
+  <p>TODO ARMÓNICO SIN NECESIDAD DE MÁS</p>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="bitacora.html">Bitácora</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- SESION PRINCIPAL DELTA -->
+  <div class="card">
+    <a href="https://youtu.be/-YgA6CVvrY0?si=FlqSJ3vhEDXQsVbm" target="_blank" style="display:block;position:relative;text-decoration:none">
+      <div class="img-wrap">
+        <img src="https://i.ytimg.com/vi/-YgA6CVvrY0/maxresdefault.jpg" alt="Ondas Delta" style="height:420px;object-fit:cover">
+        <span class="badge">🌙 SESIÓN SUGERIDA</span>
+        <span class="play">▶</span>
+      </div>
+    </a>
+    <div class="card-content">
+      <h2>BAJAR UN CAMBIO</h2>
+      <p class="muted">ONDAS DELTA 4 HORAS + MEDITACIÓN 6 MIN</p>
+      <p class="desc">
+        Método N.O.C.H.E.:<br>
+        ✨ Neutraliza estímulos<br>
+        🌙 Ordena tu entorno<br>
+        🧘 Calma tu cuerpo<br>
+        🧠 Haz espacio mental<br>
+        😴 Entra en descanso<br><br>
+        No te obligues a dormir. Prepará las condiciones para que tu cuerpo suelte.
+      </p>
+      <a href="https://youtu.be/-YgA6CVvrY0?si=FlqSJ3vhEDXQsVbm" target="_blank" class="btn">✨ Iniciar Ritual - 21 Noches</a>
+      <a href="https://xn--21nochesde.../" target="_blank" class="btn-outline">Ver guía completa →</a>
+    </div>
+  </div>
+
+  <!-- INFO FITRING -->
+  <div class="card">
+    <div class="card-content">
+      <h2>¿Cómo funciona?</h2>
+      <p class="desc">
+        El anillo mide tu HRV y temperatura. Cuando detecta que estás a la noche con la mente prendida, te sugiere esta sesión para bajar la frecuencia a Delta.
+      </p>
+      <a href="bitacora.html" class="btn" style="background:#1e1e32">Ver mi bitácora</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  FITRING © 2026 • Hecho con calma desde Buenos Aires 🌙
+</footer>
+
+</body>
+</html>
