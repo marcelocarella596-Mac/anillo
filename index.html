@@ -1,87 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FITRING - Anillo | Sueño Profundo</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#0a0a12;color:#e0e0ff;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;min-height:100vh}
-  header{padding:24px 20px;text-align:center;border-bottom:1px solid #1e1e32}
-  header h1{font-size:22px;letter-spacing:2px;color:#fff}
-  header p{color:#8b8ba7;font-size:12px;margin-top:6px;letter-spacing:1px}
-  .container{max-width:400px;margin:0 auto;padding:20px}
-  .card{background:#12121f;border:1px solid #2a2a40;border-radius:24px;overflow:hidden;margin-bottom:20px}
-  .card img{width:100%;display:block}
-  .card-content{padding:20px}
-  h2{color:#fff;font-size:18px;margin-bottom:8px}
-  .muted{color:#8b8ba7;font-size:11px;letter-spacing:1px;margin-bottom:12px}
-  .desc{color:#c2c2d6;font-size:14px;line-height:1.5;margin-bottom:18px}
-  .btn{display:block;background:#7c5cff;color:#fff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;font-size:14px}
-  .btn-outline{display:block;text-align:center;margin-top:12px;color:#8b8ba7;font-size:12px;text-decoration:none}
-  .badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);color:#fff;padding:5px 10px;border-radius:20px;font-size:11px}
-  .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-size:24px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
-  .img-wrap{position:relative}
-  footer{text-align:center;padding:30px;color:#444;font-size:11px}
-  nav{display:flex;gap:10px;justify-content:center;margin-top:16px}
-  nav a{color:#7c5cff;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #2a2a40;border-radius:20px}
-</style>
-</head>
-<body>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>FITRING • Respira y Calma</title><style>*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif}body{background:#000;color:#fff}#onboarding{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;padding:24px}#onboarding.hidden{display:none}label{font-size:11px;font-weight:800;color:#FFD93D;margin-top:14px;display:block}input,select{width:100%;background:#222;border:0;border-radius:12px;padding:14px;color:#fff;margin-top:6px}.btn-primary{background:#FFD93D;color:#000;border:0;border-radius:16px;padding:18px;font-weight:900;width:100%;margin-top:20px}.header{padding:16px;background:#111;display:flex;justify-content:space-between;position:sticky;top:0}.badge{font-size:9px;background:#FFD93D;color:#000;padding:4px 8px;border-radius:20px;font-weight:900}.modes{display:flex;gap:8px;overflow-x:auto;padding:12px;background:#0a0a0a}.modes button{white-space:nowrap;padding:9px 14px;border-radius:20px;border:1px solid #333;background:#1a1a1a;color:#888;font-size:11px;font-weight:700}.modes button.active{background:#FFD93D;color:#000}.card{background:#151515;border-radius:18px;padding:16px;margin:12px}.mode{display:none}.mode.active{display:block}.btn{width:100%;padding:14px;border-radius:14px;border:0;font-weight:800;font-size:13px;margin-top:8px}.btn.sec{background:#222;color:#fff}</style></head><body>
+<div id="onboarding"><h1>Configurar FITRING</h1><p style="color:#888;font-size:13px;margin-top:8px">Datos para mediciones reales.</p><label>NOMBRE</label><input id="nombre"><label>APELLIDO</label><input id="apellido"><label>EDAD</label><input id="edad" type="number" value="45"><label>PESO</label><input id="peso" type="number" value="78"><label>ALTURA</label><input id="altura" type="number" value="175"><label>SEXO</label><select id="sexo"><option value="M" selected>M</option><option value="F">F</option></select><button class="btn-primary" onclick="guardarPerfil()">GUARDAR Y ENTRAR</button></div>
+<div class="header"><div><div style="font-size:11px;color:#FFD93D;font-weight:900">FITRING • Little Meatball</div><div style="font-size:12px"><span class="uNameFull"></span> • <span id="uResumen"></span></div></div><div class="badge">MEATBALL</div></div>
+<div id="burbujaClima" style="display:none;margin:12px;background:linear-gradient(135deg,#001a3a,#0a2a5a);border:1px solid #4DA3FF;border-radius:16px;padding:14px;font-size:12px"></div>
+<div class="modes"><button class="active" onclick="setMode('normal',this)">🟡 NORMAL</button><button onclick="setMode('epoc',this)">🌬️ RESPIRA</button><button onclick="setMode('cardio',this)">❤️ CORAZÓN</button><button onclick="setMode('sueno',this)">🔵 SUEÑO</button><button onclick="setMode('anciano',this)">🟣 VITAL</button><button onclick="setMode('estres',this)">💜 CALMA</button><button onclick="setMode('fitness',this)">🏃‍♀️ FITNESS</button></div>
+<div id="m-normal" class="mode active"><div class="card" style="background:#FFD93D;color:#000"><b>NORMAL • <span class="uName"></span></b><div>IMC: <span id="imc"></span> • TMB: <span id="tmb"></span></div></div></div>
+<div id="m-epoc" class="mode"><div class="card" style="background:#151515;border:1px solid #7CFF9D"><div style="font-size:10px;color:#7CFF9D;font-weight:900">🌬️ MODO RESPIRA</div><div style="font-size:20px;font-weight:900;margin-top:8px">Hoy respirás estable</div><small style="color:#7CFF9D">Aire en rango óptimo</small><div style="margin-top:10px;background:#1a2a1a;border-radius:12px;padding:10px"><b style="font-size:10px;color:#7CFF9D">AIRE</b><div id="spo2e">96%</div><small id="corrSpO2" style="color:#7CFF9D">Corregido</small></div></div><div id="sugerenciaRespira" class="card" style="background:#f0fff0;color:#0a3a1a"></div></div>
+<div id="m-estres" class="mode"><div style="background:#f8f5ff;min-height:80vh;padding:12px;border-radius:24px;margin:12px"><div style="text-align:center;padding:16px 0"><div style="font-size:28px;font-weight:900;color:#6b5b8a">Hola, <span class="uName">Silvia</span></div><div style="color:#9b8ab8;font-size:13px">Bienvenida a tu momento de calma</div></div><div style="background:#fff;border-radius:24px;padding:16px;text-align:center"><div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#e8e0ff,#ffe0f0);margin:auto;display:flex;align-items:center;justify-content:center;font-size:48px">🧘‍♀️</div><div style="margin-top:10px;color:#9b8ab8;font-size:12px">Respiración consciente · 2 minutos</div></div><div style="margin-top:14px;display:grid;gap:10px"><div style="background:#efe8ff;border-radius:16px;padding:14px;display:flex;gap:12px"><div>🌤️</div><div style="color:#6b5b8a;font-size:13px">Hoy es un buen día para cuidarte</div></div><div style="background:#fff;border:1px solid #e8e0ff;border-radius:16px;padding:14px;display:flex;gap:12px"><div>💧</div><div style="color:#6b5b8a;font-size:13px" id="textoBienestar">Tu cuerpo te pide agüita y luz suave</div></div><div style="background:#efe8ff;border-radius:16px;padding:14px;display:flex;gap:12px"><div>⏱️</div><div><div style="color:#6b5b8a;font-size:13px">¿Hacemos una pausita juntas?</div><small style="color:#9b8ab8">2 minutos</small></div></div></div><button onclick="iniciarRespiracion()" style="width:100%;margin-top:18px;background:#a89bc7;color:#fff;border:0;border-radius:20px;padding:18px;font-size:17px;font-weight:800">Sí, pausita ✨</button><div style="text-align:center;margin-top:10px"><small style="color:#b8a8d8;font-size:10px">Villa Lugano • 13°C • 1020 hPa</small></div></div></div>
+<div id="m-cardio" class="mode"><div class="card" style="background:#FF6B6B"><b>❤️ CORAZÓN</b><div>72 bpm estable</div></div></div>
 
-<header>
-  <h1>FITRING • ANILLO</h1>
-  <p>TODO ARMÓNICO SIN NECESIDAD DE MÁS</p>
-  <nav>
-    <a href="index.html">Inicio</a>
-    <a href="bitacora.html">Bitácora</a>
-  </nav>
-</header>
+<!-- MODO SUEÑO CORREGIDO - DISEÑO SERENO ORIGINAL -->
+<div id="m-sueno" class="mode"><div class="card" style="background:#12121f;border:1px solid #2a2a40;padding:0;overflow:hidden"><a href="https://youtu.be/-YgA6CVvrY0?si=FlqSJ3vhEDXQsVbm" target="_blank" style="display:block;position:relative;text-decoration:none"><div style="position:relative"><img src="https://i.ytimg.com/vi/-YgA6CVvrY0/maxresdefault.jpg" style="width:100%;height:420px;object-fit:cover;display:block" onerror="this.src='https://i.ytimg.com/vi/-YgA6CVvrY0/hqdefault.jpg'"><span style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);color:#fff;padding:6px 12px;border-radius:20px;font-size:11px">🌙 SESIÓN SUGERIDA</span><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.9);width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:28px">▶</span></div></a><div style="padding:20px"><div style="color:#fff;font-size:18px;font-weight:900">BAJAR UN CAMBIO</div><div style="color:#8b8ba7;font-size:11px;letter-spacing:1px;margin-top:4px">ONDAS DELTA 4 HORAS + MEDITACIÓN 6 MIN</div><div style="color:#c2c2d6;font-size:13px;line-height:1.5;margin-top:12px">Método N.O.C.H.E.:<br>✨ Neutraliza estímulos<br>🌙 Ordena tu entorno<br>🧘 Calma tu cuerpo<br>🧠 Haz espacio mental<br>😴 Entra en descanso<br><br>Todo armónico sin necesidad de más.</div><a href="https://youtu.be/-YgA6CVvrY0?si=FlqSJ3vhEDXQsVbm" target="_blank" style="display:block;background:#7c5cff;color:#fff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-weight:800;margin-top:16px">✨ Iniciar Ritual - 21 Noches</a><a href="https://xn--21nochesde.../" target="_blank" style="display:block;text-align:center;margin-top:12px;color:#8b8ba7;font-size:11px;text-decoration:none">Ver guía completa →</a></div></div><div class="card" style="background:#4DA3FF"><b>REGISTRO SUEÑO</b><div>7h 24m anoche • Profundo 1h 52m</div></div></div>
 
-<div class="container">
-
-  <!-- SESION PRINCIPAL DELTA -->
-  <div class="card">
-    <a href="https://youtu.be/-YgA6CVvrY0?si=FlqSJ3vhEDXQsVbm" target="_blank" style="display:block;position:relative;text-decoration:none">
-      <div class="img-wrap">
-        <img src="https://i.ytimg.com/vi/-YgA6CVvrY0/maxresdefault.jpg" alt="Ondas Delta" style="height:420px;object-fit:cover">
-        <span class="badge">🌙 SESIÓN SUGERIDA</span>
-        <span class="play">▶</span>
-      </div>
-    </a>
-    <div class="card-content">
-      <h2>BAJAR UN CAMBIO</h2>
-      <p class="muted">ONDAS DELTA 4 HORAS + MEDITACIÓN 6 MIN</p>
-      <p class="desc">
-        Método N.O.C.H.E.:<br>
-        ✨ Neutraliza estímulos<br>
-        🌙 Ordena tu entorno<br>
-        🧘 Calma tu cuerpo<br>
-        🧠 Haz espacio mental<br>
-        😴 Entra en descanso<br><br>
-        No te obligues a dormir. Prepará las condiciones para que tu cuerpo suelte.
-      </p>
-      <a href="https://youtu.be/-YgA6CVvrY0?si=FlqSJ3vhEDXQsVbm" target="_blank" class="btn">✨ Iniciar Ritual - 21 Noches</a>
-      <a href="https://xn--21nochesde.../" target="_blank" class="btn-outline">Ver guía completa →</a>
-    </div>
-  </div>
-
-  <!-- INFO FITRING -->
-  <div class="card">
-    <div class="card-content">
-      <h2>¿Cómo funciona?</h2>
-      <p class="desc">
-        El anillo mide tu HRV y temperatura. Cuando detecta que estás a la noche con la mente prendida, te sugiere esta sesión para bajar la frecuencia a Delta.
-      </p>
-      <a href="bitacora.html" class="btn" style="background:#1e1e32">Ver mi bitácora</a>
-    </div>
-  </div>
-
-</div>
-
-<footer>
-  FITRING © 2026 • Hecho con calma desde Buenos Aires 🌙
-</footer>
-
-</body>
-</html>
+<div id="m-anciano" class="mode"><div class="card" style="background:#B18CFF"><b>VITAL</b><div>Actividad serena</div></div></div><div id="m-fitness" class="mode"><div class="card" style="background:#0a1a0a;border:1px solid #8cff00"><b style="color:#8cff00">FITNESS BOX 4-4-4-4</b><button class="btn" style="background:#8cff00;color:#000;margin-top:10px" onclick="iniciarBoxBreathing()">▶️ BOX</button></div></div>
+<div class="card" style="border:1.5px dashed #FFD93D;background:#1a1a0a"><div style="font-size:11px;font-weight:900">📄 ANÁLISIS</div><div id="dropZone" style="margin-top:10px;border:1.5px dashed #444;border-radius:14px;padding:16px;text-align:center;background:#111">📤 Subir<input type="file" id="fileInput" hidden></div><div id="labResults" style="display:none;margin-top:10px;background:#111;padding:10px;border-radius:10px"><div id="labList" style="font-size:11px"></div><small id="labFecha" style="color:#7CFF9D"></small></div></div>
+<script>
+let perfil=JSON.parse(localStorage.getItem('fitring_perfil')||'null');
+function init(){if(perfil){onboarding.classList.add('hidden');aplicarPerfil();}cargarLab();actualizarClimaLocal();}
+function guardarPerfil(){let n=nombre.value.trim(),a=apellido.value.trim();perfil={nombre:n,apellido:a,edad:parseInt(edad.value),peso:parseFloat(peso.value),altura:parseFloat(altura.value),sexo:sexo.value};localStorage.setItem('fitring_perfil',JSON.stringify(perfil));onboarding.classList.add('hidden');aplicarPerfil();actualizarClimaLocal();}
+function aplicarPerfil(){let f=perfil.nombre+' '+perfil.apellido;document.querySelectorAll('.uNameFull').forEach(e=>e.textContent=f);document.querySelectorAll('.uName').forEach(e=>e.textContent=perfil.nombre);uResumen.textContent=perfil.edad+'a • '+perfil.peso+'kg';imc.textContent=(perfil.peso/((perfil.altura/100)**2)).toFixed(1);let t=perfil.sexo==='M'?10*perfil.peso+6.25*perfil.altura-5*perfil.edad+5:10*perfil.peso+6.25*perfil.altura-5*perfil.edad-161;tmb.textContent=Math.round(t);}
+function setMode(m,b){document.querySelectorAll('.mode').forEach(e=>e.classList.remove('active'));document.getElementById('m-'+m).classList.add('active');document.querySelectorAll('.modes button').forEach(x=>x.classList.remove('active'));b.classList.add('active');}
+dropZone.onclick=()=>fileInput.click();fileInput.onchange=e=>{let hb=prompt('Hemoglobina?'),co=prompt('Bienestar?');let lab={fecha:new Date().toLocaleDateString(),hemoglobina:hb,cortisol:co};localStorage.setItem('fitring_lab',JSON.stringify(lab));mostrarLab(lab);};
+function cargarLab(){let l=JSON.parse(localStorage.getItem('fitring_lab')||'null');if(l)mostrarLab(l);}function mostrarLab(l){labResults.style.display='block';labList.innerHTML=(l.hemoglobina?'Hb:'+l.hemoglobina+'<br>':'')+(l.cortisol?'Bienestar:'+l.cortisol:'');labFecha.textContent=l.fecha;if(l.hemoglobina){spo2e.textContent=(96-(15-parseFloat(l.hemoglobina))*0.8).toFixed(1)+'%';corrSpO2.textContent='Corregido';}}
+async function actualizarClimaLocal(){let temp=13,presion=1020,humedad=70;try{let r=await fetch('https://wttr.in/Buenos_Aires?format=j1');let d=await r.json();let cc=d.current_condition[0];temp=parseInt(cc.temp_C);presion=parseInt(cc.pressure);humedad=parseInt(cc.humidity);}catch(e){}let msgRespira=temp<=14?`Aire fresco ${temp}°C - bufanda liviana`: `Aire estable ${temp}°C`;sugerenciaRespira.innerHTML=`<b>💡 Sugerencia de aire</b><div style="font-size:11px;margin-top:6px">${msgRespira}</div>`;let msgCalma=presion>=1018&&temp<=14?`Tu cuerpito sensible hoy (${temp}°C • ${presion}hPa) - pide agüita y luz suave`: presion>=1018?`Aire pesadito ${presion}hPa - tu cuerpo pide pausa tranquila`: `Tu cuerpo te pide agüita y luz suave`;textoBienestar.textContent=msgCalma;let burbuja=document.getElementById('burbujaClima');if(temp<=14||presion>=1018){burbuja.style.display='block';burbuja.innerHTML=`📍 Villa Lugano • ${temp}°C • ${presion}hPa<br>💧 Sugerencia suave: agüita y pausa`;} }
+function iniciarRespiracion(){alert('Tu pausita 4-7-8\\nInhala 4s nariz, retén 7s, exhala 8s boca');if(navigator.vibrate)navigator.vibrate([80,40,80]);}
+function iniciarBoxBreathing(){alert('BOX 4-4-4-4 NASAL');}
+init();
+</script></body></html>
