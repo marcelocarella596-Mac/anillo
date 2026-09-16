@@ -1,31 +1,78 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>FITRING • Modos de Prueba</title><style>*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif}body{background:#0e1217;color:#d7e2ec}.header{height:56px;background:#151b23;border-bottom:1px solid #1f2a38;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0}.logo{color:#4DD3FF;font-weight:900;display:flex;align-items:center;gap:8px}.layout{display:flex}.sidebar{width:200px;background:#111821;border-right:1px solid #1f2a38;min-height:100vh;padding:12px}.nav{padding:10px 12px;border-radius:10px;color:#8aa0b6;font-size:13px;margin-bottom:4px}.nav.active{background:#00D1FF;color:#000;font-weight:800}.main{flex:1;padding:16px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#151b23;border:1px solid #1f2a38;border-radius:14px;padding:14px}.stat b{font-size:22px;color:#fff}.card{background:#151b23;border:1px solid #1f2a38;border-radius:14px;margin-top:14px;overflow:hidden}th{color:#5a6c80;font-size:10px;text-align:left;padding:10px;border-top:1px solid #1f2a38;background:#121821}td{padding:12px;border-top:1px solid #1a2533;font-size:13px}.pill{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:900;border:1px solid}.respira{background:#00D1FF22;color:#00D1FF;border-color:#00D1FF55}.calma{background:#B18CFF22;color:#B18CFF;border-color:#B18CFF55}.fitness{background:#8cff0022;color:#8cff00;border-color:#8cff0055}.btn{padding:8px 14px;border-radius:8px;border:0;font-weight:800;font-size:11px}.cyan{background:#00E5FF;color:#000}@media(max-width:800px){.grid4{grid-template-columns:1fr 1fr}.sidebar{display:none}}</style></head><body>
-<div class="header"><div class="logo">🌀 FITRING <small style="color:#5a6c80;font-size:9px;margin-left:6px">MODOS DE PRUEBA</small></div><div style="font-size:11px;background:#1a242f;padding:8px 12px;border-radius:10px;border:1px solid #2a3a4d">📍 Villa Lugano • 13°C • 1020 hPa</div></div>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>FITRING • Hub de Prueba</title><style>*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif}body{background:#0e1217;color:#d7e2ec}.header{height:56px;background:#151b23;border-bottom:1px solid #1f2a38;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10}.logo{color:#4DD3FF;font-weight:900}.layout{display:flex}.sidebar{width:210px;background:#111821;border-right:1px solid #1f2a38;min-height:100vh;padding:12px}.nav{padding:12px;border-radius:10px;color:#8aa0b6;font-size:13px;margin-bottom:4px;cursor:pointer;display:flex;gap:8px;align-items:center}.nav.active{background:#00D1FF;color:#000;font-weight:900}.main{flex:1;padding:16px}.mode-view{display:none}.mode-view.active{display:block}.grid4{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:#151b23;border:1px solid #1f2a38;border-radius:14px;padding:16px;cursor:pointer;transition:.2s}.stat:hover{border-color:#00D1FF;transform:translateY(-2px)}.stat b{font-size:20px;color:#fff}.stat.sel{border-color:#00D1FF;background:#0e1e2a}.card{background:#151b23;border:1px solid #1f2a38;border-radius:16px;padding:16px;margin-top:14px}.btn{padding:12px 18px;border-radius:10px;border:0;font-weight:800;font-size:12px;cursor:pointer}.btn.cyan{background:#00E5FF;color:#000}.btn.dark{background:#1f2a38;color:#8aa0b6;border:1px solid #2a3a4d;width:100%;margin-top:8px}.pill{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:900;border:1px solid}.respi{background:#00D1FF22;color:#00D1FF;border-color:#00D1FF55}.calma{background:#B18CFF22;color:#B18CFF;border-color:#B18CFF55}.fit{background:#8cff0022;color:#8cff00;border-color:#8cff0055}@media(max-width:800px){.grid4{grid-template-columns:1fr}.sidebar{display:none}}</style></head><body>
+<div class="header"><div class="logo">🌀 FITRING • HUB</div><div style="font-size:11px;background:#1a242f;padding:8px 12px;border-radius:10px;border:1px solid #2a3a4d">🧪 Modo Laboratorio • Villa Lugano 13°C</div></div>
 <div class="layout">
-<div class="sidebar"><div style="font-size:9px;color:#5a6c80;margin:10px 8px;font-weight:800">NAVEGACIÓN</div><div class="nav active">🧪 Modos de Prueba</div><div class="nav">🌬️ Respira</div><div class="nav">💜 Calma</div><div class="nav">🏃 Fitness</div><div class="nav">😴 Sueño</div><div class="nav">❤️ Corazón</div><div class="nav">🟡 Normal</div></div>
+<div class="sidebar">
+<div style="font-size:9px;color:#5a6c80;margin:10px 8px;font-weight:800">MODOS DE PRUEBA</div>
+<div class="nav active" id="nav-respira" onclick="abrirModo('respira')">🌬️ Respiración</div>
+<div class="nav" id="nav-calma" onclick="abrirModo('calma')">💜 Calma</div>
+<div class="nav" id="nav-fitness" onclick="abrirModo('fitness')">🏃 Fitness</div>
+<div class="nav" id="nav-sueno" onclick="abrirModo('sueno')">😴 Sueño</div>
+<div style="margin-top:20px;padding:12px;background:#121a23;border-radius:12px;border:1px solid #1f2a38"><div style="font-size:10px;color:#5a6c80">OBJETIVO</div><div style="font-size:11px;color:#8aa0b6;margin-top:4px">Probar los 3 dashboards desde acá y luego generar un HTML específico por medición.</div></div>
+</div>
 <div class="main">
-<div class="grid4">
-<div class="stat"><div style="font-size:10px">🌬️ RESPIRA</div><b style="color:#00D1FF">ACTIVO</b><small style="color:#00D1FF">Modo EPOC • Test OK</small></div>
-<div class="stat"><div style="font-size:10px">💜 CALMA</div><b style="color:#B18CFF">ACTIVO</b><small style="color:#B18CFF">Modo ESTRES • Test OK</small></div>
-<div class="stat"><div style="font-size:10px">🏃 FITNESS</div><b style="color:#8cff00">ACTIVO</b><small style="color:#8cff00">Modo FITNESS • Test OK</small></div>
-<div class="stat"><div style="font-size:10px">🔋 Batería Test</div><b>92%</b><small>3 anillos virtuales</small></div>
+
+<!-- SELECTOR RAPIDO -->
+<div class="grid4" style="margin-bottom:14px">
+<div class="stat sel" id="card-respira" onclick="abrirModo('respira')"><div style="font-size:11px">🌬️ MODO</div><b style="color:#00D1FF">RESPIRACIÓN</b><div style="font-size:10px;color:#5a6c80;margin-top:4px">Sistema: Respiración (ex-EPOC)</div><div style="margin-top:8px"><span class="pill respi">72 bpm • 96% SpO2</span></div></div>
+<div class="stat" id="card-calma" onclick="abrirModo('calma')"><div style="font-size:11px">💜 MODO</div><b style="color:#B18CFF">CALMA</b><div style="font-size:10px;color:#5a6c80;margin-top:4px">Sistema: Calma (ex-ESTRES)</div><div style="margin-top:8px"><span class="pill calma">68 bpm • Pausa 4-7-8</span></div></div>
+<div class="stat" id="card-fitness" onclick="abrirModo('fitness')"><div style="font-size:11px">🏃 MODO</div><b style="color:#8cff00">FITNESS</b><div style="font-size:10px;color:#5a6c80;margin-top:4px">Sistema: Fitness</div><div style="margin-top:8px"><span class="pill fit">110 bpm • 310 kcal</span></div></div>
 </div>
 
-<div class="card">
-<div style="padding:14px;display:flex;justify-content:space-between"><b>Dispositivos de Prueba — 3 modos</b><button class="btn cyan">▶ Ejecutar Tests</button></div>
-<table style="width:100%;border-collapse:collapse">
-<tr><th>ID TEST</th><th>MODO DE PRUEBA</th><th>MODO SISTEMA</th><th>HR</th><th>SpO2</th><th>ESTADO</th><th>ACCIÓN</th></tr>
-<tr><td style="color:#00D1FF;font-weight:800">TEST-R01</td><td><b>🌬️ Respira</b><br><small style="color:#5a6c80">Prueba nasal 4-4-4-4</small></td><td><span class="pill respira">EPOC</span></td><td>72 bpm</td><td>96%</td><td><span style="color:#7CFF9D">● Online</span></td><td><button class="btn" style="background:#1f2a38;color:#00D1FF">Probar</button></td></tr>
-<tr><td style="color:#B18CFF;font-weight:800">TEST-C02</td><td><b>💜 Calma</b><br><small style="color:#5a6c80">Pausita 4-7-8 • 2 min</small></td><td><span class="pill calma">ESTRES</span></td><td>68 bpm</td><td>97%</td><td><span style="color:#7CFF9D">● Online</span></td><td><button class="btn" style="background:#1f2a38;color:#B18CFF">Probar</button></td></tr>
-<tr><td style="color:#8cff00;font-weight:800">TEST-F03</td><td><b>🏃 Fitness</b><br><small style="color:#5a6c80">Box 4-4-4-4 • Calorías</small></td><td><span class="pill fitness">FITNESS</span></td><td>110 bpm</td><td>95%</td><td><span style="color:#7CFF9D">● Online</span></td><td><button class="btn" style="background:#1f2a38;color:#8cff00">Probar</button></td></tr>
-</table>
+<!-- VISTA RESPIRACION -->
+<div id="view-respira" class="mode-view active">
+<div class="card" style="border-color:#00D1FF44"><div style="display:flex;justify-content:space-between;align-items:center"><div><b style="font-size:18px;color:#00D1FF">🌬️ DASHBOARD RESPIRACIÓN</b><div style="font-size:11px;color:#5a6c80">Modo Respiración • Prueba nasal 4-4-4-4 • Aire Villa Lugano</div></div><span class="pill respi">TEST-R01 • ONLINE</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+<div style="background:#0a1a1e;border:1px solid #00D1FF33;border-radius:12px;padding:14px"><div style="font-size:10px;color:#00D1FF">SpO2 CORREGIDO</div><b style="font-size:28px">96%</b><div style="font-size:11px;color:#7CFF9D">Aire estable 13°C • 1020 hPa</div></div>
+<div style="background:#0a1a1e;border:1px solid #00D1FF33;border-radius:12px;padding:14px"><div style="font-size:10px;color:#00D1FF">SUGERENCIA AIRE</div><b style="font-size:14px">Aire fresco - bufanda liviana</b><div style="font-size:11px;color:#8aa0b6">Humedad 70% • Viento leve</div></div>
+</div>
+<div style="margin-top:12px;display:flex;gap:8px"><button class="btn cyan" onclick="generarHTML('respira')">📄 Generar respira.html</button><button class="btn dark" onclick="alert('Iniciando test respiración 4-4-4-4')">▶ Probar Respiración</button></div>
+</div>
 </div>
 
-<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-<div class="card" style="padding:14px"><b style="font-size:12px">🧪 Log de Pruebas Hoy</b><div style="font-size:11px;color:#8aa0b6;margin-top:8px;line-height:1.8">✔ Respira: 5 ciclos • HR estable 72 bpm<br>✔ Calma: 2 pausitas • Estrés 22% → 18%<br>✔ Fitness: 4.2 km virtuales • 310 kcal<br><br><small style="color:#5a6c80">Última ejecución: hace 2 min</small></div></div>
-<div class="card" style="padding:14px"><b style="font-size:12px">💡 Objetivo Prueba</b><div style="font-size:11px;color:#8aa0b6;margin-top:8px;line-height:1.6">Probar todos los modos desde un mismo dashboard sin datos personales.<br><br>• Respira = valida SpO2 + clima Villa Lugano<br>• Calma = valida pausita + presión 1020 hPa<br>• Fitness = valida HR + calorías<br><br><button class="btn cyan" style="width:100%;margin-top:8px">Iniciar Secuencia Completa</button></div></div>
+<!-- VISTA CALMA -->
+<div id="view-calma" class="mode-view">
+<div class="card" style="border-color:#B18CFF44;background:#f8f5ff"><div style="display:flex;justify-content:space-between"><div><b style="font-size:18px;color:#6b5b8a">💜 DASHBOARD CALMA</b><div style="font-size:11px;color:#9b8ab8">Modo Calma • Pausita 4-7-8 • 2 minutos</div></div><span class="pill calma">TEST-C02 • ONLINE</span></div>
+<div style="background:#fff;border-radius:16px;padding:16px;margin-top:12px;text-align:center"><div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e8e0ff,#ffe0f0);margin:auto;display:grid;place-items:center;font-size:32px">🧘‍♀️</div><div style="margin-top:8px;color:#6b5b8a">Respiración consciente</div></div>
+<div style="margin-top:12px;display:flex;gap:8px"><button class="btn cyan" style="background:#a89bc7;color:#fff" onclick="generarHTML('calma')">📄 Generar calma.html</button><button class="btn dark" onclick="alert('Pausita 4-7-8')">▶ Probar Calma</button></div>
+</div>
 </div>
 
-<div style="margin-top:16px;font-size:9px;color:#5a6c80;display:flex;justify-content:space-between"><span>Sistema v2.1.5-test • Sin datos personales • Modo laboratorio</span><span style="color:#7CFF9D">Entorno seguro ●</span></div>
+<!-- VISTA FITNESS -->
+<div id="view-fitness" class="mode-view">
+<div class="card" style="border-color:#8cff0044"><div style="display:flex;justify-content:space-between"><div><b style="font-size:18px;color:#8cff00">🏃 DASHBOARD FITNESS</b><div style="font-size:11px;color:#5a6c80">Modo Fitness • Box 4-4-4-4 • Calorías</div></div><span class="pill fit">TEST-F03 • ONLINE</span></div>
+<div style="background:#0a1a0a;border:1px solid #8cff0033;border-radius:12px;padding:14px;margin-top:12px"><b style="color:#8cff00">FITNESS BOX 4-4-4-4 NASAL</b><div style="font-size:12px;margin-top:6px">110 bpm • 4.2km • 310 kcal hoy</div></div>
+<div style="margin-top:12px;display:flex;gap:8px"><button class="btn cyan" style="background:#8cff00;color:#000" onclick="generarHTML('fitness')">📄 Generar fitness.html</button><button class="btn dark" onclick="alert('Box breathing')">▶ Probar Fitness</button></div>
 </div>
 </div>
+
+<!-- VISTA SUEÑO -->
+<div id="view-sueno" class="mode-view">
+<div class="card" style="border-color:#7c5cff44"><b style="color:#7c5cff">😴 DASHBOARD SUEÑO</b><div style="font-size:11px;color:#5a6c80;margin-top:4px">Ondas Delta 4h + Método N.O.C.H.E.</div><div style="margin-top:12px"><button class="btn cyan" style="background:#7c5cff;color:#fff" onclick="generarHTML('sueno')">📄 Generar sueno.html</button></div></div>
+</div>
+
+</div>
+</div>
+<script>
+function abrirModo(m){
+ document.querySelectorAll('.mode-view').forEach(e=>e.classList.remove('active'));
+ document.getElementById('view-'+m).classList.add('active');
+ document.querySelectorAll('.nav').forEach(e=>e.classList.remove('active'));
+ document.getElementById('nav-'+m).classList.add('active');
+ document.querySelectorAll('.stat').forEach(e=>e.classList.remove('sel'));
+ document.getElementById('card-'+m)?.classList.add('sel');
+}
+function generarHTML(modo){
+ const plantillas={
+  respira:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Respiración</title><style>body{background:#000;color:#00D1FF;font-family:sans-serif;padding:20px}.card{background:#151515;border:1px solid #00D1FF;padding:20px;border-radius:16px}</style></head><body><div class="card"><h1>🌬️ MODO RESPIRACIÓN</h1><p>SpO2 96% • 13°C Villa Lugano • Test R01</p><p>Método nasal 4-4-4-4</p></div></body></html>`,
+  calma:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calma</title><style>body{background:#f8f5ff;color:#6b5b8a;font-family:sans-serif;padding:20px}.card{background:#fff;padding:20px;border-radius:24px}</style></head><body><div class="card"><h1>💜 MODO CALMA</h1><p>Pausita 4-7-8 • 2 minutos • 68 bpm</p></div></body></html>`,
+  fitness:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fitness</title><style>body{background:#000;color:#8cff00;font-family:sans-serif;padding:20px}.card{background:#111;border:1px solid #8cff00;padding:20px;border-radius:16px}</style></head><body><div class="card"><h1>🏃 MODO FITNESS</h1><p>Box 4-4-4-4 • 110 bpm • 310 kcal</p></div></body></html>`,
+  sueno:`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sueño</title><style>body{background:#12121f;color:#fff;font-family:sans-serif;padding:20px}.card{background:#1a1a2e;padding:20px;border-radius:16px}</style></head><body><div class="card"><h1>🌙 BAJAR UN CAMBIO</h1><p>Ondas Delta 4h + Meditación 6 min • Método N.O.C.H.E.</p><a href="https://youtu.be/-YgA6CVvrY0" style="color:#7c5cff">Iniciar Ritual</a></div></body></html>`
+ };
+ let html=plantillas[modo];
+ let blob=new Blob([html],{type:'text/html'});
+ let url=URL.createObjectURL(blob);
+ let a=document.createElement('a');a.href=url;a.download=modo+'.html';a.click();
+ alert('✅ '+modo+'.html generado y descargado. Subilo a GitHub como '+modo+'.html para tener link propio');
+}
+</script>
 </body></html>
