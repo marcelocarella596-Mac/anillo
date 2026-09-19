@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING v15 • FIX GRAL UNIFICADO</title>
+<title>FITRING v16 • FIX GRAL + GESTO ANILLO AUDIO</title>
 <style>
-:root{--bg:#060a14;--panel:#0f1629;--card:#141e36;--line:#1e2f55;--blue:#4da3ff;--green:#5dff8a;--orange:#ff9f43;--purple:#8b5cf6}
+:root{--bg:#060a14;--panel:#0f1629;--card:#141e36;--line:#1e2f55;--blue:#4da3ff;--green:#5dff8a;--orange:#ff9f43;--purple:#8b5cf6;--red:#ff6b6b;--yellow:#ffd166}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#c8d3e8;font-family:system-ui}
-.header{display:flex;justify-content:space-between;padding:10px 16px;background:#090f20;border-bottom:1px solid var(--line);align-items:center}
+.header{display:flex;justify-content:space-between;padding:10px 16px;background:#090f20;border-bottom:1px solid var(--line);align-items:center;flex-wrap:wrap;gap:8px}
 .grid{display:grid;grid-template-columns:220px 1fr 300px;gap:12px;padding:12px}
 @media(max-width:950px){.grid{grid-template-columns:1fr}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
@@ -26,99 +26,12 @@
 </style>
 </head><body>
 <div class="header">
-<div>⬡ <b>FITRING v15</b> <span style="background:#142a18;color:#5dff8a;padding:2px 8px;border-radius:12px;font-size:10px">FIX GRAL UNIFICADO</span> • Dashboard General</div>
-<div style="display:flex;gap:6px;align-items:center"><button class="btn btnBlue" onclick="conectar()">🔵 CONECTAR R10M</button><span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px;font-size:11px"><span class="liveDot"></span> Desconectado</span></div>
+<div>⬡ <b>FITRING v16</b> <span style="background:#142a18;color:#5dff8a;padding:2px 8px;border-radius:12px;font-size:10px">FIX GRAL + GESTO ANILLO</span></div>
+<div style="display:flex;gap:6px;align-items:center"><button class="btn btnBlue" onclick="conectarConGesto()">🔵 CONECTAR R10M + GESTOS</button><span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px;font-size:11px"><span class="liveDot"></span> Desconectado</span></div>
 </div>
 
 <div class="grid">
-<!-- COL 1 USERS -->
 <div class="card"><div style="font-size:10px;opacity:.5">USERS</div>
 <div style="border:1px solid #4da3ff;background:#141e36;padding:10px;border-radius:10px;margin-top:6px"><b>● Marcelo</b><div style="font-size:10px;opacity:.6">FR-2413 • Modo Respira</div><div style="height:4px;background:#0a1430;border-radius:4px;margin-top:6px"><div style="width:78%;height:100%;background:#4da3ff"></div></div><div style="font-size:9px;color:#5dff8a">78% • online</div></div>
 <div style="border:1px solid #ff6b6b;background:#2a1414;padding:10px;border-radius:10px;margin-top:8px"><b>⚠️ Silvia</b><div style="font-size:10px;opacity:.6">FR-2089 • Modo Calma</div><div style="height:4px;background:#0a1430;border-radius:4px;margin-top:6px"><div style="width:83%;height:100%;background:#ff6b6b"></div></div><div style="font-size:9px;color:#ff6b6b">83% • alert</div></div>
-<div style="border:1px solid #ffd166;background:#2a2414;padding:10px;border-radius:10px;margin-top:8px"><b>Vanessa</b><div style="font-size:10px;opacity:.6">FR-3125 • Fitness</div><div style="height:4px;background:#0a1430;border-radius:4px;margin-top:6px"><div style="width:28%;height:100%;background:#ffd166"></div></div><div style="font-size:9px;color:#ffd166">28% • low battery</div></div>
-</div>
-
-<!-- COL 2 LIVE INPUT PANEL - ACÁ ESTÁ TODO -->
-<div class="card">
-<div style="display:flex;justify-content:space-between"><b>Live Input Panel</b><span style="font-size:10px;color:#5dff8a">● Receiving telemetry • LIVE</span></div>
-
-<!-- BOTONES TOMA EN VIVO NUEVOS -->
-<div class="take">
-<button onclick="tomar('hr')" id="bHR">🫀 TOMAR<br>PULSO</button>
-<button onclick="tomar('spo2')" id="bSpO2">🩸 TOMAR<br>OXÍGENO</button>
-<button onclick="tomar('bp')" id="bBP">❤️ TOMAR<br>PRESIÓN</button>
-<button onclick="tomar('temp')" id="bTemp">🌡️ TOMAR<br>TEMP</button>
-<button onclick="iniciarPasos()" id="bSteps" style="border-color:#ffd166">👣 PASOS<br>ACTUALES</button>
-<button onclick="tomar('stress')" id="bStress" style="border-color:#8b5cf6">🧠 TOMAR<br>ESTRÉS</button>
-</div>
-
-<div class="row"><span>HR (BPM)</span><div class="bar"><div id="barHR" style="width:60%;background:#4da3ff"></div></div><b id="vHR">72 BPM</b></div>
-<div class="row"><span>SpO2 (%)</span><div class="bar"><div id="barSpO2" style="width:90%;background:#5dff8a"></div></div><b id="vSpO2">98%</b></div>
-<div class="row"><span>Stress (%)</span><div class="bar"><div id="barStress" style="width:34%;background:#ff9f43"></div></div><b id="vStress">34%</b></div>
-<div class="row"><span>HRV (ms)</span><div class="bar"><div id="barHRV" style="width:50%;background:#4da3ff"></div></div><b id="vHRV">48ms</b></div>
-<div class="row"><span>Temp (°C)</span><div class="bar"><div style="width:70%;background:#7ad3ff"></div></div><b id="vTemp">36.6°C</b></div>
-<div class="row"><span>Steps (count)</span><div class="bar"><div id="barSteps" style="width:40%;background:#ffd166"></div></div><b id="vSteps">1,240</b></div>
-
-<div id="chart" style="height:60px;background:#0d1730;border:1px solid var(--line);border-radius:8px;display:flex;align-items:end;gap:2px;padding:4px;margin-top:8px"></div>
-<div style="display:flex;gap:6px;margin-top:8px"><button class="btn btnGhost" onclick="calibrar()">Calibrate</button><button class="btn btnBlue" style="flex:1" onclick="exportar()">Export Data</button></div>
-<div id="log" style="font-size:10px;opacity:.5;margin-top:6px">Esperando toma en vivo... Toca 👣 PASOS ACTUALES y camina</div>
-</div>
-
-<!-- COL 3 MODE PREVIEWS -->
-<div class="card"><div style="font-size:10px;opacity:.5">MODE PREVIEWS - CLICK PARA PROBAR BOARD</div>
-<div class="mode" onclick="openBoard('calma')"><div>🌙 Calma <span style="background:#142a18;color:#5dff8a;font-size:9px;padding:2px 6px;border-radius:6px">LIVE</span></div><div style="font-size:10px;opacity:.6">Relaxation mode active</div><div style="height:30px;background:#1a0f2e;border-radius:6px;margin-top:6px;display:flex;align-items:end;gap:2px;padding:3px"><div style="flex:1;background:#8b5cf6;height:60%"></div><div style="flex:1;background:#8b5cf6;height:80%"></div><div style="flex:1;background:#8b5cf6;height:40%"></div></div></div>
-<div class="mode" onclick="openBoard('fitness')"><div>🏃 Fitness <span style="background:#142a18;color:#5dff8a;font-size:9px;padding:2px 6px;border-radius:6px">LIVE</span></div><div style="font-size:10px;opacity:.6">Training mode active</div><div style="height:30px;background:#2a1f0f;border-radius:6px;margin-top:6px;display:flex;align-items:end;gap:2px;padding:3px"><div style="flex:1;background:#ff9f43;height:50%"></div><div style="flex:1;background:#ff9f43;height:90%"></div><div style="flex:1;background:#ff9f43;height:70%"></div></div></div>
-<div class="mode" onclick="openBoard('sueno')"><div>🌙 Sueño <span style="background:#142a18;color:#5dff8a;font-size:9px;padding:2px 6px;border-radius:6px">LIVE</span></div><div style="font-size:10px;opacity:.6">Sleep tracking active</div><div style="height:30px;background:#0f1a2e;border-radius:6px;margin-top:6px;display:flex;align-items:end;gap:2px;padding:3px"><div style="flex:1;background:#4da3ff;height:30%"></div><div style="flex:1;background:#4da3ff;height:60%"></div><div style="flex:1;background:#4da3ff;height:45%"></div></div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;font-size:10px"><div style="background:#0d1730;padding:8px;border-radius:8px;text-align:center">Total Rings<br><b style="font-size:16px">12</b></div><div style="background:#2a1414;padding:8px;border-radius:8px;text-align:center">Alertas<br><b style="font-size:16px;color:#ff6b6b">2</b></div></div>
-</div>
-</div>
-
-<!-- BOARDS INDIVIDUALES DENTRO DEL FIX GRAL -->
-<div id="boardCalma" class="modal"><div class="card" style="max-width:400px;margin:20px auto;background:linear-gradient(180deg,#fdf6ff,#f2e6ff);color:#3a0ca3"><h3>🪷 Calma • Silvia - BOARD</h3><div style="background:#fff;border-radius:14px;padding:12px;color:#000"><div style="text-align:center"><b>Nivel de Estrés</b><div id="cStress" class="big" style="color:#3a0ca3">68/100</div><div style="height:8px;background:#eee;border-radius:8px"><div id="cBar" style="height:100%;width:68%;background:#8b5cf6;border-radius:8px"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;font-size:11px;text-align:center"><div>Cortisol<br><b style="color:#e11d48">ALTO</b></div><div>Resp <b id="cRpm">22 rpm</b><br><span style="color:#e11d48">Ansiosa</span></div><div>Tensión<br><b>Alta</b></div></div><div style="margin-top:10px">HR <b id="cHR">72</b> • HRV <b id="cHRV">45 ms</b> • SpO2 <b id="cSpO2">98%</b></div><button onclick="tomar('hr');tomar('stress')" style="width:100%;margin-top:10px;background:#8b5cf6;color:#fff;border:0;padding:10px;border-radius:8px;font-weight:800">🌬️ TOMAR ESTRÉS LIVE + RESPIRACIÓN 4-7-8</button></div><button class="btn btnGhost" style="width:100%;margin-top:10px" onclick="this.parentElement.parentElement.style.display='none'">Volver al FIX GRAL</button></div></div>
-
-<div id="boardFitness" class="modal"><div class="card" style="max-width:400px;margin:20px auto"><h3>🏃 Fitness - BOARD</h3><div style="text-align:center"><div id="fSteps" class="big">1,240</div><div>pasos HOY • <span id="fKcal">49 kcal</span> • <span id="fKm">0.93 km</span></div><div style="margin-top:10px">HR <b id="fHR">72 BPM</b> • Temp <b id="fTemp">36.6°C</b></div><div id="fChart" style="height:50px;background:#0d1730;border-radius:8px;display:flex;align-items:end;gap:2px;padding:4px;margin-top:10px"></div></div><button onclick="iniciarPasos();tomar('hr')" style="width:100%;margin-top:10px;background:#ff9f43;color:#000;border:0;padding:12px;border-radius:8px;font-weight:900">👣🫀 TOMAR PASOS ACTUALES + PULSO LIVE</button><br><br><button class="btn btnGhost" style="width:100%" onclick="this.parentElement.parentElement.style.display='none'">Volver al FIX GRAL</button></div></div>
-
-<div id="boardSueno" class="modal"><div class="card" style="max-width:400px;margin:20px auto"><h3>🌙 Sueño - BOARD</h3><div style="text-align:center"><div class="big">7h 12m</div><div>HR noche <b id="sHR">62 BPM</b> • SpO2 <b id="sSpO2">97%</b></div><div style="font-size:11px;opacity:.6;margin-top:8px">Última noche • 23:40 - 06:52</div></div><button onclick="tomar('hr')" style="width:100%;margin-top:12px;background:#4da3ff;color:#fff;border:0;padding:12px;border-radius:8px;font-weight:800">🌙 TOMAR HR NOCTURNO LIVE</button><br><br><button class="btn btnGhost" style="width:100%" onclick="this.parentElement.parentElement.style.display='none'">Volver al FIX GRAL</button></div></div>
-
-<script>
-let steps=1240,d={hr:72,spo2:98,stress:34,hrv:48,temp:36.6,rpm:22,sys:131,dia:87};
-let hist=[],counting=false,lastAcc=0;
-function render(){
-document.getElementById('vHR').textContent=d.hr+' BPM';document.getElementById('vSpO2').textContent=d.spo2+'%';document.getElementById('vStress').textContent=d.stress+'%';document.getElementById('vHRV').textContent=d.hrv+'ms';document.getElementById('vTemp').textContent=d.temp.toFixed(1)+'°C';document.getElementById('vSteps').textContent=steps.toLocaleString();
-document.getElementById('barHR').style.width=Math.min(100,d.hr)+'%';document.getElementById('barSpO2').style.width=d.spo2+'%';document.getElementById('barStress').style.width=d.stress+'%';document.getElementById('barHRV').style.width=d.hrv+'%';document.getElementById('barSteps').style.width=Math.min(100,steps/100)+'%';
-document.getElementById('cStress').textContent=d.stress+'/100';document.getElementById('cBar').style.width=d.stress+'%';document.getElementById('cHR').textContent=d.hr;document.getElementById('cHRV').textContent=d.hrv+' ms';document.getElementById('cSpO2').textContent=d.spo2+'%';document.getElementById('cRpm').textContent=d.rpm+' rpm';
-document.getElementById('fSteps').textContent=steps.toLocaleString();document.getElementById('fKcal').textContent=Math.floor(steps*0.04)+' kcal';document.getElementById('fKm').textContent=(steps*0.00075).toFixed(2)+' km';document.getElementById('fHR').textContent=d.hr+' BPM';document.getElementById('fTemp').textContent=d.temp.toFixed(1)+'°C';document.getElementById('sHR').textContent=Math.max(55,d.hr-10)+' BPM';document.getElementById('sSpO2').textContent=d.spo2+'%';
-let ch=document.getElementById('chart');ch.innerHTML='';hist.slice(-30).forEach(v=>{let el=document.createElement('div');el.style.flex='1';el.style.background='#4da3ff';el.style.height=(v/2)+'%';el.style.borderRadius='2px';ch.appendChild(el);});
-let fch=document.getElementById('fChart');if(fch){fch.innerHTML='';hist.slice(-20).forEach(v=>{let el=document.createElement('div');el.style.flex='1';el.style.background='#ff9f43';el.style.height=(v/2)+'%';fch.appendChild(el);});}
-}
-function tomar(t){
-document.querySelectorAll('.take button').forEach(b=>b.classList.remove('active'));document.getElementById('b'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
-let c=0;let iv=setInterval(()=>{
-c++;d.hr=70+Math.floor(Math.random()*18);d.spo2=95+Math.floor(Math.random()*4);d.stress=30+Math.floor(Math.random()*40);d.hrv=35+Math.floor(Math.random()*25);d.rpm=18+Math.floor(Math.random()*8);d.temp=36.2+Math.random()*0.8;d.sys=120+Math.floor(d.hr/3);d.dia=78+Math.floor(d.hr/6);
-hist.push(d.hr);if(hist.length>30)hist.shift();render();
-document.getElementById('log').textContent='TOMANDO '+t.toUpperCase()+' LIVE • '+d.hr+' BPM • '+d.spo2+'% • '+d.sys+'/'+d.dia+' • '+new Date().toLocaleTimeString();
-if(c>12){clearInterval(iv);document.getElementById('log').textContent='Fin toma '+t+' • HR '+d.hr+' • SpO2 '+d.spo2+'% • '+d.sys+'/'+d.dia+' • Pasos '+steps;}
-},500);navigator.vibrate&&navigator.vibrate(50);
-}
-function iniciarPasos(){
-if(counting) {steps++;render();return}
-counting=true;document.getElementById('st').innerHTML='<span class="liveDot"></span> 🟢 CONTANDO PASOS LIVE • '+steps;document.getElementById('bSteps').classList.add('active');
-if(window.DeviceMotionEvent){
-window.addEventListener('devicemotion',e=>{
-let a=e.accelerationIncludingGravity;if(!a)return;let m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);if(Math.abs(m-lastAcc)>2.3){steps++;render();document.getElementById('st').innerHTML='<span class="liveDot"></span> 🟢 '+steps+' pasos LIVE';}lastAcc=m;
-});
-}else{setInterval(()=>{steps++;render();},900);}
-}
-function openBoard(m){document.getElementById('board'+m.charAt(0).toUpperCase()+m.slice(1)).style.display='block';render();}
-function calibrar(){alert('Calibrado con R10M • HR '+d.hr+' • Pasos '+steps);}
-function exportar(){let txt=`FITRING FIX GRAL\n${new Date().toLocaleString()}\nHR:${d.hr} SpO2:${d.spo2}% Stress:${d.stress}% HRV:${d.hrv}ms Temp:${d.temp}°C Steps:${steps} BP:${d.sys}/${d.dia}`;let b=new Blob([txt],{type:'text/plain'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='fix-gral.txt';a.click();}
-async function conectar(){
-try{
-let dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'}],optionalServices:[0x180D,0x180F]});
-document.getElementById('st').innerHTML='<span class="liveDot"></span> 🟢 '+dev.name+' LIVE';
-let srv=await dev.gatt.connect();let svc=await srv.getPrimaryService(0x180D);let ch=await svc.getCharacteristic(0x2A37);
-await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{let hr=e.target.value.getUint8(1);if(hr>40){d.hr=hr;hist.push(hr);render();}});
-}catch(e){tomar('hr');}
-}
-render();
-</script></body></html>
+<div style="border:1px solid #ffd166;background:#2a2414;padding:10px;border-radius:10px;margin-top:8px"><b>Vanessa</b><div style="font-size:10px;opacity:.6">FR-3125 • Fitness</div><div style="height:4px;background:#0
