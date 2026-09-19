@@ -1,101 +1,99 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING v9 • GRAL FINAL</title>
+<title>FITRING v10 • LIVE TOMA</title>
 <style>
-:root{--bg:#060a14;--panel:#0f1629;--card:#141e36;--line:#1e2f55;--green:#5dff8a;--blue:#4da3ff;--orange:#ff9f43;--vio:#b18cff}
+:root{--bg:#060a14;--panel:#0f1629;--card:#141e36;--line:#1e2f55;--green:#5dff8a;--blue:#4da3ff;--orange:#ff9f43}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#c8d3e8;font-family:system-ui}
-.header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line);background:#090f20;flex-wrap:wrap;gap:8px}
-.badge{background:#142a18;color:var(--green);border:1px solid #1f4a2a;padding:2px 8px;border-radius:12px;font-size:10px}
-.grid3{display:grid;grid-template-columns:260px 1fr 280px;gap:12px;padding:12px}
-@media(max-width:900px){.grid3{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
-.panel h4{margin:0 0 10px;color:#8aa0c8;font-size:10px;letter-spacing:1.2px;text-transform:uppercase}
-.user{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;background:var(--card)}
-.user.active{border-color:var(--blue)}
-.barRow{display:flex;justify-content:space-between;align-items:center;margin:8px 0;font-size:13px}
-.bar{height:6px;background:#0a1430;border-radius:6px;flex:1;margin:0 10px;overflow:hidden;border:1px solid #1a2d55}
-.bar>div{height:100%;border-radius:6px}
-.bigTrend{height:60px;background:linear-gradient(180deg,#13203d,#0d1730);border:1px solid var(--line);border-radius:10px;display:flex;align-items:end;gap:2px;padding:6px;margin-top:8px}
-.bigTrend div{flex:1;background:var(--blue);border-radius:2px}
-.btn{border:0;padding:8px 14px;border-radius:8px;font-weight:800;cursor:pointer}
-.btnPrimary{background:#0a84ff;color:#fff;width:100%}
-.btnGhost{background:#1a2642;color:#8aa0c8;border:1px solid var(--line)}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.header{display:flex;justify-content:space-between;padding:10px 16px;background:#090f20;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+.grid{display:grid;grid-template-columns:260px 1fr 300px;gap:12px;padding:12px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:#0f1629;border:1px solid #1e2f55;border-radius:14px;padding:12px}
+.take{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.take button{padding:14px 6px;border-radius:12px;border:1px solid var(--line);font-weight:900;cursor:pointer;color:#fff;background:#141e36;font-size:12px}
+.take button:active{transform:scale(.97)}
+.take .hr{border-color:var(--blue);background:linear-gradient(180deg,#132a4d,#0f1f36)}
+.take .ox{border-color:var(--green);background:linear-gradient(180deg,#143d22,#0f2818)}
+.take .bp{border-color:#ff6b6b;background:linear-gradient(180deg,#4a1a1a,#2a0f0f)}
+.row{display:flex;justify-content:space-between;margin:8px 0;font-size:13px}
+.bar{height:6px;background:#0a1430;flex:1;margin:0 10px;border-radius:6px;overflow:hidden}
+.bar>div{height:100%}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);padding:14px;overflow:auto;z-index:99}
+.modal .card{max-width:500px;margin:20px auto}
+.btn{padding:10px 14px;border-radius:8px;border:0;font-weight:800;cursor:pointer}
+.btnBlue{background:#0a84ff;color:#fff}
+.btnGhost{background:#1a2642;color:#8aa0c8;border:1px solid #1e2f55}
+.big{font-size:36px;font-weight:900;color:#fff}
 </style>
-</head>
-<body>
+</head><body>
 <div class="header">
-<div><b>⬡ FITRING v9</b> <span class="badge">• PRO</span> <span style="opacity:.5;font-size:11px">Dashboard General</span></div>
-<div style="display:flex;gap:6px;align-items:center">
-<button class="btn btnGhost" onclick="conectar()">🔵 CONECTAR R10M 5E17</button>
-<button class="btn btnGhost" onclick="simular()">🧪 SIMULAR 136/93/907</button>
-<span id="connState" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px;font-size:12px">Desconectado</span>
+<div><b>⬡ FITRING v10 • LIVE TOMA</b> <span style="background:#142a18;color:#5dff8a;padding:2px 8px;border-radius:12px;font-size:10px">• PRO</span></div>
+<div style="display:flex;gap:6px"><button class="btn btnBlue" onclick="conectar()">🔵 CONECTAR R10M</button><span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px;font-size:12px">Desconectado</span></div>
+</div>
+
+<div class="grid">
+<div class="card"><h4 style="font-size:10px;opacity:.6">USERS</h4>
+<div style="border:1px solid #4da3ff;background:#141e36;padding:10px;border-radius:10px"><b>● Marcelo</b><div style="font-size:11px;opacity:.6">FR-2413 • Live</div></div>
+<div style="margin-top:12px;display:grid;gap:6px">
+<button class="btn btnBlue" onclick="openDash('respira')">🌬️ RESPIRA - Dash</button>
+<button class="btn btnGhost" onclick="openDash('calma')">💜 CALMA - Dash</button>
+<button class="btn btnGhost" onclick="openDash('fitness')">🏃 FITNESS - Dash</button>
+<button class="btn btnGhost" onclick="openDash('sueno')">🌙 SUEÑO - Dash</button>
+</div></div>
+
+<div class="card">
+<h4 style="font-size:10px;opacity:.6">TOMA EN VIVO - BOTONES</h4>
+<div class="take">
+<button class="hr" onclick="tomar('hr')">🫀<br>TOMAR<br>PULSO</button>
+<button class="ox" onclick="tomar('spo2')">🩸<br>TOMAR<br>OXÍGENO</button>
+<button class="bp" onclick="tomar('bp')">❤️<br>TOMAR<br>PRESIÓN</button>
+<button class="hr" onclick="tomar('temp')" style="border-color:#7ad3ff">🌡️<br>TOMAR<br>TEMP</button>
+<button class="ox" onclick="tomar('steps')" style="border-color:#ffd166">👣<br>TOMAR<br>PASOS</button>
+<button class="bp" onclick="tomar('stress')" style="border-color:#b18cff">🧠<br>TOMAR<br>ESTRÉS</button>
+</div>
+
+<div class="row"><span>HR</span><div class="bar"><div id="bHR" style="width:60%;background:#4da3ff"></div></div><b id="vHR">-- BPM</b></div>
+<div class="row"><span>SpO2</span><div class="bar"><div id="bSpO2" style="width:90%;background:#5dff8a"></div></div><b id="vSpO2">-- %</b></div>
+<div class="row"><span>Presión</span><div class="bar"><div style="width:65%;background:#ff6b6b"></div></div><b id="vBP">--/--</b></div>
+<div class="row"><span>Temp</span><div class="bar"><div style="width:70%;background:#7ad3ff"></div></div><b id="vTemp">--°C</b></div>
+<div id="log" style="font-size:11px;opacity:.6;margin-top:8px">Esperando toma...</div>
+</div>
+
+<div class="card"><h4 style="font-size:10px;opacity:.6">LIVE RESULTADO</h4>
+<div style="text-align:center;padding:20px"><div id="bigVal" class="big">--</div><div id="bigLabel" style="opacity:.6">Sin toma</div><div id="bigTime" style="font-size:10px;opacity:.4;margin-top:6px">-</div></div>
+<button class="btn btnGhost" style="width:100%" onclick="simular()">🧪 SIMULAR 136/93/907/36.8°</button>
 </div>
 </div>
 
-<div class="grid3">
-<div class="panel">
-<h4>USERS</h4>
-<div class="user active"><b style="color:#fff">● Marcelo</b><div style="font-size:11px;opacity:.6">FR-2413 • Modo Respira</div></div>
-<div class="user"><b style="color:#fff">▲ Silvia</b><div style="font-size:11px">FR-2089 • Modo Calma</div></div>
-<div class="user"><b style="color:#fff">● Vanessa</b><div style="font-size:11px">FR-3125 • Fitness</div></div>
-<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
-<button class="btn btnPrimary" onclick="abrir('respira')">🌬️ RESPIRA</button>
-<button class="btn btnGhost" onclick="abrir('calma')">💜 CALMA</button>
-<button class="btn btnGhost" onclick="abrir('fitness')">🏃 FITNESS</button>
-<button class="btn btnGhost" onclick="abrir('sueno')">🌙 SUEÑO</button>
-</div>
-</div>
+<!-- DASHBOARDS MODALIDADES -->
+<div id="mRespira" class="modal"><div class="card"><h3>🌬️ RESPIRA - Dashboard</h3><p style="font-size:11px;opacity:.6">Toma en vivo + guía 4-7-8</p><div style="text-align:center;padding:20px"><div id="rHR" class="big">72 BPM</div><div id="rSpO2" style="color:#5dff8a">SpO2 98%</div><div style="margin-top:12px;font-size:12px">Inhala 4s • Retén 7s • Exhala 8s</div><div style="height:60px;background:#13203d;border-radius:10px;margin-top:12px;display:flex;align-items:center;justify-content:center">◯ Respirando...</div></div><button class="btn btnBlue" onclick="tomar('hr');tomar('spo2')" style="width:100%">🫀🩸 TOMAR PULSO + OXÍGENO</button><br><br><button class="btn btnGhost" onclick="this.parentElement.parentElement.style.display='none'" style="width:100%">Cerrar</button></div></div>
 
-<div class="panel">
-<h4>Live Input Panel <span style="color:#5dff8a;float:right">● LIVE</span></h4>
-<div class="barRow"><span>HR</span><div class="bar"><div id="barHR" style="width:60%;background:#4da3ff"></div></div><b id="vHR" style="color:#fff">72 BPM</b></div>
-<div class="barRow"><span>SpO2</span><div class="bar"><div id="barSpO2" style="width:98%;background:#5dff8a"></div></div><b id="vSpO2" style="color:#fff">98%</b></div>
-<div class="barRow"><span>Stress</span><div class="bar"><div id="barStress" style="width:34%;background:#ff9f43"></div></div><b id="vStress">34%</b></div>
-<div class="barRow"><span>HRV</span><div class="bar"><div id="barHRV" style="width:48%;background:#b18cff"></div></div><b id="vHRV">48ms</b></div>
-<div class="barRow"><span>Temp</span><div class="bar"><div id="barTemp" style="width:70%;background:#7ad3ff"></div></div><b id="vTemp">36.6°C</b></div>
-<div class="barRow"><span>Steps</span><div class="bar"><div id="barSteps" style="width:55%;background:#ffd166"></div></div><b id="vSteps">1,240</b></div>
-<div class="barRow"><span>Presión</span><div class="bar"><div id="barBP" style="width:65%;background:#ff6b6b"></div></div><b id="vBP">134/92</b></div>
-<div class="bigTrend" id="trend"></div>
-<div id="detallesModo" style="margin-top:14px;display:none"><h4 id="modoTitle">MODO</h4><div id="modoBody" style="font-size:13px"></div></div>
-</div>
+<div id="mCalma" class="modal"><div class="card"><h3>💜 CALMA - Dashboard</h3><div style="text-align:center"><div id="cStress" class="big">34%</div><div>HRV <b id="cHRV">48ms</b> • HR <b id="cHR">72</b></div><div style="margin-top:12px;height:6px;background:#0a1430;border-radius:6px"><div id="cBar" style="height:100%;width:34%;background:#ff9f43;border-radius:6px"></div></div></div><button class="btn btnBlue" onclick="tomar('stress')" style="width:100%;margin-top:12px">🧠 TOMAR ESTRÉS / HRV</button><br><br><button class="btn btnGhost" onclick="this.parentElement.parentElement.style.display='none'" style="width:100%">Cerrar</button></div></div>
 
-<div class="panel">
-<h4>MODE PREVIEWS</h4>
-<div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px">💜 Calma - Relaxation active</div>
-<div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px">🏃 Fitness - Training active</div>
-<div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px">🌙 Sueño - Sleep tracking</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
-<div class="stat"><div style="font-size:11px">Total Rings</div><div style="font-size:20px;font-weight:900;color:#fff">12</div></div>
-<div class="stat"><div style="font-size:11px">Alertas</div><div style="font-size:20px;font-weight:900;color:#ff9f43">2</div></div>
-<div class="stat"><div style="font-size:11px">Estrés Prom.</div><div id="vAvg" style="font-size:20px;font-weight:900;color:#fff">34%</div></div>
-<div class="stat"><div style="font-size:11px">Batería</div><div style="font-size:20px;font-weight:900;color:#5dff8a">78%</div></div>
-</div>
-</div>
-</div>
+<div id="mFitness" class="modal"><div class="card"><h3>🏃 FITNESS - Dashboard</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;margin-top:12px"><div style="background:#141e36;padding:12px;border-radius:10px"><div id="fSteps" class="big">1240</div><div style="font-size:10px">Pasos</div></div><div style="background:#141e36;padding:12px;border-radius:10px"><div id="fHR" class="big">72</div><div style="font-size:10px">BPM</div></div></div><button class="btn btnBlue" onclick="tomar('steps');tomar('hr')" style="width:100%;margin-top:12px">👣🫀 TOMAR PASOS + PULSO</button><br><br><button class="btn btnGhost" onclick="this.parentElement.parentElement.style.display='none'" style="width:100%">Cerrar</button></div></div>
+
+<div id="mSueno" class="modal"><div class="card"><h3>🌙 SUEÑO - Dashboard</h3><div style="text-align:center"><div style="font-size:12px;opacity:.6">Última noche</div><div class="big">7h 12m</div><div>HR nocturno <b id="sHR">62</b> BPM • SpO2 <b id="sSpO2">97%</b></div></div><button class="btn btnBlue" onclick="tomar('hr')" style="width:100%;margin-top:12px">🌙 TOMAR HR NOCTURNO</button><br><br><button class="btn btnGhost" onclick="this.parentElement.parentElement.style.display='none'" style="width:100%">Cerrar</button></div></div>
 
 <script>
-let d={hr:72,spo2:98,stress:34,hrv:48,temp:36.6,steps:1240,sys:134,dia:92};
-let hist=[60,65,70,68,72,71,69,74,72,75];
+let d={hr:72,spo2:98,sys:134,dia:92,temp:36.6,steps:1240,stress:34,hrv:48};
 function render(){
-document.getElementById('vHR').textContent=d.hr+' BPM';
-document.getElementById('vSpO2').textContent=d.spo2+'%';
-document.getElementById('vStress').textContent=d.stress+'%';
-document.getElementById('vAvg').textContent=d.stress+'%';
-document.getElementById('vHRV').textContent=d.hrv+'ms';
-document.getElementById('vTemp').textContent=d.temp.toFixed(1)+'°C';
-document.getElementById('vSteps').textContent=d.steps.toLocaleString();
-document.getElementById('vBP').textContent=d.sys+'/'+d.dia;
-document.getElementById('barHR').style.width=Math.min(100,d.hr)+'%';
-document.getElementById('barSpO2').style.width=d.spo2+'%';
-document.getElementById('barSteps').style.width=Math.min(100,d.steps/30)+'%';
-let t=document.getElementById('trend');t.innerHTML='';hist.forEach(v=>{let el=document.createElement('div');el.style.height=(v/2)+'%';t.appendChild(el);});
+document.getElementById('vHR').textContent=d.hr+' BPM';document.getElementById('vSpO2').textContent=d.spo2+'%';document.getElementById('vBP').textContent=d.sys+'/'+d.dia;document.getElementById('vTemp').textContent=d.temp.toFixed(1)+'°C';
+document.getElementById('bHR').style.width=d.hr+'%';document.getElementById('bSpO2').style.width=d.spo2+'%';
+document.getElementById('rHR').textContent=d.hr+' BPM';document.getElementById('rSpO2').textContent='SpO2 '+d.spo2+'%';
+document.getElementById('cHR').textContent=d.hr;document.getElementById('cHRV').textContent=d.hrv+'ms';document.getElementById('cStress').textContent=d.stress+'%';document.getElementById('cBar').style.width=d.stress+'%';
+document.getElementById('fHR').textContent=d.hr;document.getElementById('fSteps').textContent=d.steps;
+document.getElementById('sHR').textContent=Math.max(55,d.hr-10);document.getElementById('sSpO2').textContent=d.spo2+'%';
 }
-function simular(){d={hr:136,spo2:93,stress:72,hrv:28,temp:36.8,steps:907,sys:134,dia:92};hist.push(136);if(hist.length>12)hist.shift();render();document.getElementById('connState').textContent='🟢 SIM 136/93/907';}
-function abrir(m){let b=document.getElementById('detallesModo');b.style.display='block';document.getElementById('modoTitle').textContent=m.toUpperCase();document.getElementById('modoBody').textContent=`Datos LIVE: HR ${d.hr} BPM • SpO2 ${d.spo2}% • ${d.sys}/${d.dia} • ${d.steps} pasos • ${d.temp}°C`;}
-async function conectar(){try{const dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'}],optionalServices:[0x180D,0xFF00,0x180F]});document.getElementById('connState').textContent='🟢 '+dev.name+' Conectado';const srv=await dev.gatt.connect();try{const s=await srv.getPrimaryService(0x180D);const c=await s.getCharacteristic(0x2A37);await c.startNotifications();c.addEventListener('characteristicvaluechanged',e=>{let hr=e.target.value.getUint8(1);if(hr>20){d.hr=hr;hist.push(hr);if(hist.length>12)hist.shift();render();}});}catch(e){}}catch(err){alert('Usá Chrome Android en https://');}}render();
-</script>
-</body>
-</html>
+function tomar(t){
+let el=document.getElementById('log');el.textContent='Tomando '+t+'...';
+document.getElementById('bigLabel').textContent='TOMANDO '+t.toUpperCase();
+let v='--';if(t=='hr')v=d.hr+' BPM';if(t=='spo2')v=d.spo2+'%';if(t=='bp')v=d.sys+'/'+d.dia+' mmHg';if(t=='temp')v=d.temp+'°C';if(t=='steps')v=d.steps+' pasos';if(t=='stress')v=d.stress+'% estrés';
+document.getElementById('bigVal').textContent=v;document.getElementById('bigTime').textContent=new Date().toLocaleTimeString()+' • R10M 5E17 LIVE';
+el.textContent='Última toma '+t+': '+v+' • '+new Date().toLocaleTimeString();
+render();
+navigator.vibrate&&navigator.vibrate(80);
+}
+function openDash(m){document.getElementById('m'+m.charAt(0).toUpperCase()+m.slice(1)).style.display='block';render();}
+function simular(){d={hr:136,spo2:93,sys:134,dia:92,temp:36.8,steps:907,stress:72,hrv:28};render();tomar('hr');document.getElementById('st').textContent='🟢 SIM 136/93/907';}
+async function conectar(){try{const dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'}],optionalServices:[0x180D,0xFF00]});document.getElementById('st').textContent='🟢 '+dev.name;const s=await dev.gatt.connect();const svc=await s.getPrimaryService(0x180D);const ch=await svc.getCharacteristic(0x2A37);await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{d.hr=e.target.value.getUint8(1);render();});}catch(e){alert('Usa Chrome Android HTTPS');}}render();
+</script></body></html>
