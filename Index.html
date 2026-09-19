@@ -1,3 +1,31 @@
-<!DOCTYPE html><html><body style="background:#000;color:#0f0;padding:20px">
-<h2>GRAL OK</h2><p>HR 78 BPM</p><button onclick="alert('Anda!')">PROBAR</button>
-</body></html>
+<!-- GRAL v10 - Selector Total -->
+<div id="gral" style="display:block">
+  <h2>FITRING CONTROL CENTER</h2>
+  <div style="display:grid;grid-template-columns:1fr 2fr 1fr">
+    <div>LIVE DATA: <b id="liveHR">78 BPM</b> | <b id="liveSpO2">96%</b></div>
+    <div id="selector">
+      <button onclick="abrirModo('respira')">🌬️ RESPIRA</button>
+      <button onclick="abrirModo('calma')">💜 CALMA</button>
+      <button onclick="abrirModo('fitness')">🏃 FITNESS</button>
+      <button onclick="abrirModo('sueno')">🌙 SUEÑO</button>
+    </div>
+  </div>
+</div>
+
+<div id="pantalla-respira" style="display:none">...tu pantalla respira sin nombre...</div>
+<div id="pantalla-calma" style="display:none">...tu pantalla calma sin nombre...</div>
+<div id="pantalla-fitness" style="display:none">...tu pantalla fitness sin nombre...</div>
+
+<script>
+function abrirModo(modo){
+  document.querySelectorAll('[id^=pantalla]').forEach(p=>p.style.display='none');
+  document.getElementById('gral').style.display='none';
+  document.getElementById('pantalla-'+modo).style.display='block';
+  // Los datos son los mismos, solo cambia la vista
+  console.log('Modo:',modo,'Datos vivos:',liveHR);
+}
+function volverGral(){
+  document.querySelectorAll('[id^=pantalla]').forEach(p=>p.style.display='none');
+  document.getElementById('gral').style.display='block';
+}
+</script>
