@@ -2,93 +2,63 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING v9.1 - RESPIRA</title>
+<title>FITRING v9.1 - R10M 5E17</title>
 <style>
-:root{--bg:#080c12;--card:#121821;--green:#7CFF9D;--blue:#4DA3FF;--red:#FF6B6B;--vio:#B18CFF;--yellow:#FFD93D}
-body{background:var(--bg);color:#fff;font-family:system-ui;margin:0;padding:12px}
-.top{display:flex;justify-content:space-between;align-items:center;color:#7af;font-size:12px;letter-spacing:1px}
-.pill{border:1px solid #1e5b5b;border-radius:20px;padding:8px 12px;background:#0f1f1f;color:#7cffd0;font-size:12px}
+:root{--bg:#080c12;--card:#121821;--green:#7CFF9D;--blue:#4DA3FF;--red:#FF6B6B;--vio:#B18CFF;--orange:#FF9D5A}
+body{background:var(--bg);color:#fff;font-family:system-ui;margin:0;padding:12px;padding-bottom:90px}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:1px;font-weight:900}
+.pill{border:1px solid #1e5b5b;border-radius:20px;padding:8px 12px;background:#0f1f1f;color:#7cffd0;font-size:11px;margin-top:10px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .card{background:var(--card);border-radius:18px;padding:14px;border:1px solid #1e2a3a;text-align:center}
 .card b{font-size:11px;letter-spacing:1px;opacity:.7}
 .card .val{font-size:36px;font-weight:900;margin:4px 0}
-.green{color:var(--green)} .red{color:var(--red)} .blue{color:var(--blue)} .vio{color:var(--vio)}
-.modeBtn{padding:8px 14px;border-radius:20px;border:1px solid #2a3a4a;background:#121821;color:#8aa;cursor:pointer}
-.modeBtn.active{background:#fff;color:#000;font-weight:900}
-#graph{width:100%;height:120px;background:#0e151e;border-radius:12px;margin-top:10px}
-.btnShare{background:#0A84FF;color:#fff;width:100%;padding:14px;border-radius:14px;font-weight:900;border:0;margin-top:10px}
+.modeBtn{padding:10px 16px;border-radius:20px;border:1px solid #2a3a4a;background:#121821;color:#8aa;cursor:pointer;font-weight:700;pointer-events:auto;position:relative;z-index:20}
+.modeBtn.active{background:#fff;color:#000;font-weight:900;border-color:#fff}
+#graph{width:100%;height:110px;background:#0e151e;border-radius:12px;margin-top:8px}
+.btnShare{background:#0A84FF;color:#fff;width:100%;padding:14px;border-radius:14px;font-weight:900;border:0;margin-top:10px;font-size:14px}
 .chips{display:flex;gap:8px;margin-top:8px}
-.chips span{border:1px solid #2a4a4a;border-radius:20px;padding:6px 12px;font-size:12px}
+.chips span{border:1px solid #2a4a4a;border-radius:20px;padding:6px 12px;font-size:12px;background:#121821}
 .footer{display:flex;justify-content:space-between;background:#1a2330;border-radius:18px;padding:14px;margin-top:14px}
 </style>
 </head>
 <body>
-<div class="top"><span onclick="location.href='dashboard.html'">‹</span><span style="color:#7cffd0;font-weight:900">RESPIRA • MODO</span><span>⚙️</span></div>
+<div class="top"><span>‹</span><span id="modeTitle" style="color:#FF9D5A">FITNESS • MODO</span><span>⚙️</span></div>
+<div class="pill">🔵 Anillo conectado • R10M 5E17 • Batería 78% <span style="float:right">• Bluetooth • EN VIVO</span></div>
 
-<div id="conn" class="pill" style="margin-top:12px">🔵 <span id="connTxt">Anillo desconectado</span> • Batería <span id="bat">--</span> <span style="float:right;color:#7cffd0">• Bluetooth • <span id="liveSt">OFF</span></span></div>
-
-<div style="display:flex;gap:6px;margin-top:12px">
-<button class="modeBtn active" onclick="setMode('respira',this)">🌬️ RESPIRA</button>
+<div style="display:flex;gap:6px;margin-top:12px;z-index:20;position:relative">
+<button class="modeBtn" onclick="setMode('respira',this)">🌬️ RESPIRA</button>
 <button class="modeBtn" onclick="setMode('calma',this)">💜 CALMA</button>
-<button class="modeBtn" onclick="setMode('fitness',this)">🏃 FITNESS</button>
+<button class="modeBtn active" onclick="setMode('fitness',this)">🏃 FITNESS</button>
 </div>
 
 <div class="grid">
-<div class="card"><b>SpO2</b><div class="val green" id="vSpo2">96%</div><small class="green">Normal • 95-100%</small></div>
-<div class="card"><b>Frecuencia Cardíaca</b><div class="val red" id="vHr">78 BPM</div><small class="red">Reposo • Normal</small></div>
-<div class="card"><b>Frecuencia Respiratoria</b><div class="val blue" id="vRr">18 rpm</div><small class="blue">Estable • 12-20 rpm</small></div>
-<div class="card"><b>Temperatura</b><div class="val vio" id="vTemp">36.5°C</div><small class="vio">Normal • 36.1-37.2°C</small></div>
+<div class="card"><b>SpO2</b><div class="val" style="color:var(--green)">96%</div><small style="color:var(--green)">Normal • 95-100%</small></div>
+<div class="card"><b>Frecuencia Cardíaca</b><div class="val" style="color:var(--red)">78 BPM</div><small style="color:var(--red)">Reposo • Normal</small></div>
+<div class="card"><b>Frecuencia Respiratoria</b><div class="val" style="color:var(--blue)">18 rpm</div><small style="color:var(--blue)">Estable • 12-20 rpm</small></div>
+<div class="card"><b>Temperatura</b><div class="val" style="color:var(--vio)">36.5°C</div><small style="color:var(--vio)">Normal • 36.1-37.2°C</small></div>
 </div>
 
 <div style="margin-top:14px"><b>SpO2 • Últimas 24h</b><span style="float:right;color:var(--green);font-size:12px">Promedio 96%</span>
-<canvas id="graph"></canvas>
-</div>
+<canvas id="graph"></canvas></div>
 
-<div style="background:#1a3a24;border-radius:12px;padding:10px;margin-top:10px;font-size:12px;color:var(--green)">
-ℹ️ ALERTA RESPIRA: No se han detectado exacerbaciones en 7 días
-</div>
+<div id="alertaBox" style="background:#4a2a0a;border-radius:12px;padding:10px;margin-top:10px;font-size:12px;color:var(--orange)">🏃 FITNESS: 6742 pasos • Objetivo 10,000 • 67%</div>
 
-<button class="btnShare" onclick="compartirReporte()">↗ COMPARTIR REPORTE</button>
-<div class="chips"><span onclick="compartirReporte('wa')">🟢 WhatsApp</span><span onclick="compartirReporte('med')">👨‍⚕️ Médico</span><span onclick="compartirReporte('fam')">👨‍👩‍👧 Familia</span></div>
+<button class="btnShare" onclick="compartir()">↗ COMPARTIR REPORTE</button>
+<div class="chips"><span onclick="compartir()">🟢 WhatsApp</span><span onclick="compartir()">👨‍⚕️ Médico</span><span onclick="compartir()">👨‍👩‍👧 Familia</span></div>
 
-<button id="btnAuto" onclick="conectarR10M()" style="width:100%;margin-top:12px;padding:12px;border-radius:12px;background:#00D1FF;color:#000;font-weight:900;border:0">🔵 Conectar R10M Auto (SmartHealth)</button>
-
-<div class="footer"><div>🌙 Sueño<br><b id="vSueno">7h 24m</b></div><div>🏃 Pasos<br><b id="vPasos">6742</b></div></div>
-
-<!-- LIVE INPUT PARA TEST SIN ANILLO -->
-<div style="margin-top:18px;background:#121821;padding:12px;border-radius:12px;border:1px dashed #2a5">
-<b>Live Test (sin anillo)</b><br>
-HR <input type="range" id="hr" min="40" max="130" value="78" oninput="upd()"> 
-SpO2 <input type="range" id="spo2" min="85" max="100" value="96" oninput="upd()">
-</div>
+<div class="footer"><div>🌙 Sueño<br><b>7h 24m</b></div><div>🏃 Pasos<br><b>6742</b></div></div>
 
 <script>
-function setMode(m,el){document.querySelectorAll('.modeBtn').forEach(b=>b.classList.remove('active'));el.classList.add('active')}
-function upd(){
-  document.getElementById('vHr').textContent=document.getElementById('hr').value+' BPM';
-  document.getElementById('vSpo2').textContent=document.getElementById('spo2').value+'%';
+const c=document.getElementById('graph');const ctx=c.getContext('2d');c.width=320;c.height=110;
+function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#7CFF9D';ctx.beginPath();for(let i=0;i<80;i++){ctx.lineTo(i*4, 60+Math.sin(i/5)*15+Math.random()*6)}ctx.stroke();}draw();
+function setMode(m,el){
+ document.querySelectorAll('.modeBtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');
+ const t=document.getElementById('modeTitle');const a=document.getElementById('alertaBox');
+ if(m==='respira'){t.textContent='RESPIRA • MODO';t.style.color='#7CFF9D';a.textContent='ℹ️ ALERTA RESPIRA: No se han detectado exacerbaciones en 7 días';a.style.background='#1a3a24';a.style.color='#7CFF9D';}
+ else if(m==='calma'){t.textContent='CALMA • MODO';t.style.color='#B18CFF';a.textContent='💜 CALMA: Nivel de estrés 34% • Relajado • HRV 58ms';a.style.background='#2a1a4a';a.style.color='#B18CFF';}
+ else{t.textContent='FITNESS • MODO';t.style.color='#FF9D5A';a.textContent='🏃 FITNESS: 6742 pasos • Objetivo 10,000 • 67%';a.style.background='#4a2a0a';a.style.color='#FF9D5A';}
 }
-const c=document.getElementById('graph');const ctx=c.getContext('2d');c.width=320;c.height=120;
-function draw(){
-  ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#7CFF9D';ctx.beginPath();
-  for(let i=0;i<80;i++){ctx.lineTo(i*4, 60+Math.sin(i/5)*15+Math.random()*6)}ctx.stroke();
-}draw();
-function compartirReporte(tipo='wa'){
-  const txt=`FITRING v9.1 - RESPIRA\nSpO2: ${document.getElementById('spo2').value}% | FC: ${document.getElementById('hr').value} bpm\nResp: 18 rpm | Temp: 36.5°C | Sueño: 7h24m | Pasos: 6742\n24h promedio 96% estable\nReporte: ${new Date().toLocaleString()}\nSin nombres - solo modos`;
-  if(tipo==='wa') window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
-  else if(navigator.share) navigator.share({title:'Reporte RESPIRA',text:txt});
-  else alert(txt);
-}
-async function conectarR10M(){
-  const txt=document.getElementById('connTxt');txt.textContent='Buscando R10M...';
-  try{
-    const device=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'},{namePrefix:'R10'},{namePrefix:'Smart'}],optionalServices:[0xFEE0,0xFEE1,'heart_rate','battery_service']});
-    const server=await device.gatt.connect();
-    document.getElementById('connTxt').textContent='Anillo conectado • '+device.name;
-    document.getElementById('liveSt').textContent='EN VIVO';document.getElementById('bat').textContent='78%';
-    try{const svc=await server.getPrimaryService(0xFEE0);const ch=await svc.getCharacteristics();for(const cc of ch){await cc.startNotifications();cc.addEventListener('characteristicvaluechanged',e=>{let hr=e.target.value.getUint8(1);if(hr>30&&hr<200){document.getElementById('hr').value=hr;upd();}})} }catch(e){}
-  }catch(err){txt.textContent='Anillo desconectado';alert('Cerrá SmartHealth antes y abrí en Chrome. '+err)}
-}
+function compartir(){const txt=`FITRING v9.1 - ${document.getElementById('modeTitle').textContent}\nSpO2 96% | FC 78 BPM | 18 rpm | 36.5°C\nSueño 7h24m | Pasos 6742\nR10M 5E17 Conectado`;if(navigator.share){navigator.share({text:txt})}else{window.open('https://wa.me/?text='+encodeURIComponent(txt))}}
 </script>
 </body>
-</
+</html>
