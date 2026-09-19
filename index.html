@@ -1,31 +1,55 @@
-<!-- GRAL v10 - Selector Total -->
-<div id="gral" style="display:block">
-  <h2>FITRING CONTROL CENTER</h2>
-  <div style="display:grid;grid-template-columns:1fr 2fr 1fr">
-    <div>LIVE DATA: <b id="liveHR">78 BPM</b> | <b id="liveSpO2">96%</b></div>
-    <div id="selector">
-      <button onclick="abrirModo('respira')">🌬️ RESPIRA</button>
-      <button onclick="abrirModo('calma')">💜 CALMA</button>
-      <button onclick="abrirModo('fitness')">🏃 FITNESS</button>
-      <button onclick="abrirModo('sueno')">🌙 SUEÑO</button>
-    </div>
-  </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FITRING GRAL v10.3</title>
+<style>
+:root{--bg:#070b14;--card:#121a2a;--line:#1e2d4a;--green:#7CFF9D;--vio:#B18CFF;--neon:#8aff5a;--blue:#4DA3FF}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:system-ui;padding:14px;padding-bottom:80px}
+.top{font-weight:900;font-size:12px;display:flex;justify-content:space-between}
+.pill{background:#0f1a2a;border:1px solid var(--line);border-radius:20px;padding:10px 12px;font-size:11px;display:flex;justify-content:space-between;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
+.card b{font-size:9px;opacity:.6;letter-spacing:1px}.val{font-size:28px;font-weight:900}
+.modeBtn{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;color:#fff;font-weight:800;width:100%}
+.screen{display:none}.screen.active{display:block}
+.btnBack{background:#1a2333;border:1px solid var(--line);color:#fff;padding:8px 14px;border-radius:20px}
+.btnMain{background:#0A84FF;color:#fff;width:100%;padding:14px;border-radius:12px;font-weight:900;border:0;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="top"><span>FITRING</span><span id="titleTop" style="color:var(--blue)">CONTROL CENTER • GRAL</span><span>●</span></div>
+<div class="pill"><span id="connTxt">🔵 R10M 5E17 • Desconectado</span><span id="batTxt">LIVE</span></div>
+<div id="gral" class="screen active">
+<h2 style="margin:6px 0">FITRING CONTROL CENTER</h2>
+<div class="grid">
+<div class="card"><b>LIVE HR</b><div class="val" id="liveHR" style="color:#FF6B6B">78 BPM</div></div>
+<div class="card"><b>LIVE SpO2</b><div class="val" id="liveSpO2" style="color:var(--green)">96%</div></div>
+<div class="card"><b>PRESIÓN</b><div class="val" id="liveBP" style="font-size:20px">134/92</div></div>
+<div class="card"><b>PASOS</b><div class="val" id="liveSteps">907</div></div>
+<div class="card"><b>TEMP</b><div class="val" id="liveTemp">36.5°C</div></div>
+<div class="card"><b>SUEÑO</b><div class="val" style="font-size:20px" id="liveSleep">4h 20m</div></div>
 </div>
-
-<div id="pantalla-respira" style="display:none">...tu pantalla respira sin nombre...</div>
-<div id="pantalla-calma" style="display:none">...tu pantalla calma sin nombre...</div>
-<div id="pantalla-fitness" style="display:none">...tu pantalla fitness sin nombre...</div>
-
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+<button class="modeBtn" onclick="abrirModo('respira')" style="border-color:var(--green)">🌬️ RESPIRA<br><small style="opacity:.6">SpO2</small></button>
+<button class="modeBtn" onclick="abrirModo('calma')" style="border-color:var(--vio)">💜 CALMA<br><small style="opacity:.6">Estrés</small></button>
+<button class="modeBtn" onclick="abrirModo('fitness')" style="border-color:var(--neon)">🏃 FITNESS<br><small style="opacity:.6">VO2</small></button>
+<button class="modeBtn" onclick="abrirModo('sueno')" style="border-color:var(--blue)">🌙 SUEÑO<br><small style="opacity:.6">Noche</small></button>
+</div>
+<button class="btnMain" onclick="conectarTodo()">🔵 CONECTAR R10M 5E17 - LEER TODO</button>
+<button class="btnMain" style="background:#1a2333" onclick="simular()">🧪 SIMULAR 136/93/907</button>
+</div>
+<div id="pantalla-respira" class="screen"><button class="btnBack" onclick="volverGral()">‹ Volver</button><h2 style="color:var(--green)">🌬️ RESPIRA</h2><div class="card"><b>SpO2</b><div class="val" id="rSpO2">96%</div></div></div>
+<div id="pantalla-calma" class="screen"><button class="btnBack" onclick="volverGral()">‹ Volver</button><h2 style="color:var(--vio)">💜 CALMA</h2><div class="card"><b>HR</b><div class="val" id="cHR">78 BPM</div></div></div>
+<div id="pantalla-fitness" class="screen"><button class="btnBack" onclick="volverGral()">‹ Volver</button><h2 style="color:var(--neon)">FITNESS</h2><div class="card"><b>PASOS</b><div class="val" id="fSteps">907</div></div><div class="card" style="margin-top:10px"><b>HR</b><div class="val" id="fHR">78 BPM</div></div></div>
+<div id="pantalla-sueno" class="screen"><button class="btnBack" onclick="volverGral()">‹ Volver</button><h2 style="color:var(--blue)">🌙 SUEÑO</h2><div class="card"><b>Anoche</b><div class="val" id="sSleep">4h 20m</div></div></div>
 <script>
-function abrirModo(modo){
-  document.querySelectorAll('[id^=pantalla]').forEach(p=>p.style.display='none');
-  document.getElementById('gral').style.display='none';
-  document.getElementById('pantalla-'+modo).style.display='block';
-  // Los datos son los mismos, solo cambia la vista
-  console.log('Modo:',modo,'Datos vivos:',liveHR);
-}
-function volverGral(){
-  document.querySelectorAll('[id^=pantalla]').forEach(p=>p.style.display='none');
-  document.getElementById('gral').style.display='block';
-}
+let live={hr:78,spo2:96,sys:134,dia:92,steps:907,temp:36.5,sleep:"4h 20m"};
+function abrirModo(m){document.querySelectorAll('.screen').forEach(p=>p.classList.remove('active'));document.getElementById('pantalla-'+m).classList.add('active');}
+function volverGral(){document.querySelectorAll('.screen').forEach(p=>p.classList.remove('active'));document.getElementById('gral').classList.add('active');}
+function updateAll(){document.getElementById('liveHR').textContent=live.hr+' BPM';document.getElementById('liveSpO2').textContent=live.spo2+'%';document.getElementById('liveBP').textContent=live.sys+'/'+live.dia;document.getElementById('liveSteps').textContent=live.steps;document.getElementById('liveTemp').textContent=live.temp+'°C';document.getElementById('liveSleep').textContent=live.sleep;let s=(id,v)=>{let e=document.getElementById(id);if(e)e.textContent=v};s('rSpO2',live.spo2+'%');s('cHR',live.hr+' BPM');s('fHR',live.hr+' BPM');s('fSteps',live.steps);s('sSleep',live.sleep);}
+function simular(){live={hr:136,spo2:93,sys:134,dia:92,steps:907,temp:36.8,sleep:"4h 20m"};updateAll();document.getElementById('connTxt').textContent='🟢 SIMULACIÓN SmartHealth';}
+async function conectarTodo(){try{const dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'}],optionalServices:[0x180D,0xFF00,0x180F]});document.getElementById('connTxt').textContent='🟢 '+dev.name+' Conectado';const srv=await dev.gatt.connect();try{const s=await srv.getPrimaryService(0x180D);const c=await s.getCharacteristic(0x2A37);await c.startNotifications();c.addEventListener('characteristicvaluechanged',e=>{live.hr=e.target.value.getUint8(1);updateAll();});}catch(e){}}catch(err){alert('Usa Chrome Android');}}updateAll();
 </script>
+</body>
+</html>
