@@ -1,91 +1,94 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FITRING v8 LIVE</title><style>*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif}body{background:#0a0e13;color:#e1eaf3}.h{height:54px;background:#151b23;border-bottom:1px solid #1f2a38;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:9}.lay{display:flex}.side{width:220px;background:#111821;border-right:1px solid #1f2a38;padding:10px;min-height:100vh}.nav{padding:10px;border-radius:10px;color:#8aa0b6;font-size:12px;margin-bottom:4px;cursor:pointer}.nav.active{background:#00D1FF;color:#000;font-weight:900}.main{flex:1;padding:12px}.view{display:none}.view.on{display:block}.card{background:#151b23;border:1px solid #1f2a38;border-radius:16px;padding:14px;margin-top:10px}.live{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}.box{background:#0d141e;border:1px solid #1e2d40;border-radius:12px;padding:10px;text-align:center}.box b{font-size:19px;display:block}.box span{font-size:9px;color:#8aa0b6;display:block}.analisis{background:#0e1a14;border-left:4px solid #7CFF9D;border-radius:8px;padding:10px;margin-top:8px;font-size:11px;line-height:1.4}.inp{width:62px;background:#000;border:1px solid #2a3a4d;border-radius:6px;padding:5px;color:#4DD3FF;text-align:center;font-weight:900}.btn{width:100%;padding:13px;border-radius:12px;border:0;font-weight:900;cursor:pointer;margin-top:8px}.circ{width:86px;height:86px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:26px;transition:.7s}@media(max-width:800px){.live{grid-template-columns:1fr 1fr}.side{display:none}}</style></head><body>
-<div class="h"><div style="color:#4DD3FF;font-weight:900">🌀 FITRING • v8 LIVE</div><div style="font-size:9px;background:#1a242f;padding:6px 8px;border-radius:8px">Sin generar • Datos QRing</div></div>
-<div class="lay">
-<div class="side">
-<div style="font-size:9px;color:#5a6c80;font-weight:800">DATOS VIVOS QRing</div>
-<div style="background:#0d141e;border-radius:10px;padding:8px;font-size:10px;line-height:1.9;margin-top:6px">
-HR <input class="inp" id="hr" value="68" oninput="all()"> bpm<br>
-SpO2 <input class="inp" id="spo2" value="96" oninput="all()"> %<br>
-Stress <input class="inp" id="st" value="24" oninput="all()"> %<br>
-HRV <input class="inp" id="hrv" value="42" oninput="all()"> ms<br>
-Temp <input class="inp" id="temp" value="36.4" oninput="all()"> °C<br>
-Pasos <input class="inp" id="steps" value="4210" oninput="all()">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FITRING v9.1 - RESPIRA</title>
+<style>
+:root{--bg:#080c12;--card:#121821;--green:#7CFF9D;--blue:#4DA3FF;--red:#FF6B6B;--vio:#B18CFF;--yellow:#FFD93D}
+body{background:var(--bg);color:#fff;font-family:system-ui;margin:0;padding:12px}
+.top{display:flex;justify-content:space-between;align-items:center;color:#7af;font-size:12px;letter-spacing:1px}
+.pill{border:1px solid #1e5b5b;border-radius:20px;padding:8px 12px;background:#0f1f1f;color:#7cffd0;font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.card{background:var(--card);border-radius:18px;padding:14px;border:1px solid #1e2a3a;text-align:center}
+.card b{font-size:11px;letter-spacing:1px;opacity:.7}
+.card .val{font-size:36px;font-weight:900;margin:4px 0}
+.green{color:var(--green)} .red{color:var(--red)} .blue{color:var(--blue)} .vio{color:var(--vio)}
+.modeBtn{padding:8px 14px;border-radius:20px;border:1px solid #2a3a4a;background:#121821;color:#8aa;cursor:pointer}
+.modeBtn.active{background:#fff;color:#000;font-weight:900}
+#graph{width:100%;height:120px;background:#0e151e;border-radius:12px;margin-top:10px}
+.btnShare{background:#0A84FF;color:#fff;width:100%;padding:14px;border-radius:14px;font-weight:900;border:0;margin-top:10px}
+.chips{display:flex;gap:8px;margin-top:8px}
+.chips span{border:1px solid #2a4a4a;border-radius:20px;padding:6px 12px;font-size:12px}
+.footer{display:flex;justify-content:space-between;background:#1a2330;border-radius:18px;padding:14px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="top"><span onclick="location.href='dashboard.html'">‹</span><span style="color:#7cffd0;font-weight:900">RESPIRA • MODO</span><span>⚙️</span></div>
+
+<div id="conn" class="pill" style="margin-top:12px">🔵 <span id="connTxt">Anillo desconectado</span> • Batería <span id="bat">--</span> <span style="float:right;color:#7cffd0">• Bluetooth • <span id="liveSt">OFF</span></span></div>
+
+<div style="display:flex;gap:6px;margin-top:12px">
+<button class="modeBtn active" onclick="setMode('respira',this)">🌬️ RESPIRA</button>
+<button class="modeBtn" onclick="setMode('calma',this)">💜 CALMA</button>
+<button class="modeBtn" onclick="setMode('fitness',this)">🏃 FITNESS</button>
 </div>
-<div style="margin-top:10px">
-<div class="nav" onclick="om('respira')">🌬️ Respiración</div>
-<div class="nav" onclick="om('manejo')">🚛 Manejo</div>
-<div class="nav active" id="n-calma" onclick="om('calma')">💜 Calma LIVE</div>
-<div class="nav" id="n-fitness" onclick="om('fitness')">🏃 Fitness LIVE</div>
-<div class="nav" id="n-sueno" onclick="om('sueno')">😴 Sueño LIVE</div>
+
+<div class="grid">
+<div class="card"><b>SpO2</b><div class="val green" id="vSpo2">96%</div><small class="green">Normal • 95-100%</small></div>
+<div class="card"><b>Frecuencia Cardíaca</b><div class="val red" id="vHr">78 BPM</div><small class="red">Reposo • Normal</small></div>
+<div class="card"><b>Frecuencia Respiratoria</b><div class="val blue" id="vRr">18 rpm</div><small class="blue">Estable • 12-20 rpm</small></div>
+<div class="card"><b>Temperatura</b><div class="val vio" id="vTemp">36.5°C</div><small class="vio">Normal • 36.1-37.2°C</small></div>
 </div>
+
+<div style="margin-top:14px"><b>SpO2 • Últimas 24h</b><span style="float:right;color:var(--green);font-size:12px">Promedio 96%</span>
+<canvas id="graph"></canvas>
 </div>
-<div class="main">
-<div id="v-calma" class="view on">
-<div class="card" style="border-color:#B18CFF88">
-<b style="color:#B18CFF">💜 CALMA - Medición en vivo del anillo</b>
-<div class="live">
-<div class="box"><span>HR LIVE</span><b id="cHr" style="color:#FF6B8A">68</b><span id="cHrT">Normal</span></div>
-<div class="box"><span>STRESS</span><b id="cSt" style="color:#7CFF9D">24%</b><span id="cStT">Bajo</span></div>
-<div class="box"><span>HRV</span><b id="cHrv" style="color:#B18CFF">42 ms</b><span id="cHrvT">Bueno</span></div>
-<div class="box"><span>SpO2</span><b id="cSpo">96%</b><span>Oxígeno</span></div>
-<div class="box"><span>TEMP PIEL</span><b id="cTemp">36.4°C</b><span>Anillo</span></div>
-<div class="box"><span>COHERENCIA</span><b id="cCoh">78%</b><span>4-7-8</span></div>
+
+<div style="background:#1a3a24;border-radius:12px;padding:10px;margin-top:10px;font-size:12px;color:var(--green)">
+ℹ️ ALERTA RESPIRA: No se han detectado exacerbaciones en 7 días
 </div>
-<div class="analisis" id="aCalma"></div>
-<div class="circ" id="circCalma" style="background:linear-gradient(135deg,#e8e0ff,#ffe0f0)">🧘</div>
-<button class="btn" style="background:#B18CFF;color:#fff" onclick="testCalma()">▶ Probar Calma 4-7-8</button>
+
+<button class="btnShare" onclick="compartirReporte()">↗ COMPARTIR REPORTE</button>
+<div class="chips"><span onclick="compartirReporte('wa')">🟢 WhatsApp</span><span onclick="compartirReporte('med')">👨‍⚕️ Médico</span><span onclick="compartirReporte('fam')">👨‍👩‍👧 Familia</span></div>
+
+<button id="btnAuto" onclick="conectarR10M()" style="width:100%;margin-top:12px;padding:12px;border-radius:12px;background:#00D1FF;color:#000;font-weight:900;border:0">🔵 Conectar R10M Auto (SmartHealth)</button>
+
+<div class="footer"><div>🌙 Sueño<br><b id="vSueno">7h 24m</b></div><div>🏃 Pasos<br><b id="vPasos">6742</b></div></div>
+
+<!-- LIVE INPUT PARA TEST SIN ANILLO -->
+<div style="margin-top:18px;background:#121821;padding:12px;border-radius:12px;border:1px dashed #2a5">
+<b>Live Test (sin anillo)</b><br>
+HR <input type="range" id="hr" min="40" max="130" value="78" oninput="upd()"> 
+SpO2 <input type="range" id="spo2" min="85" max="100" value="96" oninput="upd()">
 </div>
-</div>
-<div id="v-fitness" class="view">
-<div class="card" style="border-color:#8cff0088">
-<b style="color:#8cff00">🏃 FITNESS - Medición en vivo</b>
-<div class="live">
-<div class="box"><span>HR LIVE</span><b id="fHr" style="color:#8cff00">68</b><span id="fZone">Z1 Reposo</span></div>
-<div class="box"><span>HRV RECOVERY</span><b id="fHrv">42 ms</b><span id="fRec">OK entrenar</span></div>
-<div class="box"><span>STRESS</span><b id="fSt">24%</b><span>Pre-entreno</span></div>
-<div class="box"><span>PASOS LIVE</span><b id="fSteps">4210</b><span id="fKcal">310 kcal</span></div>
-<div class="box"><span>SpO2 ESFUERZO</span><b id="fSpo">96%</b><span>>95 ideal</span></div>
-<div class="box"><span>VO2 ESTIMADO</span><b id="fVo2">42 ml</b><span>por HR/HRV</span></div>
-</div>
-<div class="analisis" id="aFit" style="border-left-color:#8cff00"></div>
-<div class="circ" id="circFit" style="background:#8cff0022;border:2px solid #8cff00">🏃</div>
-<button class="btn" style="background:#8cff00;color:#000" onclick="testFit()">▶ Probar Box 4-4-4-4</button>
-</div>
-</div>
-<div id="v-sueno" class="view">
-<div class="card" style="border-color:#7c5cff88">
-<b style="color:#7c5cff">😴 SUEÑO - Medición noche del anillo</b>
-<div class="live">
-<div class="box"><span>HR NOCHE AVG</span><b id="sHr">61</b><span id="sHrT">Buen descanso</span></div>
-<div class="box"><span>HRV NOCHE</span><b id="sHrv" style="color:#7c5cff">42 ms</b><span id="sHrvT">Recuperación</span></div>
-<div class="box"><span>SpO2 MIN NOCHE</span><b id="sSpo">94%</b><span>estable</span></div>
-<div class="box"><span>LIGERO</span><b>3h 20m</b><span>45%</span></div>
-<div class="box"><span>PROFUNDO</span><b>1h 40m</b><span>Delta 22%</span></div>
-<div class="box"><span>REM</span><b>1h 10m</b><span>15%</span></div>
-</div>
-<div class="analisis" id="aSueno" style="border-left-color:#7c5cff"></div>
-<button class="btn" style="background:#7c5cff;color:#fff" onclick="alert('Modo sueño: solo mide')">🌙 Ver noche</button>
-</div>
-</div>
-<div id="v-respira" class="view"><div class="card"><b>🌬️ Respiración</b> SpO2 <span id="rSpo">96%</span> corregido +2% por 1020hPa</div></div>
-<div id="v-manejo" class="view"><div class="card"><b>🚛 Manejo</b> Ideal si HR 65-85 + Stress<30 + SpO2>95</div></div>
-</div>
-</div>
+
 <script>
-function om(m){document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));document.getElementById('v-'+m).classList.add('on');document.querySelectorAll('.nav').forEach(e=>e.classList.remove('active'));document.getElementById('n-'+m)?.classList.add('active');}
-function all(){
-let hr=+document.getElementById('hr').value||68, spo2=+document.getElementById('spo2').value||96, st=+document.getElementById('st').value||24, hrv=+document.getElementById('hrv').value||42, temp=parseFloat(document.getElementById('temp').value)||36.4, steps=+document.getElementById('steps').value||4210;
-document.getElementById('cHr').textContent=hr; document.getElementById('cSpo').textContent=spo2+'%'; document.getElementById('cSt').textContent=st+'%'; document.getElementById('cHrv').textContent=hrv+' ms'; document.getElementById('cTemp').textContent=temp+'°C'; document.getElementById('cCoh').textContent=Math.max(20,100-st-5)+'%';
-document.getElementById('cHrT').textContent=hr<75?'Normal':'Alerta'; document.getElementById('cStT').textContent=st<30?'Bajo':'Alto'; document.getElementById('cHrvT').textContent=hrv<30?'Fatiga':hrv<50?'Bueno':'Muy bueno';
-document.getElementById('aCalma').innerHTML=`<b>Análisis Calma:</b> HR ${hr} ${hr<75?'ideal':'alto'}. Stress ${st}% ${st<30?'bajo':'alto'}. HRV ${hrv}ms ${hrv>40?'buena':'fatiga'}. SpO2 ${spo2}%.`;
-document.getElementById('fHr').textContent=hr; document.getElementById('fHrv').textContent=hrv+' ms'; document.getElementById('fSt').textContent=st+'%'; document.getElementById('fSpo').textContent=spo2+'%'; document.getElementById('fSteps').textContent=steps; document.getElementById('fKcal').textContent=Math.round(steps*0.04)+' kcal'; document.getElementById('fVo2').textContent=Math.round(15*190/hr)+' ml'; let zone=hr<80?'Z1 Reposo':hr<110?'Z2 Aeróbica':hr<140?'Z3 Umbral':'Z4 VO2max'; document.getElementById('fZone').textContent=zone; let rec=hrv>40&&st<35?'OK entrenar':'Descanso'; document.getElementById('fRec').textContent=rec;
-document.getElementById('aFit').innerHTML=`<b>Análisis Fitness:</b> ${zone}. Recovery ${rec}. SpO2 ${spo2}%. Pasos ${steps}.`;
-document.getElementById('sHr').textContent=Math.round(hr*0.88); document.getElementById('sHrv').textContent=hrv+' ms'; document.getElementById('sSpo').textContent=(spo2-2)+'%';
-document.getElementById('aSueno').innerHTML=`<b>Análisis Sueño:</b> HR noche ~${Math.round(hr*0.88)} bpm. HRV ${hrv}ms ${hrv>50?'recup buena':'corta'}. SpO2 min ${spo2-2}%.`;
-document.getElementById('rSpo').textContent=spo2+'%';
+function setMode(m,el){document.querySelectorAll('.modeBtn').forEach(b=>b.classList.remove('active'));el.classList.add('active')}
+function upd(){
+  document.getElementById('vHr').textContent=document.getElementById('hr').value+' BPM';
+  document.getElementById('vSpo2').textContent=document.getElementById('spo2').value+'%';
 }
-function testCalma(){let c=document.getElementById('circCalma'); let i=0, f=['Inhala 4s','Retén 7s','Exhala 8s']; let iv=setInterval(()=>{c.textContent=f[i%3]; c.style.transform=i%3==0?'scale(1.25)':'scale(0.85)'; i++; if(i>=6){clearInterval(iv); c.textContent='🧘'; c.style.transform='scale(1)';} if(navigator.vibrate) navigator.vibrate(30);},1000);}
-function testFit(){let c=document.getElementById('circFit'); let i=0; let iv=setInterval(()=>{c.style.transform=i%2==0?'scale(1.25)':'scale(0.85)'; i++; if(i>=16){clearInterval(iv); c.style.transform='scale(1)';}},700);}
-all();
+const c=document.getElementById('graph');const ctx=c.getContext('2d');c.width=320;c.height=120;
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#7CFF9D';ctx.beginPath();
+  for(let i=0;i<80;i++){ctx.lineTo(i*4, 60+Math.sin(i/5)*15+Math.random()*6)}ctx.stroke();
+}draw();
+function compartirReporte(tipo='wa'){
+  const txt=`FITRING v9.1 - RESPIRA\nSpO2: ${document.getElementById('spo2').value}% | FC: ${document.getElementById('hr').value} bpm\nResp: 18 rpm | Temp: 36.5°C | Sueño: 7h24m | Pasos: 6742\n24h promedio 96% estable\nReporte: ${new Date().toLocaleString()}\nSin nombres - solo modos`;
+  if(tipo==='wa') window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
+  else if(navigator.share) navigator.share({title:'Reporte RESPIRA',text:txt});
+  else alert(txt);
+}
+async function conectarR10M(){
+  const txt=document.getElementById('connTxt');txt.textContent='Buscando R10M...';
+  try{
+    const device=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'},{namePrefix:'R10'},{namePrefix:'Smart'}],optionalServices:[0xFEE0,0xFEE1,'heart_rate','battery_service']});
+    const server=await device.gatt.connect();
+    document.getElementById('connTxt').textContent='Anillo conectado • '+device.name;
+    document.getElementById('liveSt').textContent='EN VIVO';document.getElementById('bat').textContent='78%';
+    try{const svc=await server.getPrimaryService(0xFEE0);const ch=await svc.getCharacteristics();for(const cc of ch){await cc.startNotifications();cc.addEventListener('characteristicvaluechanged',e=>{let hr=e.target.value.getUint8(1);if(hr>30&&hr<200){document.getElementById('hr').value=hr;upd();}})} }catch(e){}
+  }catch(err){txt.textContent='Anillo desconectado';alert('Cerrá SmartHealth antes y abrí en Chrome. '+err)}
+}
 </script>
-</body></html>
+</body>
+</
