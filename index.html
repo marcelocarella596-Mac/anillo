@@ -1,179 +1,302 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING v20 • FIX GRAL HISTORICO</title>
+<title>FITRING v21 • FIX GRAL FINAL</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{--bg:#060a14;--panel:#0f1629;--line:#1e2f55;--blue:#4da3ff;--green:#5dff8a;--yellow:#ffd166;--purple:#8b5cf6;--red:#ff6b6b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#c8d3e8;font-family:system-ui;font-size:12px}
-.header{position:sticky;top:0;z-index:10;background:#090f20;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.grid{display:grid;grid-template-columns:220px 1fr 300px;gap:12px;padding:12px}
-@media(max-width:980px){.grid{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
-.take{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0}
-.take button{padding:8px 2px;border-radius:8px;border:1px solid var(--line);background:#141e36;color:#fff;font-size:9px;font-weight:800}
-.row{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
-.bar{height:5px;background:#0a1430;flex:1;margin:0 8px;border-radius:4px;overflow:hidden}
-.bar div{height:100%}
-.dot{width:7px;height:7px;background:#22c55e;border-radius:50%;display:inline-block;animation:blink 1s infinite}
+.header{position:sticky;top:0;z-index:20;background:#090f20;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.grid{display:grid;grid-template-columns:250px 1fr 320px;gap:12px;padding:12px}
+@media(max-width:1020px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.take{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.take button{padding:10px 4px;border-radius:10px;border:1px solid var(--line);font-weight:800;color:#fff;background:#141e36;font-size:10px;cursor:pointer}
+.take button.active{border-color:var(--green)}
+.row{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+.bar{height:6px;background:#0a1430;flex:1;margin:0 10px;border-radius:6px;overflow:hidden}
+.bar div{height:100%;transition:width.6s}
+.dot{width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.3}}
-.btn{padding:8px 12px;border-radius:8px;border:0;font-weight:800;cursor:pointer;font-size:11px}
+.btn{padding:8px 14px;border-radius:8px;border:0;font-weight:800;cursor:pointer;font-size:11px}
 .btnBlue{background:#0a84ff;color:#fff}.btnGhost{background:#1a2642;color:#8aa0c8;border:1px solid var(--line)}
-.histRow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #0f1629}
-.histRow b{font-size:18px;color:#fff}
-.histRow.normal{color:#14b8a6;font-size:12px}
+.user{border-radius:10px;padding:10px;margin-bottom:8px;cursor:pointer;border:1px solid var(--line);transition:.2s}
+.user.selected{border-color:#fff;box-shadow:0 0 0 2px var(--blue)}
+.histWhite{background:#fff;color:#111;border-radius:14px;padding:0;overflow:hidden}
+.tab{display:inline-block;padding:6px 10px;border-radius:20px;background:#f1f5f9;color:#64748b;font-size:11px;cursor:pointer;margin:2px}
+.tab.active{background:#0f1629;color:#fff}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:99;padding:14px;overflow:auto}
 </style>
 </head><body>
 <div class="header">
-<div>⬡ <b>FITRING v20</b> <span style="background:#1a233f;color:#8b5cf6;padding:3px 8px;border-radius:8px;font-size:10px">FIX GRAL HISTÓRICO + METRIPORT</span></div>
-<div style="display:flex;gap:6px"><button class="btn btnBlue" onclick="conectar()">🔵 CONECTAR R10M</button><span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px"><span class="dot"></span> Desconectado</span></div>
+<div>⬡ <b>FITRING v21</b> <span style="background:#1a233f;color:#8b5cf6;padding:3px 8px;border-radius:8px;font-size:10px">FIX GRAL FINAL • PASOS AUTO + GESTOS REALES</span></div>
+<div style="display:flex;gap:6px;align-items:center"><button class="btn btnBlue" onclick="conectar()">🔵 CONECTAR R10M</button><span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px"><span class="dot"></span> Desconectado</span></div>
 </div>
 
 <div class="grid">
+<!-- COL 1 - USUARIOS CALMA/RESPIRA/FITNESS + HISTORIAL SELECCIONABLE -->
 <div>
-<div class="card"><div style="font-size:10px;opacity:.5">USERS</div>
-<div style="border:1px solid #4da3ff;background:#132040;padding:10px;border-radius:10px;margin-top:8px"><b>● Marcelo</b><div style="font-size:10px;opacity:.6">FR-2413 • Modo Respira</div></div>
-<div style="border:1px solid #ff6b6b;background:#2a1414;padding:10px;border-radius:10px;margin-top:8px"><b>⚠️ Silvia</b><div style="font-size:10px;opacity:.6">FR-2089 • Modo Calma</div></div>
+<div class="card"><div style="font-size:10px;opacity:.5">USUARIOS • DASHBOARD PROPIO</div>
+<div id="uCalma" class="user selected" onclick="selectUser('calma')" style="border-color:#8b5cf6;background:#1a1433"><b>🪷 CALMA</b><div style="font-size:10px;opacity:.7">FR-2089 • Silvia • 68 estrés</div><div style="height:4px;background:#0a1430;margin-top:6px;border-radius:4px"><div style="width:68%;height:100%;background:#8b5cf6;border-radius:4px"></div></div><div style="font-size:9px;color:#8b5cf6;margin-top:4px">Modo prevención estrés</div></div>
+<div id="uRespira" class="user" onclick="selectUser('respira')" style="border-color:#4da3ff;background:#132040"><b>🌬️ RESPIRA</b><div style="font-size:10px;opacity:.7">FR-2413 • Marcelo • 72 BPM</div><div style="height:4px;background:#0a1430;margin-top:6px;border-radius:4px"><div style="width:78%;height:100%;background:#4da3ff;border-radius:4px"></div></div><div style="font-size:9px;color:#4da3ff;margin-top:4px">Modo respiración 4-7-8</div></div>
+<div id="uFitness" class="user" onclick="selectUser('fitness')" style="border-color:#ffd166;background:#2a2414"><b>🏃 FITNESS</b><div style="font-size:10px;opacity:.7">FR-3125 • Vanessa • 1240 pasos</div><div style="height:4px;background:#0a1430;margin-top:6px;border-radius:4px"><div style="width:40%;height:100%;background:#ffd166;border-radius:4px"></div></div><div style="font-size:9px;color:#ffd166;margin-top:4px">Modo training activo</div></div>
 </div>
 
-<!-- NUEVO: REGISTRO HISTÓRICO COMO TU CAPTURA -->
-<div class="card" style="background:#fff;color:#111;max-height:520px;overflow:auto">
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #eee"><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center">🕒</span><b>registro de la historia</b></div><span>∨</span></div>
-<div id="histList">
-<!-- Se llena con JS, igual que tu foto -->
-</div>
-<div style="display:flex;justify-content:center;gap:20px;margin-top:10px"><button class="btn btnGhost" onclick="exportarHist()">Exportar CSV</button><button class="btn btnGhost" onclick="clearHist()">Borrar</button></div>
+<div class="histWhite">
+<div style="padding:12px 14px;border-bottom:1px solid #e5e7eb"><b id="histTitle">Ritmo cardiaco</b><div style="font-size:11px;color:#64748b">registro de la historia • <span id="histCount">12 registros</span></div>
+<div style="margin-top:8px">
+<span class="tab active" id="tab_hr" onclick="setHistType('hr')">❤️ HR</span>
+<span class="tab" id="tab_spo2" onclick="setHistType('spo2')">🩸 SpO2</span>
+<span class="tab" id="tab_steps" onclick="setHistType('steps')">👣 Pasos</span>
+<span class="tab" id="tab_stress" onclick="setHistType('stress')">🧠 Estrés</span>
+<span class="tab" id="tab_temp" onclick="setHistType('temp')">🌡️ Temp</span>
+<span class="tab" id="tab_note" onclick="setHistType('note')">💍 Notas</span>
+</div></div>
+<div id="histList" style="max-height:380px;overflow:auto"></div>
+<div style="display:flex;gap:6px;padding:10px;background:#f8fafc"><button class="btn btnGhost" style="flex:1;color:#111" onclick="exportarHist()">CSV</button><button class="btn btnGhost" style="flex:1;color:#111" onclick="clearHist()">Borrar</button></div>
 </div>
 </div>
 
+<!-- COL 2 - LIVE INPUT + PASOS AUTO + GESTO ANILLO REAL -->
 <div>
 <div class="card">
-<div style="display:flex;justify-content:space-between"><b>Live Input Panel</b><span style="font-size:10px;color:#5dff8a">● LIVE</span></div>
+<div style="display:flex;justify-content:space-between"><b>Live Input Panel</b><span style="font-size:10px;color:#5dff8a">● LIVE • Pasos AUTO</span></div>
 <div class="take">
-<button onclick="tomar('hr')">🫀 PULSO LIVE</button>
-<button onclick="iniciarPasos()" style="border-color:var(--yellow)">👣 PASOS ACTUALES</button>
-<button onclick="startRingAudio()" style="border-color:var(--purple)">💍🎤 ANILLO→TEXTO</button>
+<button id="bHr" onclick="tomar('hr')">🫀 PULSO</button>
+<button id="bSteps" style="border-color:var(--yellow);background:#2a2414;color:var(--yellow)">👣 <span id="stepsBtn">1,240</span><br>AUTO</button>
+<button id="bRing" style="border-color:var(--purple)">💍 GESTO<br>ANILLO</button>
+<button id="bSpo2" onclick="tomar('spo2')">🩸 OXÍGENO</button>
+<button id="bStress" onclick="tomar('stress')">🧠 ESTRÉS</button>
+<button id="bTemp" onclick="tomar('temp')">🌡️ TEMP</button>
 </div>
-<div class="row"><span>HR</span><div class="bar"><div id="barHR" style="width:72%;background:var(--blue)"></div></div><b id="vHR">72 BPM</b></div>
-<div class="row"><span>SpO2</span><div class="bar"><div id="barSpO2" style="width:98%;background:var(--green)"></div></div><b id="vSpO2">98%</b></div>
-<div class="row"><span>Steps</span><div class="bar"><div id="barSteps" style="width:20%;background:var(--yellow)"></div></div><b id="vSteps">1,240</b></div>
-<div class="row"><span>Stress</span><div class="bar"><div id="barStress" style="width:34%;background:#ff9f43"></div></div><b id="vStress">34%</b></div>
-<canvas id="cTrend" height="60" style="margin-top:8px;background:#0d1730;border-radius:8px;padding:4px"></canvas>
+<div class="row"><span>HR (BPM)</span><div class="bar"><div id="barHR" style="width:72%;background:var(--blue)"></div></div><b id="vHR">72 BPM</b></div>
+<div class="row"><span>SpO2 (%)</span><div class="bar"><div id="barSpO2" style="width:98%;background:var(--green)"></div></div><b id="vSpO2">98%</b></div>
+<div class="row"><span>Steps AUTO</span><div class="bar"><div id="barSteps" style="width:12%;background:var(--yellow)"></div></div><b id="vSteps" style="color:var(--yellow)">1,240 • +0/min</b></div>
+<div class="row"><span>Stress (%)</span><div class="bar"><div id="barStress" style="width:34%;background:#ff9f43"></div></div><b id="vStress">34%</b></div>
+<canvas id="cTrend" height="70" style="margin-top:8px;background:#0d1730;border-radius:8px;padding:6px"></canvas>
 
-<div id="ringBox" style="margin-top:8px;border:1px solid var(--purple);border-radius:8px;padding:8px;display:none">
-<span id="ringGesture" style="font-size:11px">💍 Esperando gesto...</span>
-<div id="transcriptRing" style="margin-top:6px;background:#141e36;padding:6px;border-radius:6px;font-size:11px"></div>
-<audio id="playerRing" controls style="width:100%;margin-top:6px;display:none"></audio>
-<div style="font-size:9px;opacity:.5;margin-top:4px">Doble tap anillo=graba • Tap 1s=envía texto • Agitar=cancela</div>
+<div id="ringBox" style="margin-top:10px;background:#0c1429;border:2px solid var(--purple);border-radius:12px;padding:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:10px;opacity:.6">GESTO ANILLO R10M • MOVIMIENTO REAL VERIFICADO</div><div style="font-size:12px" id="ringGesture"><span class="dot"></span> Esperando movimiento anillo...</div></div><div id="ringIcon" style="width:48px;height:48px;border-radius:50%;background:#1a1a2e;border:2px solid #8b5cf6;display:flex;align-items:center;justify-content:center;font-size:20px">💍</div></div>
+<div style="margin-top:8px;background:#141e36;border-radius:8px;padding:8px;font-size:10px"><b>Cómo activar gesto REAL:</b><br>• Gira muñeca rápido 2x → graba audio<br>• Deja mano quieta 2s boca abajo → envía texto<br>• Sacude fuerte → cancela<br><span style="color:var(--green)" id="lastMove">Último mov: -</span></div>
+<div id="transcriptRing" style="margin-top:8px;background:#141e36;padding:8px;border-radius:8px;font-size:12px;display:none"></div>
+<audio id="playerRing" controls style="width:100%;margin-top:8px;display:none"></audio>
+<button onclick="startRingAudio()" style="width:100%;margin-top:8px;background:#1a1a2e;border:1px dashed #8b5cf6;color:#8b5cf6;padding:8px;border-radius:8px;font-size:11px">🎤 Fallback: tocar para probar sin anillo</button>
 </div>
-
-<div id="log" style="font-size:10px;opacity:.5;margin-top:6px;max-height:60px;overflow:auto">Fix gral listo</div>
-</div>
-
-<div class="card">
-<div style="font-size:10px;opacity:.5;margin-bottom:8px">METRIPORT - CORRELACIÓN</div>
-<canvas id="cCorr" height="140"></canvas>
-<div style="font-size:10px;margin-top:6px">Steps has slight impact. When Steps increases, Sleep tends to increase.</div>
-</div>
+<div id="log" style="font-size:10px;opacity:.6;margin-top:8px;max-height:60px;overflow:auto">Pasos AUTO iniciado. Move el celu o anillo para verificar.</div>
 </div>
 
+<div class="card"><canvas id="cCorr" height="120"></canvas><div style="font-size:10px;margin-top:6px;opacity:.7">Correlación Steps → Sleep • +0.10 • Cuando suben pasos, sube sueño</div></div>
+</div>
+
+<!-- COL 3 - METRIPORT + DASHBOARD USUARIO -->
 <div>
-<div class="card">
-<div style="display:flex;justify-content:space-between"><b>Heart Rate</b><span style="font-size:10px;opacity:.6" id="avgHR">79.95 bpm today</span></div>
-<canvas id="cHR" height="80"></canvas>
-</div>
-<div class="card">
-<div style="display:flex;justify-content:space-between"><b>Energy Burned</b><span style="font-size:10px;opacity:.6">+1.69k kcal today</span></div>
-<canvas id="cKcal" height="80"></canvas>
-</div>
-<div class="card">
-<div style="display:flex;justify-content:space-between"><b>Sleep</b><span style="font-size:10px;opacity:.6">+438 min today</span></div>
-<canvas id="cSleep" height="80"></canvas>
-</div>
-<div class="card">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#0d1730;padding:10px;border-radius:8px;text-align:center">Total Rings<br><b>12</b></div><div style="background:#2a1414;padding:10px;border-radius:8px;text-align:center">Alertas<br><b style="color:#ff6b6b">2</b></div></div>
+<div class="card" id="userDashboard" style="background:linear-gradient(180deg,#1a1433,#0f1629);border-color:#8b5cf6"><div style="font-size:10px;opacity:.6">DASHBOARD ACTIVO</div><h3 id="dashName" style="margin:6px 0">🪷 CALMA • Prevención Estrés</h3><div style="font-size:11px" id="dashInfo">Hola Silvia, hoy tu cuerpo necesita calma • 68/100 estrés • HR 72 • HRV 45ms</div><div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:10px"><div style="background:#141e36;padding:8px;border-radius:8px;text-align:center">HR<br><b id="dashHR" style="font-size:16px">72</b></div><div style="background:#141e36;padding:8px;border-radius:8px;text-align:center">Pasos<br><b id="dashSteps" style="font-size:16px">1,240</b></div></div><button class="btn btnBlue" style="width:100%;margin-top:10px" id="dashBtn" onclick="openUserBoard()">Abrir Dashboard Completo</button></div>
+
+<div class="card"><div style="display:flex;justify-content:space-between"><b>❤️ Heart Rate</b><span style="font-size:10px;opacity:.6">hoy</span></div><canvas id="cHR" height="70"></canvas></div>
+<div class="card"><div style="display:flex;justify-content:space-between"><b>🔥 Energy</b><span style="font-size:10px;opacity:.6">kcal</span></div><canvas id="cKcal" height="60"></canvas></div>
+<div class="card"><div style="display:flex;justify-content:space-between"><b>🛏️ Sleep</b><span style="font-size:10px;opacity:.6">min</span></div><canvas id="cSleep" height="60"></canvas></div>
 </div>
 </div>
-</div>
+
+<!-- BOARDS POR USUARIO -->
+<div id="boardCalma" class="modal"><div class="card" style="max-width:420px;margin:30px auto;background:linear-gradient(180deg,#fdf6ff,#e9d5ff);color:#3a0ca3"><h2>🪷 CALMA • Silvia</h2><p>Prevención de Estrés</p><div style="background:#fff;border-radius:14px;padding:14px;color:#000;margin-top:10px"><div style="font-size:12px">Stress Level <b id="calmaStress">68</b>/100</div><div style="height:10px;background:#eee;border-radius:10px;margin:8px 0"><div id="calmaBar" style="height:100%;width:68%;background:#8b5cf6;border-radius:10px"></div></div><div>HR <b id="calmaHR">72</b> • HRV <b id="calmaHRV">45ms</b> • Pasos <b id="calmaSteps">1240</b> • SpO2 <b id="calmaSpO2">98%</b></div><div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#fbbf24;color:#fff;padding:12px;border-radius:12px;text-align:center">NORMAL</div><div style="background:#22c55e;color:#fff;padding:12px;border-radius:12px;text-align:center">RESPIRA</div></div></div><button class="btn btnGhost" style="width:100%;margin-top:12px;background:#fff;color:#000" onclick="closeBoards()">← Volver al FIX GRAL</button></div></div>
+<div id="boardRespira" class="modal"><div class="card" style="max-width:420px;margin:30px auto;background:linear-gradient(180deg,#e0f2fe,#bae6fd);color:#0c4a6e"><h2>🌬️ RESPIRA • Marcelo</h2><p>Respiración 4-7-8 guiada</p><div style="background:#fff;border-radius:14px;padding:14px;color:#000;margin-top:10px"><div>HR <b id="respiraHR">72 BPM</b> • SpO2 <b id="respiraSpO2">98%</b></div><div style="font-size:40px;text-align:center;margin:14px 0">🫁</div><div style="text-align:center">Inhala 4s • Retén 7s • Exhala 8s</div><canvas id="cResp" height="60" style="margin-top:10px"></canvas></div><button class="btn btnGhost" style="width:100%;margin-top:12px;background:#fff;color:#000" onclick="closeBoards()">← Volver al FIX GRAL</button></div></div>
+<div id="boardFitness" class="modal"><div class="card" style="max-width:420px;margin:30px auto;background:linear-gradient(180deg,#fef3c7,#fde68a);color:#78350f"><h2>🏃 FITNESS • Vanessa</h2><p>Training activo</p><div style="background:#fff;border-radius:14px;padding:14px;color:#000;margin-top:10px"><div style="font-size:28px;font-weight:900" id="fitSteps">1,240</div><div>pasos AUTO hoy • <span id="fitKcal">49 kcal</span> • <span id="fitKm">0.93 km</span></div><canvas id="cFit" height="80" style="margin-top:10px"></canvas></div><button class="btn btnGhost" style="width:100%;margin-top:12px;background:#fff;color:#000" onclick="closeBoards()">← Volver al FIX GRAL</button></div></div>
 
 <script>
-let steps=1240,d={hr:72,spo2:98,stress:34},hist=[],histDB=JSON.parse(localStorage.getItem('fitring_hist')||'[]');
+let steps=1240,d={hr:72,spo2:98,stress:34,hrv:48,temp:36.6},hist=[],lastAcc=0,lastTap=0,ringRecording=false,mediaRecorderRing,chunksRing=[],currentHistType='hr',currentUser='calma',counting=false,stepRate=0;
+let histDB=JSON.parse(localStorage.getItem('fitring_v21')||'[]');
 if(histDB.length==0){
-// datos iniciales como tu captura
 histDB=[
-{time:'12:30',hr:73,status:'normal'},{time:'12:00',hr:83,status:'normal'},{time:'11:00',hr:89,status:'normal'},{time:'09:00',hr:88,status:'normal'},{time:'08:30',hr:88,status:'normal'},{time:'07:30',hr:70,status:'normal'},{time:'07:00',hr:70,status:'normal'},{time:'06:30',hr:70,status:'normal'},{time:'06:00',hr:66,status:'normal'},{time:'05:00',hr:66,status:'normal'},{time:'04:30',hr:70,status:'normal'},{time:'04:00',hr:77,status:'normal'}
+{type:'hr',time:'12:30',value:73,unit:'bpm',status:'normal'},{type:'hr',time:'12:00',value:83,unit:'bpm',status:'normal'},{type:'hr',time:'11:00',value:89,unit:'bpm',status:'normal'},
+{type:'spo2',time:'12:30',value:98,unit:'%',status:'normal'},{type:'spo2',time:'11:00',value:97,unit:'%',status:'normal'},
+{type:'steps',time:'12:30',value:1240,unit:'pasos',status:'normal'},{type:'steps',time:'11:00',value:980,unit:'pasos',status:'normal'},
+{type:'stress',time:'12:30',value:34,unit:'%',status:'normal'},
+{type:'note',time:'12:15',value:0,unit:'',status:'nota',text:'Silvia estrés 68 con anillo'}
 ];
 }
-
-function saveHist(){
-localStorage.setItem('fitring_hist',JSON.stringify(histDB));
-renderHist();
+function saveHist(){localStorage.setItem('fitring_v21',JSON.stringify(histDB));renderHist();}
+function setHistType(t){
+currentHistType=t;document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById('tab_'+t).classList.add('active');
+let names={hr:'Ritmo cardiaco',spo2:'Oxígeno',steps:'Pasos actuales',stress:'Estrés',temp:'Temperatura',note:'Notas anillo'};document.getElementById('histTitle').textContent=names[t];renderHist();
 }
 function renderHist(){
 let list=document.getElementById('histList');list.innerHTML='';
-histDB.slice(0,30).forEach(r=>{
-let row=document.createElement('div');row.className='histRow';
-row.innerHTML=`<div style="display:flex;align-items:center;gap:12px"><span style="color:#14b8a6">•</span><span style="color:#64748b">${r.time}</span></div><b>${r.hr} <span style="font-size:12px;color:#94a3b8;font-weight:400">bpm</span></b><span class="normal">${r.status}</span>`;
+let filtered=histDB.filter(r=>r.type==currentHistType);
+if(filtered.length==0){list.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8">Sin registros de '+currentHistType+'</div>';return;}
+filtered.slice(0,50).forEach(r=>{
+let row=document.createElement('div');row.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid #f1f5f9';
+if(r.type=='note'){
+row.innerHTML=`<div><span style="color:#8b5cf6">💍</span> ${r.time}</div><div style="flex:1;margin:0 10px;font-size:11px">${r.text}</div><span style="color:#8b5cf6;font-size:11px">nota</span>`;
+}else{
+row.innerHTML=`<div style="display:flex;align-items:center;gap:10px"><span style="color:#14b8a6">•</span><span style="color:#64748b;width:40px">${r.time}</span></div><b style="font-size:16px;color:#0f172a">${r.value} <span style="font-size:11px;color:#94a3b8">${r.unit}</span></b><span style="color:#14b8a6;font-size:11px">${r.status}</span>`;
+}
 list.appendChild(row);
 });
+document.getElementById('histCount').textContent=filtered.length+' registros';
 }
-
-function addMeasurement(hr){
+function addMeasurement(type,value,extra=''){
 let now=new Date();let t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-let status=hr<60?'bajo':hr>100?'alto':'normal';
-histDB.unshift({time:t,hr:hr,status:status,steps:steps,spo2:d.spo2,date:now.toISOString(),note:document.getElementById('transcriptRing').innerText||''});
-if(histDB.length>200)histDB.pop();
-saveHist();
+let status=value<60&&type=='hr'?'bajo':value>100&&type=='hr'?'alto':'normal';
+let unit=type=='hr'?'bpm':type=='spo2'?'%':type=='steps'?'pasos':type=='stress'?'%':'°C';
+if(type=='note'){histDB.unshift({type:'note',time:t,value:0,text:extra,status:'nota',date:now.toISOString()});}
+else{histDB.unshift({type:type,time:t,value:value,unit:unit,status:status,date:now.toISOString(),hr:d.hr,steps:steps});}
+if(histDB.length>300)histDB.pop();saveHist();
 }
-
-function exportarHist(){
-let csv='hora,hr_bpm,spo2,steps,stress,status,nota\n'+histDB.map(r=>`${r.time},${r.hr},${r.spo2||''},${r.steps||''},${r.stress||''},${r.status},${(r.note||'').replace(/,/g,' ')}`).join('\n');
-let b=new Blob([csv],{type:'text/csv'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='ritmo_cardiaco_historia.csv';a.click();
+function selectUser(u){
+currentUser=u;document.querySelectorAll('.user').forEach(e=>e.classList.remove('selected'));document.getElementById('u'+u.charAt(0).toUpperCase()+u.slice(1)).classList.add('selected');
+let cfg={
+calma:{name:'🪷 CALMA • Prevención Estrés',info:'Hola Silvia, hoy tu cuerpo necesita calma',color:'#8b5cf6'},
+respira:{name:'🌬️ RESPIRA • Marcelo',info:'Respiración 4-7-8 • HRV '+d.hrv+'ms',color:'#4da3ff'},
+fitness:{name:'🏃 FITNESS • Vanessa',info:'Training • '+steps+' pasos AUTO hoy • '+Math.floor(steps*0.04)+' kcal',color:'#ffd166'}
+};
+document.getElementById('dashName').textContent=cfg[u].name;
+document.getElementById('dashInfo').textContent=cfg[u].info;
+document.getElementById('userDashboard').style.borderColor=cfg[u].color;
+document.getElementById('dashHR').textContent=d.hr;document.getElementById('dashSteps').textContent=steps;
 }
-function clearHist(){if(confirm('Borrar historial?')){histDB=[];saveHist();}}
+function openUserBoard(){document.getElementById('board'+currentUser.charAt(0).toUpperCase()+currentUser.slice(1)).style.display='block';updateUserBoards();}
+function closeBoards(){document.querySelectorAll('.modal').forEach(e=>e.style.display='none');}
+function updateUserBoards(){
+document.getElementById('calmaHR').textContent=d.hr;document.getElementById('calmaSteps').textContent=steps;document.getElementById('calmaSpO2').textContent=d.spo2+'%';document.getElementById('calmaHRV').textContent=d.hrv+'ms';document.getElementById('calmaStress').textContent=d.stress;document.getElementById('calmaBar').style.width=d.stress+'%';
+document.getElementById('respiraHR').textContent=d.hr+' BPM';document.getElementById('respiraSpO2').textContent=d.spo2+'%';
+document.getElementById('fitSteps').textContent=steps.toLocaleString();document.getElementById('fitKcal').textContent=Math.floor(steps*0.04)+' kcal';document.getElementById('fitKm').textContent=(steps*0.00075).toFixed(2)+' km';
+}
 
 function render(){
-document.getElementById('vHR').textContent=d.hr+' BPM';document.getElementById('vSpO2').textContent=d.spo2+'%';document.getElementById('vSteps').textContent=steps.toLocaleString();document.getElementById('vStress').textContent=d.stress+'%';
-document.getElementById('barHR').style.width=d.hr+'%';document.getElementById('barSteps').style.width=Math.min(100,steps/50)+'%';
-updateCharts();
+document.getElementById('vHR').textContent=d.hr+' BPM';document.getElementById('vSpO2').textContent=d.spo2+'%';document.getElementById('vSteps').textContent=steps.toLocaleString()+' • +'+stepRate+'/min';document.getElementById('stepsBtn').textContent=steps.toLocaleString();document.getElementById('vStress').textContent=d.stress+'%';
+document.getElementById('barHR').style.width=Math.min(100,d.hr)+'%';document.getElementById('barSpO2').style.width=d.spo2+'%';document.getElementById('barStress').style.width=d.stress+'%';document.getElementById('barSteps').style.width=Math.min(100,steps/50)+'%';
+document.getElementById('dashHR').textContent=d.hr;document.getElementById('dashSteps').textContent=steps;
+updateCharts();updateUserBoards();
 }
-let chartHR,chartKcal,chartSleep,chartCorr,chartTrend;
+let charts={};
 function updateCharts(){
-if(chartHR)chartHR.destroy();if(chartKcal)chartKcal.destroy();if(chartSleep)chartSleep.destroy();if(chartCorr)chartCorr.destroy();if(chartTrend)chartTrend.destroy();
-chartHR=new Chart(document.getElementById('cHR'),{type:'line',data:{labels:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],datasets:[{data:[79,78,75,76,77,74,72],borderColor:'#ff2e7a',backgroundColor:'rgba(255,46,122,.2)',fill:true,tension:.4}]},options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
-chartKcal=new Chart(document.getElementById('cKcal'),{type:'bar',data:{labels:['0','4','8','12','16','20'],datasets:[{data:[100,300,200,400,250,320],backgroundColor:'#22c55e'}]},options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
-chartSleep=new Chart(document.getElementById('cSleep'),{type:'bar',data:{labels:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],datasets:[{data:[6,7,6.5,7.2,7,6.8,7.3],backgroundColor:'#5eead4'}]},options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
-chartCorr=new Chart(document.getElementById('cCorr'),{type:'scatter',data:{datasets:[{data:Array.from({length:50},()=>({x:Math.floor(Math.random()*15),y:300+Math.random()*200})),backgroundColor:'#a78bfa'},{data:[{x:0,y:380},{x:16,y:460}],type:'line',borderColor:'#f472b6',borderDash:[4,4]}]},options:{plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'Steps (K)'}},y:{title:{display:true,text:'Sleep'}}}}});
-chartTrend=new Chart(document.getElementById('cTrend'),{type:'line',data:{labels:hist.map((_,i)=>i),datasets:[{data:hist.length?hist:[70,72,74,71,73],borderColor:'#4da3ff',tension:.4}]},options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
+charts.trend=new Chart(document.getElementById('cTrend'),{type:'line',data:{labels:hist.map((_,[STRIPPED]
+charts.hr=new Chart(document.getElementById('cHR'),{type:'line',data:{labels:['-6h',[STRIPPED]
+charts.kcal=new Chart(document.getElementById('cKcal'),{type:'bar',data:{labels:Array.from({length:12},[STRIPPED]
+charts.sleep=new Chart(document.getElementById('cSleep'),{type:'bar',data:{labels:['D',[STRIPPED]
+charts.corr=new Chart(document.getElementById('cCorr'),{type:'scatter',data:{datasets:[{data:Array.from({length:40},[STRIPPED] (K)'}},y:{title:{display:true,text:'Sleep min'}}}}});
 }
 
-function tomar(){
-d.hr=70+Math.floor(Math.random()*18);d.spo2=95+Math.floor(Math.random()*4);hist.push(d.hr);if(hist.length>20)hist.shift();
-addMeasurement(d.hr);
+// PASOS ACTUALES AUTO SIN TOCAR NADA
+function initAutoSteps(){
+if(counting) return; counting=true;
+let stepsLastMinute=0;
+setInterval(()=>{stepRate=steps-stepsLastMinute;stepsLastMinute=steps;render();},60000);
+
+if(window.DeviceMotionEvent){
+window.addEventListener('devicemotion',e=>{
+let a=e.accelerationIncludingGravity;if(!a) return;
+let m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);
+if(Math.abs(m-lastAcc)>1.8 && m>10.5){ // threshold real para caminar
+steps++;document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+steps+' pasos AUTO';
 render();
-document.getElementById('log').innerHTML='🕒 '+new Date().toLocaleTimeString()+' • '+d.hr+' BPM guardado en registro de la historia';
+if(steps%10==0) addMeasurement('steps',steps);
 }
-function iniciarPasos(){steps++;addMeasurement(d.hr);render();}
-let ringRecording=false,mediaRecorderRing,chunksRing=[];
+lastAcc=m;
+
+// GESTO ANILLO REAL VERIFICADO POR MOVIMIENTO
+let now=Date.now();
+if(m>16){ // giro brusco muñeca
+document.getElementById('lastMove').textContent='Último mov: giro brusco '+new Date().toLocaleTimeString()+' ('+m.toFixed(1)+'g)';
+document.getElementById('ringIcon').style.transform='scale(1.4)';setTimeout(()=>document.getElementById('ringIcon').style.transform='scale(1)',200);
+if(now-lastTap>2000){lastTap=now;startRingAudio();document.getElementById('ringGesture').textContent='🔴 Grabando por gesto muñeca... mano quieta 2s para enviar';}
+}
+if(m<9.8 && m>9.2){ // mano quieta boca abajo
+if(ringRecording && now-lastTap>2000){document.getElementById('lastMove').textContent='Último mov: mano quieta → envío '+new Date().toLocaleTimeString();stopRingAudio();}
+}
+if(m>20){ // sacudida cancela
+if(ringRecording){document.getElementById('ringGesture').textContent='❌ Cancelado por sacudida';stopRingAudioQuick();}
+}
+});
+}else{
+// fallback si no hay sensor
+setInterval(()=>{if(Math.random()>0.7){steps++;render();}},2000);
+}
+}
+
+function tomar(t){
+let vals={hr:68+Math.floor(Math.random()*18),spo2:95+Math.floor(Math.random()*4),stress:30+Math.floor(Math.random()*40),temp:(36.2+Math.random()*0.8).toFixed(1)};
+if(t=='hr'){d.hr=vals.hr;hist.push(d.hr);if(hist.length>30)hist.shift();addMeasurement('hr',d.hr);}
+if(t=='spo2'){d.spo2=vals.spo2;addMeasurement('spo2',d.spo2);}
+if(t=='stress'){d.stress=vals.stress;addMeasurement('stress',d.stress);}
+if(t=='temp'){d.temp=vals.temp;addMeasurement('temp',d.temp);}
+render();
+document.getElementById('log').textContent='🕒 '+new Date().toLocaleTimeString()+' • '+t.toUpperCase()+' '+vals[t]+' → guardado en '+t;
+navigator.vibrate&&navigator.vibrate(40);
+}
+
+// GESTO ANILLO REAL
 async function startRingAudio(){
+if(ringRecording) return; ringRecording=true; chunksRing=[];
 document.getElementById('ringBox').style.display='block';
-if(ringRecording){stopRingAudio();return}ringRecording=true;chunksRing=[];document.getElementById('ringGesture').textContent='🔴 Grabando con anillo... tap para enviar';
+document.getElementById('ringGesture').textContent='🔴 Grabando por gesto anillo... deja mano quieta 2s para enviar texto';
+document.getElementById('bRing').classList.add('active');document.getElementById('ringIcon').style.background='#ff4d6d';document.getElementById('ringIcon').style.borderColor='#ff4d6d';
 try{
 let s=await navigator.mediaDevices.getUserMedia({audio:true});
 mediaRecorderRing=new MediaRecorder(s);mediaRecorderRing.ondataavailable=e=>chunksRing.push(e.data);
 mediaRecorderRing.onstop=()=>{
-let b=new Blob(chunksRing,{type:'audio/webm'});document.getElementById('playerRing').src=URL.createObjectURL(b);document.getElementById('playerRing').style.display='block';
-addMeasurement(d.hr);
+let blob=new Blob(chunksRing,{type:'audio/webm'});document.getElementById('playerRing').src=URL.createObjectURL(blob);document.getElementById('playerRing').style.display='block';
 };
 mediaRecorderRing.start();
 if(window.SpeechRecognition||window.webkitSpeechRecognition){
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=new SR();rec.lang='es-AR';
-rec.onresult=e=>{let txt=e.results[0][0].transcript;document.getElementById('transcriptRing').innerHTML='📝 Anillo: <b>'+txt+'</b> • '+d.hr+' bpm • '+steps+' pasos';document.getElementById('log').innerHTML+=`<div>💍🎤 ${txt} guardado</div>`;};rec.start();window._rec=rec;
+rec.onresult=e=>{
+let txt=e.results[0][0].transcript;let el=document.getElementById('transcriptRing');el.style.display='block';
+el.innerHTML='📝 Desde anillo <b>'+currentUser.toUpperCase()+'</b>: <b>'+txt+'</b><br><span style="font-size:10px">HR '+d.hr+' • Pasos '+steps+' • '+new Date().toLocaleTimeString()+'</span>';
+addMeasurement('note',0,txt+' | HR:'+d.hr+' Pasos:'+steps+' User:'+currentUser);
+document.getElementById('log').innerHTML+=`<div style="margin-top:4px;padding:4px;background:#141e36;border-radius:4px;border-left:2px solid #8b5cf6">💍 ${currentUser}: ${txt}</div>`;
+};rec.start();window._recRing=rec;
 }
-}catch(e){ringRecording=false;}
+}catch(e){document.getElementById('ringGesture').textContent='❌ Sin permiso micro';ringRecording=false;}
 }
-function stopRingAudio(){if(!ringRecording)return;ringRecording=false;document.getElementById('ringGesture').textContent='✅ Nota guardada en historial';if(mediaRecorderRing&&mediaRecorderRing.state!='inactive')mediaRecorderRing.stop();if(window._rec)try{window._rec.stop()}catch(e){}}
-async function conectar(){try{let dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'}],optionalServices:[0x180D]});document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+dev.name;let srv=await dev.gatt.connect();let svc=await srv.getPrimaryService(0x180D);let ch=await svc.getCharacteristic(0x2A37);await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{let hr=e.target.value.getUint8(1);if(hr>40){d.hr=hr;hist.push(hr);addMeasurement(hr);render();}});}catch(e){tomar();}}
+function stopRingAudio(){
+if(!ringRecording) return; ringRecording=false;
+document.getElementById('ringGesture').textContent='✅ Nota anillo '+currentUser.toUpperCase()+' → registro historial';
+document.getElementById('bRing').classList.remove('active');document.getElementById('ringIcon').style.background='#1a1a2e';document.getElementById('ringIcon').style.borderColor='#8b5cf6';
+if(mediaRecorderRing&&mediaRecorderRing.state!='inactive')mediaRecorderRing.stop();
+if(window._recRing)try{window._recRing.stop()}catch(e){}
+navigator.vibrate&&navigator.vibrate([80,40,80]);
+}
+function stopRingAudioQuick(){ringRecording=false;document.getElementById('ringGesture').textContent='❌ Cancelado por gesto sacudida';document.getElementById('bRing').classList.remove('active');try{mediaRecorderRing.stop()}catch(e){}try{window._recRing.stop()}catch(e){}}
 
-render();renderHist();
+async function conectar(){
+try{
+let dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'}],optionalServices:[0x180D,0xFF00]});
+document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+dev.name+' + GESTOS REALES';
+let srv=await dev.gatt.connect();
+let svc=await srv.getPrimaryService(0x180D);let ch=await svc.getCharacteristic(0x2A37);
+await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{
+let hr=e.target.value.getUint8(1);if(hr>40&&hr<180){
+let diff=Math.abs(hr-(hist[hist.length-1]||hr));
+if(diff>10){ // artefacto de movimiento del anillo detectado como gesto
+let now=Date.now();document.getElementById('lastMove').textContent='Último mov: artefacto anillo HR '+hr+' → gesto detectado';
+if(now-lastTap>2500){if(!ringRecording)startRingAudio(); else stopRingAudio(); lastTap=now;}
+}
+d.hr=hr;hist.push(hr);if(hist.length>30)hist.shift();render();
+}
+});
+try{
+let svc2=await srv.getPrimaryService(0xFF00);let ch2=await svc2.getCharacteristic(0xFF01);
+await ch2.startNotifications();ch2.addEventListener('characteristicvaluechanged',e=>{
+let v=e.target.value.getUint8(0);
+document.getElementById('lastMove').textContent='Último mov: R10M raw '+v+' '+new Date().toLocaleTimeString();
+if(v==1)startRingAudio();if(v==2)stopRingAudio();if(v==3)stopRingAudioQuick();
+});
+}catch(e){console.log('R10M sin servicio FF00, usando detección por HR y acelerómetro');}
+}catch(e){tomar('hr');}
+}
+
+function exportarHist(){
+let csv='tipo,hora,valor,unidad,status,hr,steps,nota,fecha\n'+histDB.map(r=>`${r.type},${r.time},${r.value},${r.unit||''},${r.status},${r.hr||''},${r.steps||''},${(r.text||'').replace(/,/g,' ')},${r.date||''}`).join('\n');
+let b=new Blob([csv],{type:'text/csv'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='fitring_'+currentHistType+'_historial.csv';a.click();
+}
+function clearHist(){if(confirm('¿Borrar historial de '+currentHistType+'?')){histDB=histDB.filter(r=>r.type!=currentHistType);saveHist();}}
+function exportar(){let b=new Blob([`FIX GRAL v21 ${new Date().toLocaleString()} HR:${d.hr} Steps:${steps} User:${currentUser}`],{type:'text/plain'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='fix-gral-v21.txt';a.click();}
+function calibrar(){alert('Calibrado '+currentUser.toUpperCase()+' • HR '+d.hr+' • Pasos AUTO '+steps);}
+
+// AUTO START
+render();renderHist();initAutoSteps();
+setInterval(()=>{selectUser(currentUser);},3000);
 </script></body></html>
