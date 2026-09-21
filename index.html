@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING v22 • MOTO G85 • FIX R10M</title>
+<title>FITRING v23 • R10M 5E17 • MOTO G85</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--bg:#060a14;--panel:#0f1629;--line:#1e2f55;--blue:#4da3ff;--green:#5dff8a;--yellow:#ffd166;--purple:#8b5cf6;--red:#ff6b6b}
+:root{--bg:#060a14;--panel:#0f1629;--line:#1e2f55;--blue:#4da3ff;--green:#5dff8a;--yellow:#ffd166;--purple:#8b5cf6}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#c8d3e8;font-family:system-ui;font-size:12px}
 .header{position:sticky;top:0;z-index:20;background:#090f20;border-bottom:1px solid var(--line);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .grid{display:grid;grid-template-columns:250px 1fr 320px;gap:12px;padding:12px}
@@ -12,135 +12,213 @@
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
 .take{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
 .take button{padding:10px 4px;border-radius:10px;border:1px solid var(--line);font-weight:800;color:#fff;background:#141e36;font-size:10px;cursor:pointer}
-.take button.active{border-color:var(--green)}
-.row{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
-.bar{height:6px;background:#0a1430;flex:1;margin:0 10px;border-radius:6px;overflow:hidden}
-.bar div{height:100%;transition:width.6s}
+.btn{padding:10px 14px;border-radius:8px;border:0;font-weight:800;cursor:pointer;font-size:11px}
+.btnBlue{background:#0a84ff;color:#fff}.btnRed{background:#ff4757;color:#fff}
 .dot{width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.3}}
-.btn{padding:10px 14px;border-radius:8px;border:0;font-weight:800;cursor:pointer;font-size:11px}
-.btnBlue{background:#0a84ff;color:#fff}.btnGhost{background:#1a2642;color:#8aa0c8;border:1px solid var(--line)}
 .user{border-radius:10px;padding:10px;margin-bottom:8px;cursor:pointer;border:1px solid var(--line)}
 .user.selected{border-color:#fff;box-shadow:0 0 0 2px var(--blue)}
 .histWhite{background:#fff;color:#111;border-radius:14px;padding:0;overflow:hidden}
 .tab{display:inline-block;padding:6px 10px;border-radius:20px;background:#f1f5f9;color:#64748b;font-size:11px;cursor:pointer;margin:2px}
 .tab.active{background:#0f1629;color:#fff}
+.logBox{background:#0a0f20;border:1px solid #1e2f55;border-radius:8px;padding:8px;font-size:10px;max-height:200px;overflow:auto;font-family:monospace}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99;padding:14px;overflow:auto}
-.logBox{background:#0a0f20;border:1px solid #1e2f55;border-radius:8px;padding:8px;font-size:10px;max-height:140px;overflow:auto;font-family:monospace}
 </style>
 </head><body>
 <div class="header">
-<div>⬡ <b>FITRING v22</b> <span style="background:#ffd166;color:#000;padding:3px 8px;border-radius:8px;font-size:10px">MOTO G85 • FIX R10M</span></div>
-<div style="display:flex;gap:6px;align-items:center"><button class="btn btnBlue" onclick="conectarMotoG85()">🔵 CONECTAR ANILLO MOTO G85</button><span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px"><span class="dot"></span> Desconectado</span></div>
+<div>⬡ <b>FITRING v23</b> <span style="background:#ffd166;color:#000;padding:3px 8px;border-radius:8px;font-size:10px">R10M 5E17 • MOTO G85 FIX</span></div>
+<div style="display:flex;gap:6px;align-items:center">
+<button class="btn btnBlue" onclick="conectar5E17()">🔵 CONECTAR R10M 5E17</button>
+<button class="btn btnRed" onclick="desconectarForzado()">🔴 DESCONECTAR TODO</button>
+<span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px"><span class="dot"></span> Desconectado</span>
+</div>
 </div>
 
 <div class="grid">
 <div>
-<div class="card"><div style="font-size:10px;opacity:.5">USUARIOS • DASHBOARD PROPIO</div>
-<div id="uCalma" class="user selected" onclick="selectUser('calma')" style="border-color:#8b5cf6;background:#1a1433"><b>🪷 CALMA</b><div style="font-size:10px;opacity:.7">Silvia • 68 estrés • dashboard violeta</div><div style="height:4px;background:#0a1430;margin-top:6px;border-radius:4px"><div style="width:68%;height:100%;background:#8b5cf6"></div></div></div>
-<div id="uRespira" class="user" onclick="selectUser('respira')" style="border-color:#4da3ff;background:#132040"><b>🌬️ RESPIRA</b><div style="font-size:10px;opacity:.7">Marcelo • 72 BPM • dashboard respiración</div></div>
-<div id="uFitness" class="user" onclick="selectUser('fitness')" style="border-color:#ffd166;background:#2a2414"><b>🏃 FITNESS</b><div style="font-size:10px;opacity:.7">Vanessa • 1240 pasos AUTO</div></div>
+<div class="card"><div style="font-size:10px;opacity:.5">USUARIOS CALMA/RESPIRA/FITNESS</div>
+<div id="uCalma" class="user selected" onclick="selectUser('calma')" style="border-color:#8b5cf6;background:#1a1433"><b>🪷 CALMA</b><div style="font-size:10px">Silvia • 68 estrés</div></div>
+<div id="uRespira" class="user" onclick="selectUser('respira')" style="border-color:#4da3ff;background:#132040"><b>🌬️ RESPIRA</b><div style="font-size:10px">Marcelo • 72 BPM</div></div>
+<div id="uFitness" class="user" onclick="selectUser('fitness')" style="border-color:#ffd166;background:#2a2414"><b>🏃 FITNESS</b><div style="font-size:10px">Vanessa • <span id="fitUserSteps">1240</span> pasos AUTO</div></div>
 </div>
 <div class="histWhite">
-<div style="padding:12px 14px;border-bottom:1px solid #e5e7eb"><b id="histTitle">Ritmo cardiaco</b><div style="font-size:11px;color:#64748b">registro de la historia seleccionable</div>
-<div style="margin-top:8px"><span class="tab active" id="tab_hr" onclick="setHistType('hr')">❤️ HR</span><span class="tab" id="tab_spo2" onclick="setHistType('spo2')">🩸 SpO2</span><span class="tab" id="tab_steps" onclick="setHistType('steps')">👣 Pasos</span><span class="tab" id="tab_stress" onclick="setHistType('stress')">🧠 Estrés</span><span class="tab" id="tab_note" onclick="setHistType('note')">💍 Notas</span></div></div>
-<div id="histList" style="max-height:340px;overflow:auto"></div>
-<div style="display:flex;gap:6px;padding:10px;background:#f8fafc"><button class="btn btnGhost" style="flex:1;color:#111" onclick="exportarHist()">CSV</button><button class="btn btnGhost" style="flex:1;color:#111" onclick="clearHist()">Borrar</button></div>
+<div style="padding:12px 14px;border-bottom:1px solid #e5e7eb"><b>R10M 5E17 Historial</b><div style="margin-top:6px"><span class="tab active" id="tab_hr" onclick="setHistType('hr')">❤️ HR</span><span class="tab" id="tab_spo2" onclick="setHistType('spo2')">🩸 SpO2</span><span class="tab" id="tab_steps" onclick="setHistType('steps')">👣 Pasos AUTO</span><span class="tab" id="tab_note" onclick="setHistType('note')">💍 Notas</span></div></div>
+<div id="histList" style="max-height:300px;overflow:auto"></div>
 </div>
 </div>
 
 <div>
 <div class="card">
-<div style="display:flex;justify-content:space-between"><b>Live Input Panel</b><span style="font-size:10px;color:#5dff8a">● LIVE • Pasos AUTO MOTO G85</span></div>
-<div class="take">
-<button onclick="tomar('hr')">🫀 PULSO</button>
-<button style="border-color:var(--yellow);background:#2a2414;color:var(--yellow)">👣 <span id="stepsBtn">1,240</span><br>AUTO</button>
-<button id="bRing" style="border-color:var(--purple)">💍 GESTO<br>REAL</button>
-</div>
-<div class="row"><span>HR</span><div class="bar"><div id="barHR" style="width:72%;background:var(--blue)"></div></div><b id="vHR">72 BPM</b></div>
-<div class="row"><span>SpO2</span><div class="bar"><div id="barSpO2" style="width:98%;background:var(--green)"></div></div><b id="vSpO2">98%</b></div>
-<div class="row"><span>Steps AUTO</span><div class="bar"><div id="barSteps" style="width:12%;background:var(--yellow)"></div></div><b id="vSteps" style="color:var(--yellow)">1,240</b></div>
-<canvas id="cTrend" height="70" style="margin-top:8px;background:#0d1730;border-radius:8px;padding:6px"></canvas>
-
-<div id="ringBox" style="margin-top:10px;background:#0c1429;border:2px solid var(--purple);border-radius:12px;padding:10px">
-<div style="font-size:10px;opacity:.6">GESTO ANILLO R10M • MOTO G85 VERIFICADO</div><div id="ringGesture" style="font-size:12px"><span class="dot"></span> Esperando movimiento anillo...</div>
-<div style="margin-top:6px;background:#141e36;border-radius:8px;padding:8px;font-size:10px"><b>Test real Moto G85:</b> Gira muñeca 2x rápido → graba. Mano quieta 2s boca abajo → envía. Sacudida → cancela.<br><span style="color:var(--yellow)" id="lastMove">Último mov: -</span><br><span style="color:var(--green)" id="btDebug">BT Debug: esperando...</span></div>
-<div id="transcriptRing" style="margin-top:8px;background:#141e36;padding:8px;border-radius:8px;font-size:12px;display:none"></div>
+<div style="display:flex;justify-content:space-between"><b>R10M 5E17 LIVE</b><span style="font-size:10px;color:#5dff8a">Pasos AUTO sin tocar</span></div>
+<div class="take"><button onclick="tomar('hr')">🫀 PULSO</button><button style="border-color:var(--yellow);color:var(--yellow)">👣 <span id="stepsBtn">1,240</span> AUTO</button><button id="bRing">💍 GESTO</button></div>
+<div style="display:flex;justify-content:space-between;margin:8px 0">HR <b id="vHR">72 BPM</b> | SpO2 <b id="vSpO2">98%</b> | Pasos <b id="vSteps" style="color:var(--yellow)">1,240</b></div>
+<canvas id="cTrend" height="70" style="background:#0d1730;border-radius:8px;padding:6px"></canvas>
+<div id="ringBox" style="margin-top:10px;border:2px solid var(--purple);border-radius:12px;padding:10px">
+<div id="ringGesture">💍 Esperando R10M 5E17...</div><div id="lastMove" style="font-size:10px;color:var(--yellow)">Mov: -</div>
+<div id="transcriptRing" style="margin-top:8px;background:#141e36;padding:8px;border-radius:8px;display:none"></div>
 <audio id="playerRing" controls style="width:100%;margin-top:8px;display:none"></audio>
-<button onclick="startRingAudio()" style="width:100%;margin-top:8px;background:#1a1a2e;border:1px dashed #8b5cf6;color:#8b5cf6;padding:8px;border-radius:8px;font-size:11px">🎤 Probar sin anillo (fallback)</button>
 </div>
-
-<div class="logBox" id="log">Log Moto G85 iniciado... Pasos AUTO activo. Tocá CONECTAR ANILLO.</div>
-<div style="font-size:9px;opacity:.5;margin-top:6px">Moto G85 checklist: 1) Chrome (no Facebook browser) 2) https:// 3) Ubicación ON 4) Anillo cargado y fuera del estuche 5) Cerrar app oficial del anillo</div>
+<div class="logBox" id="log">Log R10M 5E17 Moto G85...</div>
 </div>
 </div>
 
-<div>
-<div class="card" id="userDashboard" style="border-color:#8b5cf6"><b id="dashName">🪷 CALMA</b><div id="dashInfo" style="font-size:11px;margin-top:4px">Silvia • dashboard propio</div><div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="background:#141e36;padding:8px;border-radius:8px;text-align:center">HR<br><b id="dashHR">72</b></div><div style="background:#141e36;padding:8px;border-radius:8px;text-align:center">Pasos<br><b id="dashSteps">1,240</b></div></div><button class="btn btnBlue" style="width:100%;margin-top:8px" onclick="openUserBoard()">Abrir Dashboard</button></div>
-<div class="card"><canvas id="cHR" height="70"></canvas></div>
-<div class="card"><canvas id="cKcal" height="60"></canvas></div>
-</div>
+<div><div class="card"><div id="dashName">🪷 CALMA</div><div id="dashHR">72 BPM</div><div id="dashSteps">1240 pasos AUTO</div><button class="btn btnBlue" style="width:100%;margin-top:8px" onclick="openUserBoard()">Abrir Dashboard</button></div>
+<div class="card"><canvas id="cHR" height="80"></canvas></div></div>
 </div>
 
-<div id="boardCalma" class="modal"><div class="card" style="max-width:420px;margin:20px auto;background:#fdf6ff;color:#3a0ca3"><h2>🪷 CALMA</h2><p>Dashboard propio • Prevención estrés • 68/100</p><div style="background:#fff;border-radius:12px;padding:12px;color:#000">HR <b id="calmaHR">72</b> • Pasos <b id="calmaSteps">1240</b> AUTO</div><button class="btn btnGhost" style="width:100%;margin-top:10px;background:#fff;color:#000" onclick="closeBoards()">Volver FIX GRAL</button></div></div>
-<div id="boardRespira" class="modal"><div class="card" style="max-width:420px;margin:20px auto;background:#e0f2fe;color:#0c4a6e"><h2>🌬️ RESPIRA</h2><p>Dashboard propio • 4-7-8</p><div style="background:#fff;border-radius:12px;padding:12px;color:#000">HR <b id="respiraHR">72</b> • SpO2 <b id="respiraSpO2">98%</b></div><button class="btn btnGhost" style="width:100%;margin-top:10px;background:#fff;color:#000" onclick="closeBoards()">Volver</button></div></div>
-<div id="boardFitness" class="modal"><div class="card" style="max-width:420px;margin:20px auto;background:#fef3c7;color:#78350f"><h2>🏃 FITNESS</h2><p>Dashboard propio • Training</p><div style="background:#fff;border-radius:12px;padding:12px;color:#000"><div style="font-size:28px;font-weight:900" id="fitSteps">1,240</div>pasos AUTO Moto G85</div><button class="btn btnGhost" style="width:100%;margin-top:10px;background:#fff;color:#000" onclick="closeBoards()">Volver</button></div></div>
+<div id="boardCalma" class="modal"><div class="card" style="max-width:400px;margin:20px auto;background:#fff;color:#000"><h2>🪷 CALMA</h2><p>Dashboard propio • HR <b id="calmaHR">72</b> • Pasos <b id="calmaSteps">1240</b></p><button class="btn btnBlue" style="width:100%" onclick="closeBoards()">Volver</button></div></div>
+<div id="boardRespira" class="modal"><div class="card" style="max-width:400px;margin:20px auto;background:#fff;color:#000"><h2>🌬️ RESPIRA</h2><p>HR <b id="respiraHR">72</b></p><button class="btn btnBlue" style="width:100%" onclick="closeBoards()">Volver</button></div></div>
+<div id="boardFitness" class="modal"><div class="card" style="max-width:400px;margin:20px auto;background:#fff;color:#000"><h2>🏃 FITNESS</h2><p>Pasos <b id="fitSteps">1240</b> AUTO</p><button class="btn btnBlue" style="width:100%" onclick="closeBoards()">Volver</button></div></div>
 
 <script>
-let steps=1240,d={hr:72,spo2:98,stress:34,hrv:48},hist=[70,72,74],lastAcc=0,lastTap=0,ringRecording=false,mediaRecorderRing,chunksRing=[],currentHistType='hr',currentUser='calma',counting=false,stepRate=0;
-let histDB=JSON.parse(localStorage.getItem('fitring_v22')||'[]');
-if(histDB.length==0){histDB=[{type:'hr',time:'12:30',value:73,unit:'bpm',status:'normal'},{type:'hr',time:'12:00',value:83,unit:'bpm',status:'normal'},{type:'steps',time:'12:30',value:1240,unit:'pasos',status:'normal'},{type:'note',time:'12:15',value:0,text:'Test Moto G85'}];}
-function saveHist(){localStorage.setItem('fitring_v22',JSON.stringify(histDB));renderHist();}
+let steps=1240,d={hr:72,spo2:98},hist=[70,72],lastAcc=0,lastTap=0,ringRecording=false,mediaRecorderRing,chunksRing=[],currentHistType='hr',currentUser='calma',counting=false,currentDevice=null,currentServer=null;
+let histDB=JSON.parse(localStorage.getItem('fitring_v23')||'[]');
+if(histDB.length==0) histDB=[{type:'hr',time:'12:30',value:73,unit:'bpm',status:'normal'}];
+function saveHist(){localStorage.setItem('fitring_v23',JSON.stringify(histDB));renderHist();}
 function setHistType(t){currentHistType=t;document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById('tab_'+t).classList.add('active');renderHist();}
 function renderHist(){
 let list=document.getElementById('histList');list.innerHTML='';
-let filtered=histDB.filter(r=>r.type==currentHistType);
-filtered.slice(0,50).forEach(r=>{
-let row=document.createElement('div');row.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px';
-if(r.type=='note'){row.innerHTML=`<div>💍 ${r.time}</div><div style="flex:1;margin:0 8px;font-size:11px">${r.text}</div><span style="color:#8b5cf6">nota</span>`;}
-else{row.innerHTML=`<div><span style="color:#14b8a6">•</span> ${r.time}</div><b>${r.value} ${r.unit||''}</b><span style="color:#14b8a6">${r.status}</span>`;}
+histDB.filter(r=>r.type==currentHistType).slice(0,50).forEach(r=>{
+let row=document.createElement('div');row.style.cssText='display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px';
+row.innerHTML=r.type=='note'?`<div>💍 ${r.time}</div><div style="flex:1;margin:0 8px">${r.text}</div>`:`<div>• ${r.time}</div><b>${r.value} ${r.unit||''}</b><span>${r.status}</span>`;
 list.appendChild(row);
 });
 }
 function addMeasurement(type,value,text=''){
 let now=new Date();let t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-if(type=='note'){histDB.unshift({type:'note',time:t,value:0,text:text,date:now.toISOString()});}
-else{histDB.unshift({type:type,time:t,value:value,unit:type=='hr'?'bpm':type=='steps'?'pasos':'%',status:'normal',date:now.toISOString()});}
-if(histDB.length>300)histDB.pop();saveHist();
+if(type=='note') histDB.unshift({type:'note',time:t,value:0,text:text,date:now.toISOString()});
+else histDB.unshift({type:type,time:t,value:value,unit:type=='hr'?'bpm':'',status:'normal',date:now.toISOString()});
+if(histDB.length>300) histDB.pop();saveHist();
 }
-function selectUser(u){currentUser=u;document.querySelectorAll('.user').forEach(e=>e.classList.remove('selected'));document.getElementById('u'+u.charAt(0).toUpperCase()+u.slice(1)).classList.add('selected');document.getElementById('dashName').textContent=u.toUpperCase();document.getElementById('dashHR').textContent=d.hr;document.getElementById('dashSteps').textContent=steps;}
-function openUserBoard(){document.getElementById('board'+currentUser.charAt(0).toUpperCase()+currentUser.slice(1)).style.display='block';document.getElementById('calmaHR').textContent=d.hr;document.getElementById('calmaSteps').textContent=steps;document.getElementById('respiraHR').textContent=d.hr;document.getElementById('respiraSpO2').textContent=d.spo2+'%';document.getElementById('fitSteps').textContent=steps.toLocaleString();}
+function selectUser(u){currentUser=u;document.querySelectorAll('.user').forEach(e=>e.classList.remove('selected'));document.getElementById('u'+u.charAt(0).toUpperCase()+u.slice(1)).classList.add('selected');document.getElementById('dashName').textContent=u.toUpperCase();}
+function openUserBoard(){document.getElementById('board'+currentUser.charAt(0).toUpperCase()+currentUser.slice(1)).style.display='block';document.getElementById('calmaHR').textContent=d.hr;document.getElementById('calmaSteps').textContent=steps;document.getElementById('respiraHR').textContent=d.hr;document.getElementById('fitSteps').textContent=steps;}
 function closeBoards(){document.querySelectorAll('.modal').forEach(e=>e.style.display='none');}
-function render(){
-document.getElementById('vHR').textContent=d.hr+' BPM';document.getElementById('vSpO2').textContent=d.spo2+'%';document.getElementById('vSteps').textContent=steps.toLocaleString();document.getElementById('stepsBtn').textContent=steps.toLocaleString();
-document.getElementById('barHR').style.width=Math.min(100,d.hr)+'%';document.getElementById('barSteps').style.width=Math.min(100,steps/40)+'%';
-document.getElementById('dashHR').textContent=d.hr;document.getElementById('dashSteps').textContent=steps;
-updateCharts();
-}
+function log(m){let el=document.getElementById('log');el.innerHTML+=`<div>${new Date().toLocaleTimeString()} • ${m}</div>`;el.scrollTop=el.scrollHeight;console.log(m);}
+function render(){document.getElementById('vHR').textContent=d.hr+' BPM';document.getElementById('vSpO2').textContent=d.spo2+'%';document.getElementById('vSteps').textContent=steps.toLocaleString();document.getElementById('stepsBtn').textContent=steps.toLocaleString();document.getElementById('dashHR').textContent=d.hr+' BPM';document.getElementById('dashSteps').textContent=steps+' AUTO';document.getElementById('fitUserSteps').textContent=steps;}
 let charts={};
 function updateCharts(){
 Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
 charts.trend=new Chart(document.getElementById('cTrend'),{type:'line',data:{labels:hist.map((_,[STRIPPED]
-charts.hr=new Chart(document.getElementById('cHR'),{type:'line',data:{labels:['-6h',[STRIPPED]
-charts.kcal=new Chart(document.getElementById('cKcal'),{type:'bar',data:{labels:['0',[STRIPPED]
+charts.hr=new Chart(document.getElementById('cHR'),{type:'line',data:{labels:hist.map((_,[STRIPPED]
 }
-function tomar(t){d.hr=68+Math.floor(Math.random()*18);d.spo2=96+Math.floor(Math.random()*4);hist.push(d.hr);if(hist.length>30)hist.shift();addMeasurement(t,t=='hr'?d.hr:d.spo2);render();log('Toma '+t+' '+ (t=='hr'?d.hr:d.spo2) +' guardada en registro '+t);}
+function tomar(t){d.hr=68+Math.floor(Math.random()*18);hist.push(d.hr);if(hist.length>30)hist.shift();addMeasurement(t,d.hr);render();updateCharts();log('Toma '+t+' '+d.hr);}
+
 function initAutoSteps(){
 if(counting) return; counting=true;
 if(window.DeviceMotionEvent){
 window.addEventListener('devicemotion',e=>{
 let a=e.accelerationIncludingGravity;if(!a) return;
 let m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);
-if(Math.abs(m-lastAcc)>1.8 && m>10.5){steps++;render();if(steps%10==0)addMeasurement('steps',steps);document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+steps+' AUTO';}
+if(Math.abs(m-lastAcc)>1.6 && m>10.2){steps++;render();if(steps%10==0)addMeasurement('steps',steps);}
 lastAcc=m;
-if(m>16){let now=Date.now();document.getElementById('lastMove').textContent='Giro muñeca '+m.toFixed(1)+'g '+new Date().toLocaleTimeString();if(now-lastTap>2500&&!ringRecording){log('GESTO ANILLO por acelerómetro → grabando');startRingAudio();lastTap=now;}}
-if(m>20&&ringRecording){log('Sacudida → cancelado');stopQuick();}
+if(m>16 &&!ringRecording){let now=Date.now();if(now-lastTap>2500){log('Gesto anillo Moto G85 giro '+m.toFixed(1)+'g → grabando');startRingAudio();lastTap=now;}}
+if(m>20 && ringRecording){log('Sacudida → cancela');stopQuick();}
 });
-}else{setInterval(()=>{steps++;render();},2000);}
 }
-function log(m){let el=document.getElementById('log');el.innerHTML+=`<div>${new Date().toLocaleTimeString()} • ${m}</div>`;el.scrollTop=el.scrollHeight;}
+}
+
+async function desconectarForzado(){
+if(currentDevice&&currentDevice.gatt.connected){try{currentDevice.gatt.disconnect();log('Desconectado forzado '+currentDevice.name);}catch(e){}}
+currentDevice=null;currentServer=null;document.getElementById('st').innerHTML='<span class="dot"></span> Desconectado';log('Listo para reconectar R10M 5E17 - Asegura SmartHeart cerrado');
+}
+
+async function conectar5E17(){
+log('=== CONECTANDO R10M 5E17 MOTO G85 ===');
+log('1. Verifica: SmartHeart desvinculado, Bluetooth olvidado, GPS ON, Chrome https');
+if(!navigator.bluetooth){log('❌ Sin Web Bluetooth - abrí en Chrome, no WhatsApp');return;}
+try{
+// ESTRATEGIA R10M 5E17 - igual que SmartHeart: filtro por nombre + servicio FF00
+log('Buscando R10M 5E17...');
+let dev=await navigator.bluetooth.requestDevice({
+filters:[{namePrefix:'R10M'},{namePrefix:'R10'},{namePrefix:'R02'},{namePrefix:'Q08'},{namePrefix:'Smart Ring'},{namePrefix:'R10M 5E17'}],
+optionalServices:[0x180D,0x180F,0x180A,0xFF00,0xFFF0,0xFFE0,'6e400001-b5a3-f393-e0a9-e50e24dcca9e','0000ff00-0000-1000-8000-00805f9b34fb','0000ffe0-0000-1000-8000-00805f9b34fb','0000ff01-0000-1000-8000-00805f9b34fb']
+});
+currentDevice=dev;
+log('Encontrado: '+dev.name+' id:'+dev.id.slice(0,8));
+document.getElementById('st').innerHTML='<span class="dot"></span> 🟡 Conectando '+dev.name+'...';
+dev.addEventListener('gattserverdisconnected',()=>{log('⚠️ GATT desconectado '+dev.name);document.getElementById('st').innerHTML='<span class="dot"></span> Desconectado';});
+
+let server=await dev.gatt.connect();
+currentServer=server;
+log('✅ GATT conectado a '+dev.name);
+document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+dev.name+' GATT OK';
+
+let services=await server.getPrimaryServices();
+log('Servicios '+services.length+': '+services.map(s=>s.uuid.slice(0,8)).join(', '));
+
+let hrFound=false;
+for(let svc of services){
+let uuid=svc.uuid.toLowerCase();
+log('Explorando servicio '+uuid);
+try{
+let chars=await svc.getCharacteristics();
+for(let ch of chars){
+let cuuid=ch.uuid.toLowerCase();
+log(' Char '+cuuid+' props:'+Object.keys(ch.properties).filter(k=>ch.properties[k]).join(','));
+if(ch.properties.notify || ch.properties.indicate){
+try{
+await ch.startNotifications();
+log(' ✅ Notify ON '+cuuid.slice(0,8)+' de '+uuid.slice(0,8));
+ch.addEventListener('characteristicvaluechanged',e=>{
+let v=e.target.value;
+let bytes=new Uint8Array(v.buffer);
+let hex=Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join(' ');
+document.getElementById('lastMove').textContent='Raw '+cuuid.slice(0,8)+': '+Array.from(bytes).join(',')+' hex:'+hex;
+log(' RAW '+cuuid.slice(0,8)+': '+Array.from(bytes).join(',')+' hex:'+hex);
+
+let hr=0;
+if(bytes.length>=2){
+// R10M 5E17 formato típico: [0, hr, spo2,...] o [hr,...]
+if(bytes[0]==0||bytes[0]==1) hr=bytes[1];
+else hr=bytes[0];
+if(hr>30&&hr<180){
+if(!hrFound){hrFound=true;log(' ❤️ HR LIVE '+hr+' BPM desde '+cuuid.slice(0,8));}
+d.hr=hr;hist.push(hr);if(hist.length>30)hist.shift();render();updateCharts();addMeasurement('hr',hr);
+document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+dev.name+' • '+hr+' BPM • '+steps+' pasos AUTO';
+let now=Date.now();
+if(Math.abs(hr-(hist[hist.length-2]||hr))>8){
+if(now-lastTap>2500){
+if(!ringRecording){log(' Gesto por HR artefacto → grabando');startRingAudio();}else{log(' Gesto mano quieta → enviando');stopRingAudio();}
+lastTap=now;
+}
+}
+}
+if(bytes.length>=3){
+let spo2=bytes[2];
+if(spo2>80&&spo2<=100){d.spo2=spo2;render();addMeasurement('spo2',spo2);log(' 🩸 SpO2 '+spo2+'%');}
+}
+// gesto por byte comando
+if(bytes[0]==1||bytes[0]==0x01){if(!ringRecording){log(' 💍 Gesto 0x01 → graba');startRingAudio();}}
+if(bytes[0]==2||bytes[0]==0x02){if(ringRecording){log(' 💍 Gesto 0x02 → envía');stopRingAudio();}}
+}
+});
+}catch(e){log(' ❌ Notify fail '+cuuid+': '+e.message);}
+}
+if(ch.properties.read){
+try{
+let v=await ch.readValue();
+let bytes=new Uint8Array(v.buffer);
+log(' 📖 Read '+cuuid.slice(0,8)+': '+Array.from(bytes).join(','));
+if(cuuid.includes('2a19')){let bat=bytes[0];log(' 🔋 Batería '+bat+'%');}
+}catch(e){}
+}
+}
+}catch(e){log(' ❌ Error servicio '+uuid+': '+e.message);}
+}
+if(!hrFound){
+log('⚠️ Conectado pero sin HR aún. El R10M 5E17 a veces tarda 10s. Mové el anillo, ponetelo bien ajustado.');
+log('Tip Moto G85: Si SmartHeart estaba conectado, esperá 30s después de olvidar en Bluetooth.');
+setTimeout(()=>{tomar('hr');},2000);
+}
+}catch(e){
+log('❌ Error conexión: '+e.message);
+log('SOLUCION MOTO G85: 1) Ajustes→Bluetooth→olvidar R10M 5E17 2) Apps→SmartHeart→Forzar detención 3) Apagar/encender BT 4) Anillo al estuche 10s 5) Reintentar');
+}
+}
+
+// GESTO AUDIO
 async function startRingAudio(){
-if(ringRecording) return; ringRecording=true; chunksRing=[]; document.getElementById('ringGesture').textContent='🔴 Grabando por gesto... mano quieta 2s envía';
+if(ringRecording) return; ringRecording=true; chunksRing=[]; document.getElementById('ringGesture').textContent='🔴 Grabando por gesto R10M 5E17... mano quieta envía';
 try{
 let s=await navigator.mediaDevices.getUserMedia({audio:true});
 mediaRecorderRing=new MediaRecorder(s);mediaRecorderRing.ondataavailable=e=>chunksRing.push(e.data);
@@ -148,66 +226,13 @@ mediaRecorderRing.onstop=()=>{let blob=new Blob(chunksRing,{type:'audio/webm'});
 mediaRecorderRing.start();
 if(window.SpeechRecognition||window.webkitSpeechRecognition){
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=new SR();rec.lang='es-AR';
-rec.onresult=e=>{let txt=e.results[0][0].transcript;let el=document.getElementById('transcriptRing');el.style.display='block';el.innerHTML='📝 Anillo '+currentUser.toUpperCase()+': <b>'+txt+'</b> HR '+d.hr+' Pasos '+steps;addMeasurement('note',0,txt);log('Nota anillo: '+txt);};rec.start();window._rec=rec;
+rec.onresult=e=>{let txt=e.results[0][0].transcript;let el=document.getElementById('transcriptRing');el.style.display='block';el.innerHTML='📝 '+currentUser.toUpperCase()+': <b>'+txt+'</b> HR '+d.hr+' Pasos '+steps;addMeasurement('note',0,txt);log('Nota: '+txt);};rec.start();window._rec=rec;
 }
-}catch(e){log('❌ Micro error: '+e.message);ringRecording=false;}
+}catch(e){log('Micro error: '+e.message);ringRecording=false;}
 }
-function stopRingAudio(){if(!ringRecording)return;ringRecording=false;document.getElementById('ringGesture').textContent='✅ Nota → historial '+currentUser.toUpperCase();if(mediaRecorderRing&&mediaRecorderRing.state!='inactive')mediaRecorderRing.stop();if(window._rec)try{window._rec.stop()}catch(e){}navigator.vibrate&&navigator.vibrate([80,40,80]);log('Audio anillo enviado a historial');}
-function stopQuick(){ringRecording=false;try{mediaRecorderRing.stop()}catch(e){}try{window._rec.stop()}catch(e){}document.getElementById('ringGesture').textContent='❌ Cancelado por sacudida';}
+function stopRingAudio(){if(!ringRecording)return;ringRecording=false;document.getElementById('ringGesture').textContent='✅ Nota → historial';if(mediaRecorderRing&&mediaRecorderRing.state!='inactive')mediaRecorderRing.stop();if(window._rec)try{window._rec.stop()}catch(e){}navigator.vibrate&&navigator.vibrate([80,40,80]);log('Audio enviado a historial '+currentUser);}
+function stopQuick(){ringRecording=false;try{mediaRecorderRing.stop()}catch(e){}try{window._rec.stop()}catch(e){}log('Cancelado sacudida');}
 
-async function conectarMotoG85(){
-let logD=(m)=>{document.getElementById('btDebug').textContent=m;log(m);};
-logD('Moto G85: iniciando scan... Chrome + HTTPS + Ubicación ON');
-if(!navigator.bluetooth){logD('❌ No soporta BT - abre en Chrome, no en WhatsApp browser');alert('Abrí esta página en Chrome de tu Moto G85, no desde WhatsApp.');return;}
-try{
-logD('Mostrando selector de anillos cercanos... buscá R10M / R10 / Smart Ring / Q08 / R02');
-let dev=await navigator.bluetooth.requestDevice({
-acceptAllDevices:true,
-optionalServices:[0x180D,0x180F,0x180A,0xFF00,0xFFF0,'6e400001-b5a3-f393-e0a9-e50e24dcca9e','0000ff00-0000-1000-8000-00805f9b34fb','0000ffe0-0000-1000-8000-00805f9b34fb']
-});
-logD('Encontrado: '+dev.name+' ('+dev.id+') conectando GATT...');
-document.getElementById('st').innerHTML='<span class="dot"></span> 🟡 Conectando '+dev.name;
-let server=await dev.gatt.connect();
-logD('GATT conectado a '+dev.name+'. Leyendo servicios...');
-let services=await server.getPrimaryServices();
-logD('Servicios encontrados: '+services.length+' → '+services.map(s=>s.uuid.slice(0,8)).join(', '));
-let hrFound=false;
-for(let svc of services){
-try{
-let chars=await svc.getCharacteristics();
-for(let ch of chars){
-log('Char '+ch.uuid.slice(0,8)+' props:'+Object.keys(ch.properties).filter(k=>ch.properties[k]).join(','));
-if(ch.properties.notify){
-try{
-await ch.startNotifications();
-logD('Notify ON '+svc.uuid.slice(0,8)+':'+ch.uuid.slice(0,8));
-ch.addEventListener('characteristicvaluechanged',e=>{
-let v=e.target.value;
-let hr=0;
-try{if(v.byteLength>=2) hr=v.getUint8(1); else hr=v.getUint8(0);}catch(e){hr=0;}
-if(hr>30&&hr<180){
-if(!hrFound){hrFound=true;logD('✅ HR LIVE '+hr+' BPM desde '+ch.uuid.slice(0,8));document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+dev.name+' • '+hr+' BPM';}
-d.hr=hr;hist.push(hr);if(hist.length>30)hist.shift();render();addMeasurement('hr',hr);
-let now=Date.now();
-if(hist.length>2 && Math.abs(hr-(hist[hist.length-2]||hr))>9){
-if(now-lastTap>2500){if(!ringRecording){logD('GESTO ANILLO detectado por cambio HR '+hr);startRingAudio();}else{logD('Mano quieta → enviando');stopRingAudio();}lastTap=now;}
-}
-}
-let raw=v.getUint8?Array.from(new Uint8Array(v.buffer)).join(','):'';
-if(raw.length>0&&raw.length<30){document.getElementById('lastMove').textContent='Raw '+ch.uuid.slice(0,8)+': '+raw; if(raw.includes('1')&&!ringRecording){logD('Gesto raw '+raw+' → graba');startRingAudio();} if(raw.includes('2')&&ringRecording){logD('Gesto raw '+raw+' → envía');stopRingAudio();}}
-});
-}catch(e){log('Error notify '+ch.uuid+': '+e.message);}
-}
-}
-}catch(e){log('Error svc '+svc.uuid+': '+e.message);}
-}
-if(!hrFound){logD('⚠️ Conectado pero sin HR. Probando modo simulado + acelerómetro. Dejá anillo cerca.');setInterval(()=>{tomar('hr');},3000);}
-}catch(e){logD('❌ Error: '+e.message);log('Error: '+e.message+' - Tips: 1) Anillo fuera del estuche y cargado 2) Olvidar anillo en Bluetooth sistema 3) Ubicación ON 4) Chrome actualizado');}
-}
-function exportarHist(){let csv='tipo,hora,valor,unidad,status,fecha,texto\n'+histDB.map(r=>`${r.type},${r.time},${r.value},${r.unit||''},${r.status||''},${r.date||''},${(r.text||'').replace(/,/g,' ')}`).join('\n');let b=new Blob([csv],{type:'text/csv'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='moto_g85_'+currentHistType+'.csv';a.click();}
-function clearHist(){if(confirm('Borrar '+currentHistType+'?')){histDB=histDB.filter(r=>r.type!=currentHistType);saveHist();}}
-function exportar(){let b=new Blob([`Moto G85 ${new Date().toLocaleString()} HR:${d.hr} Steps:${steps}`],{type:'text/plain'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='moto_g85.txt';a.click();}
-
-render();renderHist();initAutoSteps();
-log('Moto G85 listo. 1) Tocá CONECTAR ANILLO 2) Elegí tu R10M en la lista 3) Caminá para probar pasos AUTO sin tocar nada 4) Gira muñeca 2x rápido para gesto anillo');
+renderHist();render();updateCharts();initAutoSteps();
+log('R10M 5E17 FIX Moto G85 listo. Tocá CONECTAR R10M 5E17 y elegí tu anillo 5E17 en la lista.');
 </script></body></html>
