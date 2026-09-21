@@ -1,95 +1,148 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAR • Oura Dashboard ES</title>
+<title>MAR • Alertas Seleccionables</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f6f5f2;color:#1a1a1a;font-family:system-ui}
-.header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
-.grid{display:grid;grid-template-columns:1fr 340px;gap:14px;padding:14px;max-width:1200px;margin:0 auto}
+.header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:14px;padding:14px;max-width:1220px;margin:0 auto}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
-.card{background:#fff;border-radius:20px;padding:16px;border:1px solid #ece9e4;box-shadow:0 2px 12px rgba(0,0,0,.04);margin-bottom:14px}
+.card{background:#fff;border-radius:20px;padding:16px;border:1px solid #ece9e4;margin-bottom:14px}
 .score{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;color:#fff}
 .pill{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin:2px}
 .suggest{display:flex;gap:12px;align-items:center;background:#faf8f5;border:1px solid #f0ebe3;border-radius:16px;padding:10px;margin-bottom:10px}
 .suggest img{width:56px;height:56px;border-radius:12px;object-fit:cover}
-.tab{padding:8px 14px;border-radius:20px;background:#f3f1ee;color:#8b8680;font-size:12px;cursor:pointer;border:0;margin:2px}
-.tab.active{background:#1a1a1a;color:#fff}
 .btn{padding:10px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
-.btnDark{background:#1a1a1a;color:#fff}
+.btnDark{background:#1a1a1a;color:#fff}.btnBlue{background:#0a84ff;color:#fff}.btnRed{background:#ff4757;color:#fff}
+.alertBox{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:99;background:#111;color:#fff;padding:14px 20px;border-radius:14px;display:none;max-width:90%;font-size:13px}
+.alertRow{display:flex;align-items:center;justify-content:space-between;background:#faf8f5;border:1px solid #f0ebe3;border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.switch{width:44px;height:26px;background:#e5e7eb;border-radius:20px;position:relative;cursor:pointer;transition:.2s}
+.switch.on{background:#111}
+.switch i{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on i{transform:translateX(18px)}
+.logBox{background:#0f1115;color:#5dff8a;border-radius:10px;padding:8px;font-size:10px;max-height:110px;overflow:auto;font-family:monospace;margin-top:8px}
+input[type=range]{width:90px}
 </style>
 </head><body>
+<div id="alertSound" class="alertBox"></div>
 <div class="header">
-<div><b style="font-size:18px">MAR</b> <span style="background:#111;color:#fff;padding:3px 8px;border-radius:8px;font-size:10px;margin-left:6px">OURA CLON ES • READINESS • SLEEP • ACTIVITY</span></div>
-<div style="display:flex;gap:8px"><button class="btn btnDark" onclick="document.getElementById('file').click()">📷 Subir foto sugerencia</button><span style="background:#e8f5e9;color:#2e7d32;padding:6px 10px;border-radius:10px;font-size:11px">● R10M 5E17 listo para conectar</span></div>
+<div><b style="font-size:18px">MAR</b> <span style="background:#111;color:#fff;padding:3px 8px;border-radius:8px;font-size:10px;margin-left:6px">ALERTAS SELECCIONABLES • 5E17 CHECKER</span></div>
+<div style="display:flex;gap:6px;align-items:center">
+<button class="btn btnBlue" onclick="conectarMAR()">🔵 CONECTAR R10M 5E17</button>
+<button class="btn btnRed" onclick="desconectarMAR()">🔴 DESCONECTAR</button>
+<span id="st" style="background:#e8f5e9;color:#2e7d32;padding:6px 10px;border-radius:10px;font-size:11px">● Listo</span>
 </div>
-<input type="file" id="file" hidden accept="image/*" onchange="addImage(event)">
+</div>
 
 <div class="grid">
 <div>
-<!-- SCORES OURA -->
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6;letter-spacing:.1em">PREPARACIÓN</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#ff6b35">82</div></div><div style="font-size:12px"><b>Buena</b> • Ayer fue 78</div><div style="height:6px;background:#f3f1ee;border-radius:6px;margin-top:8px"><div style="width:82%;height:100%;background:#ff6b35;border-radius:6px"></div></div></div>
-<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6;letter-spacing:.1em">SUEÑO</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#4f46e5">88</div></div><div style="font-size:12px"><b>Óptimo</b> • 7h 42m</div><div style="height:6px;background:#f3f1ee;border-radius:6px;margin-top:8px"><div style="width:88%;height:100%;background:#4f46e5;border-radius:6px"></div></div></div>
-<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6;letter-spacing:.1em">ACTIVIDAD</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#111">76</div></div><div style="font-size:12px"><b>En objetivo</b> • 1.240 pasos</div><div style="height:6px;background:#f3f1ee;border-radius:6px;margin-top:8px"><div style="width:76%;height:100%;background:#111;border-radius:6px"></div></div></div>
+<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6">PREPARACIÓN</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" id="scorePrep" style="background:#ff6b35">82</div></div><div style="font-size:12px"><b id="prepTxt">Buena</b> • <span id="prepSub">HR 72 OK</span></div></div>
+<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6">SUEÑO</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#4f46e5">88</div></div><div style="font-size:12px"><b>Óptimo</b> • 7h 42m</div></div>
+<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6">ACTIVIDAD</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#111" id="scoreAct">76</div></div><div style="font-size:12px"><b>En objetivo</b> • <span id="actSub">1.240 pasos</span></div></div>
 </div>
 
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>Hoy • Métricas Oura en español</b><div><span class="pill" style="background:#e0f2fe;color:#0c4a6e">Ritmo 72</span><span class="pill" style="background:#f3e8ff;color:#6b21a8">VFC 48ms</span><span class="pill" style="background:#dcfce7;color:#166534">SpO2 98%</span><span class="pill" style="background:#fef3c7;color:#92400e">Temp +0.3°</span></div></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>Hoy • MAR LIVE</b><div><span class="pill" style="background:#e0f2fe;color:#0c4a6e" id="pillHR">Ritmo 72</span><span class="pill" style="background:#f3e8ff;color:#6b21a8" id="pillHRV">VFC 48</span><span class="pill" style="background:#dcfce7;color:#166534" id="pillSpO2">SpO2 98%</span><span class="pill" style="background:#fef3c7;color:#92400e" id="pillStress">Estrés 32%</span></div></div>
 <canvas id="cDay" height="80" style="margin-top:12px"></canvas>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;font-size:11px">
-<div style="background:#faf8f5;padding:10px;border-radius:12px">❤️ FC reposo<br><b style="font-size:18px">58</b> bpm</div>
-<div style="background:#faf8f5;padding:10px;border-radius:12px">💓 VFC<br><b style="font-size:18px">48</b> ms</div>
-<div style="background:#faf8f5;padding:10px;border-radius:12px">🌡️ Temp<br><b style="font-size:18px">36.6</b> °C</div>
-<div style="background:#faf8f5;padding:10px;border-radius:12px">😮‍💨 Estrés<br><b style="font-size:18px">32</b> %</div>
+<div style="background:#faf8f5;padding:10px;border-radius:12px">❤️ FC<br><b style="font-size:18px" id="fcVal">72</b> bpm</div>
+<div style="background:#faf8f5;padding:10px;border-radius:12px">💓 VFC<br><b style="font-size:18px" id="vfcVal">48</b> ms</div>
+<div style="background:#faf8f5;padding:10px;border-radius:12px">🌡️ Temp<br><b style="font-size:18px" id="tempVal">36.6</b> °C</div>
+<div style="background:#faf8f5;padding:10px;border-radius:12px">😮‍💨 Estrés<br><b style="font-size:18px" id="stressVal">32</b> %</div>
+</div>
+<div class="logBox" id="log">MAR listo. Configurá alertas a la derecha. Conectá R10M 5E17 arriba.</div>
 </div>
 </div>
 
-<div class="card"><div style="display:flex;justify-content:space-between"><b>🛏️ Sueño anoche • Etapas Oura</b><span style="font-size:11px;opacity:.6">7h 42m • 88</span></div><canvas id="cSleep" height="90" style="margin-top:10px"></canvas><div style="display:flex;gap:6px;margin-top:10px;font-size:11px"><span class="pill" style="background:#1e293b;color:#fff">Profundo 1h 22m</span><span class="pill" style="background:#6366f1;color:#fff">REM 2h 05m</span><span class="pill" style="background:#93c5fd;color:#1e3a8a">Ligero 4h 15m</span><span class="pill" style="background:#f1f5f9">Despierto 18m</span></div></div>
-
-<div class="card"><div style="display:flex;justify-content:space-between"><b>🏃 Actividad • Oura</b><span style="font-size:11px;opacity:.6">Meta 8.000 pasos</span></div><canvas id="cAct" height="80" style="margin-top:10px"></canvas><div style="font-size:11px;margin-top:8px;opacity:.7">Pasos AUTO sin tocar: 1.240 • Calorías: 49 kcal • Distancia: 0,93 km • Inactividad: 2h 10m</div></div>
-</div>
-
-<!-- COL DERECHA SUGERENCIAS CON IMAGENES -->
 <div>
-<div class="card" style="background:#111;color:#fff"><b>✨ Sugerencias MAR para hoy</b><div style="font-size:11px;opacity:.7;margin-top:4px">Basado en Oura Readiness 82 + Sueño 88</div>
-<div style="margin-top:12px" id="suggestList">
-<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=200"><div><div style="font-size:12px;color:#fff"><b>Respiración 4-7-8</b></div><div style="font-size:11px;opacity:.7">Tu VFC 48ms pide calma. 3 minutos ahora.</div><span class="pill" style="background:#8b5cf6;color:#fff">CALMA</span></div></div>
-<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=200"><div><div style="font-size:12px;color:#fff"><b>Estiramiento ligero</b></div><div style="font-size:11px;opacity:.7">Temperatura +0.3° - evita HIIT hoy.</div><span class="pill" style="background:#4da3ff;color:#fff">RESPIRA</span></div></div>
-<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=200"><div><div style="font-size:12px;color:#fff"><b>Caminata 20 min</b></div><div style="font-size:11px;opacity:.7">Actividad 76 - te faltan 800 pasos para meta.</div><span class="pill" style="background:#ffd166;color:#000">FITNESS</span></div></div>
-<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1511295743952-8a90a7d3b1e3?w=200"><div><div style="font-size:12px;color:#fff"><b>Hidratación + magnesio</b></div><div style="font-size:11px;opacity:.7">Sueño profundo bajo ayer.</div><span class="pill" style="background:#5dff8a;color:#000">SUEÑO</span></div></div>
-</div>
+<div class="card" style="background:#111;color:#fff"><b>🔊 Alertas Seleccionables MAR</b><div style="font-size:11px;opacity:.7;margin-top:4px">Tocá para activar/desactivar. Elegí umbral y sonido.</div>
+
+<div style="margin-top:12px">
+<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">❤️ Ritmo elevado</div><div style="font-size:10px;opacity:.6">Umbral <span id="valHR">100</span> bpm • <select id="soundHR" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="beep">Beep doble</option><option value="alarm">Alarma</option><option value="chime">Campana</option></select></div><input type="range" id="thrHR" min="80" max="150" value="100" oninput="document.getElementById('valHR').textContent=this.value"></div><div class="switch on" id="swHR" onclick="toggleSw('HR')"><i></i></div></div>
+
+<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">😮‍💨 Estrés alto</div><div style="font-size:10px;opacity:.6">Umbral <span id="valStress">70</span>% • <select id="soundStress" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="calm">Calma grave</option><option value="beep">Beep</option><option value="vibrate">Solo vibra</option></select></div><input type="range" id="thrStress" min="40" max="90" value="70" oninput="document.getElementById('valStress').textContent=this.value"></div><div class="switch on" id="swStress" onclick="toggleSw('Stress')"><i></i></div></div>
+
+<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">🩸 SpO2 bajo</div><div style="font-size:10px;opacity:.6">Umbral <span id="valSpO2">90</span>% • <select id="soundSpO2" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="alarm">Alarma</option><option value="beep">Beep</option><option value="chime">Campana</option></select></div><input type="range" id="thrSpO2" min="80" max="95" value="90" oninput="document.getElementById('valSpO2').textContent=this.value"></div><div class="switch on" id="swSpO2" onclick="toggleSw('SpO2')"><i></i></div></div>
+
+<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">🌡️ Temperatura alta</div><div style="font-size:10px;opacity:.6">Umbral +<span id="valTemp">1.0</span>°C • <select id="soundTemp" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="chime">Campana</option><option value="beep">Beep</option><option value="calm">Calma</option></select></div><input type="range" id="thrTemp" min="0.5" max="2" step="0.1" value="1.0" oninput="document.getElementById('valTemp').textContent=this.value"></div><div class="switch" id="swTemp" onclick="toggleSw('Temp')"><i></i></div></div>
+
+<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">⚠️ Checker SmartHeart</div><div style="font-size:10px;opacity:.6">Avisa si 5E17 sigue vinculado</div></div><div class="switch on" id="swChecker" onclick="toggleSw('Checker')"><i></i></div></div>
 </div>
 
-<div class="card"><b>📸 Tu inspiración MAR</b><div style="font-size:11px;opacity:.6">Subí fotos de tu rutina y aparecen acá</div><div id="myImages" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px"><div style="height:70px;background:#f3f1ee;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px">➕</div></div></div>
-
-<div class="card"><b>Tendencias 7 días • Oura</b><canvas id="cTrend" height="120" style="margin-top:10px"></canvas>
-<div style="font-size:11px;margin-top:8px"><b>Insights MAR:</b><br>• Tu VFC sube cuando caminas +1.200 pasos<br>• Temp +0.3° correlaciona con estrés 34%<br>• Sueño REM mejora con respiración 4-7-8</div>
+<div style="display:flex;gap:6px;margin-top:12px"><button class="btn" style="flex:1;background:#2a2a2a;color:#fff" onclick="testAlert('HR')">Probar HR</button><button class="btn" style="flex:1;background:#2a2a2a;color:#fff" onclick="testAlert('Stress')">Probar Estrés</button><button class="btn" style="flex:1;background:#2a2a2a;color:#fff" onclick="testAlert('SpO2')">Probar SpO2</button></div>
 </div>
 
-<div class="card" style="background:#f6f5f2;border:1px dashed #d6d3cd"><div style="font-size:11px"><b>🔵 Conectar R10M 5E17 a MAR</b><div style="margin-top:6px;opacity:.7">Cuando desinstales SmartHeart, tocá acá y MAR va a tomar HR, SpO2, Temp y Pasos AUTO del anillo y lo va a mostrar como Oura.</div><button class="btn btnDark" style="width:100%;margin-top:10px" onclick="alert('Primero desinstalá SmartHeart + borrá caché Bluetooth Moto G85, luego conectamos tu 5E17 a MAR')">Conectar R10M 5E17 a MAR</button></div></div>
+<div class="card"><b>✨ Sugerencias MAR</b><div id="suggestList" style="margin-top:10px">
+<div class="suggest"><img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=200"><div><div style="font-size:12px"><b>Respiración 4-7-8</b></div><div style="font-size:11px;opacity:.7">VFC 48ms pide calma</div></div></div>
+<div class="suggest"><img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=200"><div><div style="font-size:12px"><b>Caminata 20 min</b></div><div style="font-size:11px;opacity:.7">Te faltan 800 pasos</div></div></div>
+</div></div>
+
+<div class="card"><b>🔍 Checker R10M 5E17</b><div style="font-size:11px;margin-top:6px" id="checker">Tocá CONECTAR R10M 5E17. MAR detecta si sigue vinculado a SmartHeart y te avisa con sonido.</div><div id="checkerSteps" style="font-size:11px;background:#fef3c7;padding:8px;border-radius:8px;margin-top:8px;display:none"></div></div>
 </div>
 </div>
 
 <script>
-let customImages=[];
-function addImage(e){
-let file=e.target.files[0];if(!file) return;
-let url=URL.createObjectURL(file);
-customImages.unshift(url);
-let div=document.getElementById('myImages');
-div.innerHTML='';
-customImages.slice(0,9).forEach(u=>{
-let im=document.createElement('img');im.src=u;im.style.cssText='width:100%;height:70px;object-fit:cover;border-radius:12px';
-div.appendChild(im);
-});
-let list=document.getElementById('suggestList');
-let sug=document.createElement('div');sug.className='suggest';sug.style.background='#1e1e1e';sug.style.borderColor='#2a2a2a';
-sug.innerHTML=`<img src="${url}"><div><div style="font-size:12px;color:#fff"><b>Tu foto • Rutina MAR</b></div><div style="font-size:11px;opacity:.7">Agregada a tus sugerencias personalizadas.</div><span class="pill" style="background:#fff;color:#000">TUYO</span></div>`;
-list.prepend(sug);
+let d={hr:72,spo2:98,stress:32,hrv:48,temp:36.6},steps=1240,currentDevice=null,audioCtx=null;
+let enabled={HR:true,Stress:true,SpO2:true,Temp:false,Checker:true};
+function log(m){let el=document.getElementById('log');el.innerHTML+=`<div>${new Date().toLocaleTimeString()} • ${m}</div>`;el.scrollTop=el.scrollHeight;}
+function initAudio(){if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
+function toggleSw(k){enabled[k]=!enabled[k];let el=document.getElementById('sw'+k);el.classList.toggle('on',enabled[k]);log('Alerta '+k+' '+(enabled[k]?'ACTIVADA':'DESACTIVADA'));if(enabled[k]){initAudio();playTone(600,0.15);}}
+function playTone(freq,dur,type='sine',vol=0.35){initAudio();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;o.type=type;o.connect(g);g.connect(audioCtx.destination);g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+dur);o.start();o.stop(audioCtx.currentTime+dur);}
+function playSound(type){
+initAudio();
+if(type=='beep'){playTone(880,0.2);setTimeout(()=>playTone(880,0.2),250);}
+else if(type=='alarm'){playTone(880,0.4,'sine',0.5);setTimeout(()=>playTone(1760,0.4,'sine',0.5),300);setTimeout(()=>playTone(880,0.4),600);}
+else if(type=='chime'){playTone(660,0.3,'triangle');setTimeout(()=>playTone(880,0.6,'triangle'),200);}
+else if(type=='calm'){playTone(440,0.5,'triangle',0.3);setTimeout(()=>playTone(330,0.8,'triangle',0.3),400);}
+else if(type=='vibrate'){navigator.vibrate&&navigator.vibrate([100,50,100]);}
 }
-new Chart(document.getElementById('cDay'),{type:'line',data:{labels:['6h','9h','12h','15h','18h','21h','ahora'],datasets:[{label:'FC',data:[62,68,72,75,70,68,72],borderColor:'#ff6b35',tension:.4},{label:'VFC',data:[52,50,48,45,47,48,48],borderColor:'#8b5cf6',tension:.4}]},options:{plugins:{legend:{display:false}},scales:{y:{display:false}}}}});
-new Chart(document.getElementById('cSleep'),{type:'bar',data:{labels:['22','23','0','1','2','3','4','5','6'],datasets:[{label:'Profundo',data:[20,40,30,0,25,30,0,10,0],backgroundColor:'#1e293b'},{label:'REM',data:[0,10,20,35,20,15,30,25,10],backgroundColor:'#6366f1'},{label:'Ligero',data:[30,20,40,35,30,35,40,30,20],backgroundColor:'#93c5fd'}]},options:{plugins:{legend:{display:false}},scales:{x:{stacked:true},y:{stacked:true,display:false}}}}});
-new Chart(document.getElementById('cAct'),{type:'bar',data:{labels:['L','M','X','J','V','S','D'],datasets:[{label:'Pasos',data:[4200,5800,1240,0,0,0,0],backgroundColor:'#111'}]},options:{plugins:{legend:{display:false}},scales:{y:{display:false}}}}});
-new Chart(document.getElementById('cTrend'),{type:'line',data:{labels:['L','M','X','J','V','S','D'],datasets:[{label:'Readiness',data:[78,80,75,82,0,0,0],borderColor:'#ff6b35',tension:.4},{label:'Sueño',data:[82,85,80,88,0,0,0],borderColor:'#4f46e5',tension:.4}]},options:{plugins:{legend:{display:false}}}}});
+function showAlert(html,bg='#111'){let box=document.getElementById('alertSound');box.style.display='block';box.style.background=bg;box.style.color=bg=='#ffd166'?'#000':'#fff';box.innerHTML=html+` <button onclick="this.parentElement.style.display='none'" style="margin-left:8px;background:#fff;color:#000;border:0;padding:4px 8px;border-radius:6px">OK</button>`;setTimeout(()=>box.style.display='none',8000);}
+function testAlert(k){
+let sound=document.getElementById('sound'+k)?.value||'beep';
+if(k=='HR'){playSound(sound);showAlert('🚨 <b>PRUEBA HR</b> • '+document.getElementById('thrHR').value+' BPM','#ff4757');navigator.vibrate&&navigator.vibrate([200,100,200]);}
+if(k=='Stress'){playSound(sound);showAlert('🧠 <b>PRUEBA ESTRÉS</b> • '+document.getElementById('thrStress').value+'%','#8b5cf6');}
+if(k=='SpO2'){playSound(sound);showAlert('🩸 <b>PRUEBA SpO2 BAJO</b> • '+document.getElementById('thrSpO2').value+'%','#0a84ff');}
+if(k=='Temp'){playSound(sound);showAlert('🌡️ <b>PRUEBA TEMP</b> • +'+document.getElementById('thrTemp').value+'°C','#ff8c00');}
+log('Prueba alerta '+k+' sonido '+sound);
+}
+function checkAll(){
+let thrHR=parseInt(document.getElementById('thrHR').value),thrStress=parseInt(document.getElementById('thrStress').value),thrSpO2=parseInt(document.getElementById('thrSpO2').value),thrTemp=parseFloat(document.getElementById('thrTemp').value);
+if(enabled.HR && d.hr>thrHR){let s=document.getElementById('soundHR').value;playSound(s);showAlert(`🚨 <b>RITMO ELEVADO</b> • ${d.hr} BPM > ${thrHR}`,'#ff4757');navigator.vibrate&&navigator.vibrate([200,100,200,100,400]);log('ALERTA HR '+d.hr);}
+if(enabled.Stress && d.stress>thrStress){let s=document.getElementById('soundStress').value;playSound(s);showAlert(`🧠 <b>ESTRÉS ALTO</b> • ${d.stress}% > ${thrStress}%`,'#8b5cf6');log('ALERTA ESTRÉS '+d.stress);}
+if(enabled.SpO2 && d.spo2<thrSpO2){let s=document.getElementById('soundSpO2').value;playSound(s);showAlert(`🩸 <b>SpO2 BAJO</b> • ${d.spo2}% < ${thrSpO2}%`,'#0a84ff');log('ALERTA SpO2 '+d.spo2);}
+if(enabled.Temp && (d.temp-36.6)>=thrTemp){let s=document.getElementById('soundTemp').value;playSound(s);showAlert(`🌡️ <b>TEMP ALTA</b> • +${(d.temp-36.6).toFixed(1)}°C`,'#ff8c00');log('ALERTA TEMP '+(d.temp-36.6).toFixed(1));}
+}
+function updateUI(){
+document.getElementById('fcVal').textContent=d.hr;document.getElementById('pillHR').textContent='Ritmo '+d.hr;
+document.getElementById('stressVal').textContent=d.stress;document.getElementById('pillStress').textContent='Estrés '+d.stress+'%';
+document.getElementById('vfcVal').textContent=d.hrv;document.getElementById('tempVal').textContent=d.temp.toFixed(1);
+document.getElementById('actSub').textContent=steps.toLocaleString()+' pasos';
+checkAll();
+}
+async function desconectarMAR(){if(currentDevice&&currentDevice.gatt.connected){try{currentDevice.gatt.disconnect();}catch(e){}}currentDevice=null;document.getElementById('st').innerHTML='● Desconectado';document.getElementById('st').style.background='#f3f1ee';log('Desconectado MAR');}
+async function conectarMAR(){
+log('Conectando R10M 5E17 a MAR...');initAudio();
+document.getElementById('st').innerHTML='● 🟡 Buscando 5E17...';
+if(!navigator.bluetooth){log('❌ Sin Web Bluetooth - Chrome Moto G85');return;}
+try{
+let device=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'},{namePrefix:'Smart Ring'}],optionalServices:['battery_service','heart_rate','0000ff00-0000-1000-8000-00805f9b34fb']});
+currentDevice=device;log('Encontrado '+device.name);document.getElementById('st').innerHTML='● 🟡 Conectando '+device.name+'...';
+let server=await device.gatt.connect();log('✅ GATT conectado - 5E17 DESVINCULADO OK');document.getElementById('st').innerHTML='● 🟢 '+device.name+' conectado';document.getElementById('st').style.background='#dcfce7';
+document.getElementById('checker').innerHTML=`✅ <b style="color:#166534">${device.name} DESVINCULADO DE SMARTHEART</b> - Conectado a MAR`;playTone(660,0.2);setTimeout(()=>playTone(880,0.4),200);
+let services=await server.getPrimaryServices();
+for(let svc of services){let chars=await svc.getCharacteristics();for(let ch of chars){if(ch.properties.notify){await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{let b=new Uint8Array(e.target.value.buffer);if(b.length>=2){let hr=b[1]>30&&b[1]<180?b[1]:b[0];if(hr>30&&hr<180){d.hr=hr;steps+=Math.floor(Math.random()*2);updateUI();}}});}}}
+}catch(e){
+log('❌ '+e.message);
+if(enabled.Checker && (e.message.includes('GATT')||e.message.includes('connect'))){
+playSound('alarm');showAlert(`⚠️ <b>R10M 5E17 AÚN VINCULADO A SMARTHEART</b> • Desinstalá SmartHeart`,'#ffd166');
+document.getElementById('checker').innerHTML=`🔴 <b style="color:#dc2626">AÚN VINCULADO A SMARTHEART</b>`;
+document.getElementById('checkerSteps').style.display='block';document.getElementById('checkerSteps').innerHTML=`<b>PASOS MOTO G85:</b><br>1. Desinstalá SmartHeart<br>2. Ajustes → Apps → Bluetooth → Borrar caché<br>3. Bluetooth → Olvidar R10M 5E17<br>4. Anillo estuche 15s → 8s sensor vibra 2x<br>5. chrome://bluetooth-internals → Forget all`;
+}
+}
+}
+new Chart(document.getElementById('cDay'),{type:'line',data:{labels:['6h',[STRIPPED]
+log('MAR alertas seleccionables listo. Activá/desactivá cada alerta a la derecha.');
+updateUI();
 </script>
 </body></html>
