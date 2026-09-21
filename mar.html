@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAR • Oura Dashboard ES</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f5f2;color:#1a1a1a;font-family:system-ui}
+.header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:14px;padding:14px;max-width:1200px;margin:0 auto}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:20px;padding:16px;border:1px solid #ece9e4;box-shadow:0 2px 12px rgba(0,0,0,.04);margin-bottom:14px}
+.score{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;color:#fff}
+.pill{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin:2px}
+.suggest{display:flex;gap:12px;align-items:center;background:#faf8f5;border:1px solid #f0ebe3;border-radius:16px;padding:10px;margin-bottom:10px}
+.suggest img{width:56px;height:56px;border-radius:12px;object-fit:cover}
+.tab{padding:8px 14px;border-radius:20px;background:#f3f1ee;color:#8b8680;font-size:12px;cursor:pointer;border:0;margin:2px}
+.tab.active{background:#1a1a1a;color:#fff}
+.btn{padding:10px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
+.btnDark{background:#1a1a1a;color:#fff}
+</style>
+</head><body>
+<div class="header">
+<div><b style="font-size:18px">MAR</b> <span style="background:#111;color:#fff;padding:3px 8px;border-radius:8px;font-size:10px;margin-left:6px">OURA CLON ES • READINESS • SLEEP • ACTIVITY</span></div>
+<div style="display:flex;gap:8px"><button class="btn btnDark" onclick="document.getElementById('file').click()">📷 Subir foto sugerencia</button><span style="background:#e8f5e9;color:#2e7d32;padding:6px 10px;border-radius:10px;font-size:11px">● R10M 5E17 listo para conectar</span></div>
+</div>
+<input type="file" id="file" hidden accept="image/*" onchange="addImage(event)">
+
+<div class="grid">
+<div>
+<!-- SCORES OURA -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6;letter-spacing:.1em">PREPARACIÓN</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#ff6b35">82</div></div><div style="font-size:12px"><b>Buena</b> • Ayer fue 78</div><div style="height:6px;background:#f3f1ee;border-radius:6px;margin-top:8px"><div style="width:82%;height:100%;background:#ff6b35;border-radius:6px"></div></div></div>
+<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6;letter-spacing:.1em">SUEÑO</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#4f46e5">88</div></div><div style="font-size:12px"><b>Óptimo</b> • 7h 42m</div><div style="height:6px;background:#f3f1ee;border-radius:6px;margin-top:8px"><div style="width:88%;height:100%;background:#4f46e5;border-radius:6px"></div></div></div>
+<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6;letter-spacing:.1em">ACTIVIDAD</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#111">76</div></div><div style="font-size:12px"><b>En objetivo</b> • 1.240 pasos</div><div style="height:6px;background:#f3f1ee;border-radius:6px;margin-top:8px"><div style="width:76%;height:100%;background:#111;border-radius:6px"></div></div></div>
+</div>
+
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>Hoy • Métricas Oura en español</b><div><span class="pill" style="background:#e0f2fe;color:#0c4a6e">Ritmo 72</span><span class="pill" style="background:#f3e8ff;color:#6b21a8">VFC 48ms</span><span class="pill" style="background:#dcfce7;color:#166534">SpO2 98%</span><span class="pill" style="background:#fef3c7;color:#92400e">Temp +0.3°</span></div></div>
+<canvas id="cDay" height="80" style="margin-top:12px"></canvas>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;font-size:11px">
+<div style="background:#faf8f5;padding:10px;border-radius:12px">❤️ FC reposo<br><b style="font-size:18px">58</b> bpm</div>
+<div style="background:#faf8f5;padding:10px;border-radius:12px">💓 VFC<br><b style="font-size:18px">48</b> ms</div>
+<div style="background:#faf8f5;padding:10px;border-radius:12px">🌡️ Temp<br><b style="font-size:18px">36.6</b> °C</div>
+<div style="background:#faf8f5;padding:10px;border-radius:12px">😮‍💨 Estrés<br><b style="font-size:18px">32</b> %</div>
+</div>
+</div>
+
+<div class="card"><div style="display:flex;justify-content:space-between"><b>🛏️ Sueño anoche • Etapas Oura</b><span style="font-size:11px;opacity:.6">7h 42m • 88</span></div><canvas id="cSleep" height="90" style="margin-top:10px"></canvas><div style="display:flex;gap:6px;margin-top:10px;font-size:11px"><span class="pill" style="background:#1e293b;color:#fff">Profundo 1h 22m</span><span class="pill" style="background:#6366f1;color:#fff">REM 2h 05m</span><span class="pill" style="background:#93c5fd;color:#1e3a8a">Ligero 4h 15m</span><span class="pill" style="background:#f1f5f9">Despierto 18m</span></div></div>
+
+<div class="card"><div style="display:flex;justify-content:space-between"><b>🏃 Actividad • Oura</b><span style="font-size:11px;opacity:.6">Meta 8.000 pasos</span></div><canvas id="cAct" height="80" style="margin-top:10px"></canvas><div style="font-size:11px;margin-top:8px;opacity:.7">Pasos AUTO sin tocar: 1.240 • Calorías: 49 kcal • Distancia: 0,93 km • Inactividad: 2h 10m</div></div>
+</div>
+
+<!-- COL DERECHA SUGERENCIAS CON IMAGENES -->
+<div>
+<div class="card" style="background:#111;color:#fff"><b>✨ Sugerencias MAR para hoy</b><div style="font-size:11px;opacity:.7;margin-top:4px">Basado en Oura Readiness 82 + Sueño 88</div>
+<div style="margin-top:12px" id="suggestList">
+<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=200"><div><div style="font-size:12px;color:#fff"><b>Respiración 4-7-8</b></div><div style="font-size:11px;opacity:.7">Tu VFC 48ms pide calma. 3 minutos ahora.</div><span class="pill" style="background:#8b5cf6;color:#fff">CALMA</span></div></div>
+<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=200"><div><div style="font-size:12px;color:#fff"><b>Estiramiento ligero</b></div><div style="font-size:11px;opacity:.7">Temperatura +0.3° - evita HIIT hoy.</div><span class="pill" style="background:#4da3ff;color:#fff">RESPIRA</span></div></div>
+<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=200"><div><div style="font-size:12px;color:#fff"><b>Caminata 20 min</b></div><div style="font-size:11px;opacity:.7">Actividad 76 - te faltan 800 pasos para meta.</div><span class="pill" style="background:#ffd166;color:#000">FITNESS</span></div></div>
+<div class="suggest" style="background:#1e1e1e;border-color:#2a2a2a"><img src="https://images.unsplash.com/photo-1511295743952-8a90a7d3b1e3?w=200"><div><div style="font-size:12px;color:#fff"><b>Hidratación + magnesio</b></div><div style="font-size:11px;opacity:.7">Sueño profundo bajo ayer.</div><span class="pill" style="background:#5dff8a;color:#000">SUEÑO</span></div></div>
+</div>
+</div>
+
+<div class="card"><b>📸 Tu inspiración MAR</b><div style="font-size:11px;opacity:.6">Subí fotos de tu rutina y aparecen acá</div><div id="myImages" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px"><div style="height:70px;background:#f3f1ee;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px">➕</div></div></div>
+
+<div class="card"><b>Tendencias 7 días • Oura</b><canvas id="cTrend" height="120" style="margin-top:10px"></canvas>
+<div style="font-size:11px;margin-top:8px"><b>Insights MAR:</b><br>• Tu VFC sube cuando caminas +1.200 pasos<br>• Temp +0.3° correlaciona con estrés 34%<br>• Sueño REM mejora con respiración 4-7-8</div>
+</div>
+
+<div class="card" style="background:#f6f5f2;border:1px dashed #d6d3cd"><div style="font-size:11px"><b>🔵 Conectar R10M 5E17 a MAR</b><div style="margin-top:6px;opacity:.7">Cuando desinstales SmartHeart, tocá acá y MAR va a tomar HR, SpO2, Temp y Pasos AUTO del anillo y lo va a mostrar como Oura.</div><button class="btn btnDark" style="width:100%;margin-top:10px" onclick="alert('Primero desinstalá SmartHeart + borrá caché Bluetooth Moto G85, luego conectamos tu 5E17 a MAR')">Conectar R10M 5E17 a MAR</button></div></div>
+</div>
+</div>
+
+<script>
+let customImages=[];
+function addImage(e){
+let file=e.target.files[0];if(!file) return;
+let url=URL.createObjectURL(file);
+customImages.unshift(url);
+let div=document.getElementById('myImages');
+div.innerHTML='';
+customImages.slice(0,9).forEach(u=>{
+let im=document.createElement('img');im.src=u;im.style.cssText='width:100%;height:70px;object-fit:cover;border-radius:12px';
+div.appendChild(im);
+});
+let list=document.getElementById('suggestList');
+let sug=document.createElement('div');sug.className='suggest';sug.style.background='#1e1e1e';sug.style.borderColor='#2a2a2a';
+sug.innerHTML=`<img src="${url}"><div><div style="font-size:12px;color:#fff"><b>Tu foto • Rutina MAR</b></div><div style="font-size:11px;opacity:.7">Agregada a tus sugerencias personalizadas.</div><span class="pill" style="background:#fff;color:#000">TUYO</span></div>`;
+list.prepend(sug);
+}
+new Chart(document.getElementById('cDay'),{type:'line',data:{labels:['6h','9h','12h','15h','18h','21h','ahora'],datasets:[{label:'FC',data:[62,68,72,75,70,68,72],borderColor:'#ff6b35',tension:.4},{label:'VFC',data:[52,50,48,45,47,48,48],borderColor:'#8b5cf6',tension:.4}]},options:{plugins:{legend:{display:false}},scales:{y:{display:false}}}}});
+new Chart(document.getElementById('cSleep'),{type:'bar',data:{labels:['22','23','0','1','2','3','4','5','6'],datasets:[{label:'Profundo',data:[20,40,30,0,25,30,0,10,0],backgroundColor:'#1e293b'},{label:'REM',data:[0,10,20,35,20,15,30,25,10],backgroundColor:'#6366f1'},{label:'Ligero',data:[30,20,40,35,30,35,40,30,20],backgroundColor:'#93c5fd'}]},options:{plugins:{legend:{display:false}},scales:{x:{stacked:true},y:{stacked:true,display:false}}}}});
+new Chart(document.getElementById('cAct'),{type:'bar',data:{labels:['L','M','X','J','V','S','D'],datasets:[{label:'Pasos',data:[4200,5800,1240,0,0,0,0],backgroundColor:'#111'}]},options:{plugins:{legend:{display:false}},scales:{y:{display:false}}}}});
+new Chart(document.getElementById('cTrend'),{type:'line',data:{labels:['L','M','X','J','V','S','D'],datasets:[{label:'Readiness',data:[78,80,75,82,0,0,0],borderColor:'#ff6b35',tension:.4},{label:'Sueño',data:[82,85,80,88,0,0,0],borderColor:'#4f46e5',tension:.4}]},options:{plugins:{legend:{display:false}}}}});
+</script>
+</body></html>
