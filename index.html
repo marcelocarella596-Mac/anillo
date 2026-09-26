@@ -1,159 +1,194 @@
 <!DOCTYPE html>
-<html lang="es"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING v9 • FIX GRAL REAL</title>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FITRING / MAR v10 • REAL DATA ARCHITECTURE</title>
+
 <style>
-:root{--bg:#060a14;--panel:#0f1629;--card:#141e36;--line:#1e2f55;--blue:#4da3ff;--green:#5dff8a;--orange:#ff9f43;--red:#ff6b6b;--yellow:#ffd166;--purple:#8b5cf6}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#c8d3e8;font-family:system-ui;font-size:12px}
-.header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#090f20;border-bottom:1px solid var(--line)}
-.grid{display:grid;grid-template-columns:240px 1fr 240px;gap:12px;padding:12px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}.header{flex-wrap:wrap}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
-.user{border-radius:10px;padding:10px;margin-bottom:8px;border:1px solid var(--line)}
-.user.online{border-color:var(--blue);background:#132040}.user.alert{border-color:var(--red);background:#2a1414}.user.low{border-color:var(--yellow);background:#2a2414}
-.barH{height:4px;background:#0a1430;border-radius:4px;margin-top:6px;overflow:hidden}
+:root{
+  --bg:#060a14;
+  --panel:#0f1629;
+  --card:#141e36;
+  --line:#1e2f55;
+  --blue:#4da3ff;
+  --green:#5dff8a;
+  --orange:#ff9f43;
+  --red:#ff6b6b;
+  --yellow:#ffd166;
+  --purple:#8b5cf6;
+  --cyan:#4ecdc4;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:#c8d3e8;
+  font-family:system-ui,-apple-system,Arial,sans-serif;
+  font-size:12px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  background:#090f20;
+  border-bottom:1px solid var(--line);
+  gap:10px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:240px minmax(0,1fr) 240px;
+  gap:12px;
+  padding:12px;
+}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr}
+  .header{flex-wrap:wrap}
+}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+}
+
+.user{
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:8px;
+  border:1px solid var(--line);
+}
+
+.user.online{
+  border-color:var(--blue);
+  background:#132040;
+}
+
+.user.alert{
+  border-color:var(--red);
+  background:#2a1414;
+}
+
+.user.low{
+  border-color:var(--yellow);
+  background:#2a2414;
+}
+
+.barH{
+  height:4px;
+  background:#0a1430;
+  border-radius:4px;
+  margin-top:6px;
+  overflow:hidden;
+}
+
 .barH div{height:100%}
-.row{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
-.bar{height:5px;background:#0a1430;flex:1;margin:0 8px;border-radius:4px;overflow:hidden}
-.bar div{height:100%;transition:width .6s}
-.btn{padding:8px 10px;border-radius:8px;border:0;font-weight:800;cursor:pointer;font-size:11px}
-.btnBlue{background:#0a84ff;color:#fff}.btnGhost{background:#1a2642;color:#8aa0c8;border:1px solid var(--line)}
-.live{font-size:9px;color:var(--green)}
-.mode{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;cursor:pointer;background:#0c1429}
-.dot{width:7px;height:7px;background:#22c55e;border-radius:50%;display:inline-block;animation:blink 1s infinite}
-@keyframes blink{50%{opacity:.3}}
-.take{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0}
-.take button{padding:8px 2px;border-radius:8px;border:1px solid var(--line);background:#141e36;color:#fff;font-size:9px;font-weight:800}
-.take button.active{border-color:var(--green)}
-</style>
-</head><body>
-<div class="header">
-<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">⬡</span><b>FITRING v9</b><span style="background:#142a18;color:#5dff8a;padding:2px 8px;border-radius:8px;font-size:9px">END</span><span style="opacity:.5">Dashboard General</span></div>
-<div style="display:flex;gap:6px;align-items:center"><button class="btn btnBlue" onclick="conectar()">🔵 CONECTAR R10M</button><span id="st" style="background:#142a18;color:#5dff8a;padding:6px 10px;border-radius:8px;font-size:10px"><span class="dot"></span> Desconectado</span></div>
-</div>
 
-<div class="grid">
-<!-- USERS -->
-<div class="card">
-<div style="font-size:10px;opacity:.5;margin-bottom:8px">USERS</div>
-<div class="user online"><div style="display:flex;justify-content:space-between"><b>● Marcelo</b><span style="font-size:9px;opacity:.6">FR-2413 • Modo Respira</span></div><div class="barH"><div style="width:78%;background:var(--blue)"></div></div><div style="font-size:9px;color:var(--green);margin-top:4px">● 78% • online</div></div>
-<div class="user alert"><div style="display:flex;justify-content:space-between"><b>⚠️ Silvia</b><span style="font-size:9px;opacity:.6">FR-2089 • Modo Calma</span></div><div class="barH"><div style="width:83%;background:var(--red)"></div></div><div style="font-size:9px;color:var(--red);margin-top:4px">● 83% • alert</div></div>
-<div class="user low"><div style="display:flex;justify-content:space-between"><b>Vanessa</b><span style="font-size:9px;opacity:.6">FR-3125 • Fitness</span></div><div class="barH"><div style="width:28%;background:var(--yellow)"></div></div><div style="font-size:9px;color:var(--yellow);margin-top:4px">● 28% • low battery</div></div>
-<div style="margin-top:12px;font-size:9px;opacity:.4">STATUS<br><span style="color:var(--green)">● All systems operational</span></div>
-</div>
-
-<!-- LIVE INPUT PANEL - CENTRO -->
-<div class="card">
-<div style="display:flex;justify-content:space-between"><b>Live Input Panel</b><span class="live">● Receiving telemetry • LIVE</span></div>
-
-<div class="take">
-<button onclick="tomar('hr')" id="bHr">🫀 PULSO</button>
-<button onclick="tomar('spo2')" id="bSpo2">🩸 OXÍGENO</button>
-<button onclick="tomar('bp')" id="bBp">❤️ PRESIÓN</button>
-<button onclick="iniciarPasos()" id="bSteps" style="border-color:var(--yellow)">👣 PASOS ACTUALES</button>
-<button onclick="startRingAudio()" id="bRing" style="border-color:var(--purple)">💍🎤 NOTA ANILLO</button>
-<button onclick="tomar('stress')" id="bStress">🧠 ESTRÉS</button>
-</div>
-
-<div class="row"><span>HR (BPM)</span><div class="bar"><div id="barHR" style="width:72%;background:var(--blue)"></div></div><b id="vHR">72 BPM</b></div>
-<div class="row"><span>SpO2 (%)</span><div class="bar"><div id="barSpO2" style="width:98%;background:var(--green)"></div></div><b id="vSpO2">98%</b></div>
-<div class="row"><span>Stress (%)</span><div class="bar"><div id="barStress" style="width:34%;background:var(--orange)"></div></div><b id="vStress">34%</b></div>
-<div class="row"><span>HRV (ms)</span><div class="bar"><div id="barHRV" style="width:48%;background:var(--blue)"></div></div><b id="vHRV">48ms</b></div>
-<div class="row"><span>Temp (°C)</span><div class="bar"><div style="width:66%;background:#7ad3ff"></div></div><b id="vTemp">36.6°C</b></div>
-<div class="row"><span>Steps (count)</span><div class="bar"><div id="barSteps" style="width:40%;background:var(--yellow)"></div></div><b id="vSteps">1,240</b></div>
-
-<div style="margin-top:8px;font-size:9px;opacity:.6">Heart Rate Trend – Last 10min</div>
-<div id="chart" style="height:50px;background:#0d1730;border:1px solid var(--line);border-radius:8px;display:flex;align-items:end;gap:2px;padding:4px;margin-top:4px"></div>
-<div style="display:flex;justify-content:space-between;font-size:8px;opacity:.4;margin-top:2px"><span>14:40</span><span>14:42</span><span>14:44</span><span>14:46</span><span>14:48</span><span>14:48</span></div>
-
-<div id="ringBox" style="margin-top:8px;background:#0c1429;border:1px solid var(--purple);border-radius:8px;padding:8px;display:none">
-<div style="display:flex;justify-content:space-between"><span style="font-size:10px"><span class="dot"></span> <span id="ringGesture">💍 Gesto anillo esperando...</span></span><span style="font-size:10px" id="ringIcon">💍</span></div>
-<div id="transcriptRing" style="margin-top:6px;background:#141e36;padding:6px;border-radius:6px;font-size:11px"></div>
-<audio id="playerRing" controls style="width:100%;margin-top:6px;display:none"></audio>
-<div style="font-size:8px;opacity:.5;margin-top:4px">Gesto: doble tap anillo = graba • tap largo 1s = envía → texto • agitar = cancela</div>
-</div>
-
-<div style="display:flex;gap:6px;margin-top:10px"><button class="btn btnGhost" style="flex:1" onclick="calibrar()">Calibrate</button><button class="btn btnBlue" style="flex:1" onclick="exportar()">Export Data</button></div>
-<div id="log" style="font-size:9px;opacity:.5;margin-top:6px;max-height:70px;overflow:auto">Fix gral listo. Tocá PASOS ACTUALES para ver pasos live. Doble tap anillo para audio→texto.</div>
-</div>
-
-<!-- MODE PREVIEWS -->
-<div class="card">
-<div style="font-size:10px;opacity:.5;margin-bottom:8px">MODE PREVIEWS</div>
-<div class="mode" onclick="openBoard('calma')"><div style="display:flex;justify-content:space-between"><span>🌙 Calma</span><span style="background:#142a18;color:var(--green);font-size:8px;padding:2px 6px;border-radius:6px">LIVE</span></div><div style="font-size:9px;opacity:.5">Relaxation mode active</div><div style="height:22px;display:flex;align-items:end;gap:2px;margin-top:6px"><div style="flex:1;background:var(--purple);height:40%"></div><div style="flex:1;background:var(--purple);height:70%"></div><div style="flex:1;background:var(--purple);height:50%"></div></div></div>
-<div class="mode" onclick="openBoard('fitness')"><div style="display:flex;justify-content:space-between"><span>🏃 Fitness</span><span style="background:#142a18;color:var(--green);font-size:8px;padding:2px 6px;border-radius:6px">LIVE</span></div><div style="font-size:9px;opacity:.5">Training mode active</div><div style="height:22px;display:flex;align-items:end;gap:2px;margin-top:6px"><div style="flex:1;background:var(--orange);height:60%"></div><div style="flex:1;background:var(--orange);height:90%"></div><div style="flex:1;background:var(--orange);height:70%"></div></div></div>
-<div class="mode" onclick="openBoard('sueno')"><div style="display:flex;justify-content:space-between"><span>🌙 Sueño</span><span style="background:#142a18;color:var(--green);font-size:8px;padding:2px 6px;border-radius:6px">LIVE</span></div><div style="font-size:9px;opacity:.5">Sleep tracking active</div><div style="height:22px;display:flex;align-items:end;gap:2px;margin-top:6px"><div style="flex:1;background:var(--blue);height:30%"></div><div style="flex:1;background:var(--blue);height:60%"></div><div style="flex:1;background:var(--blue);height:40%"></div></div></div>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px">
-<div style="background:#0d1730;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center"><div style="font-size:9px;opacity:.5">Total Rings</div><b style="font-size:18px">12</b></div>
-<div style="background:#2a1414;border:1px solid #4a1a1a;border-radius:8px;padding:8px;text-align:center"><div style="font-size:9px;opacity:.5">Alertas Activas</div><b style="font-size:18px;color:var(--red)">2</b><div style="font-size:7px;opacity:.5">1 critical • 1 warning</div></div>
-<div style="background:#0d1730;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center"><div style="font-size:9px;opacity:.5">Estrés Promedio</div><b style="font-size:18px" id="avgStress">34%</b></div>
-<div style="background:#0d1730;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center"><div style="font-size:9px;opacity:.5">Batería</div><b style="font-size:18px" id="bat">78%</b></div>
-</div>
-</div>
-</div>
-
-<script>
-let steps=1240,d={hr:72,spo2:98,stress:34,hrv:48,temp:36.6},hist=[],counting=false,lastAcc=0,lastTap=0,ringRecording=false,mediaRecorderRing,chunksRing=[];
-function render(){
-document.getElementById('vHR').textContent=d.hr+' BPM';document.getElementById('vSpO2').textContent=d.spo2+'%';document.getElementById('vStress').textContent=d.stress+'%';document.getElementById('vHRV').textContent=d.hrv+'ms';document.getElementById('vTemp').textContent=d.temp.toFixed(1)+'°C';document.getElementById('vSteps').textContent=steps.toLocaleString();document.getElementById('avgStress').textContent=d.stress+'%';
-document.getElementById('barHR').style.width=Math.min(100,d.hr)+'%';document.getElementById('barSpO2').style.width=d.spo2+'%';document.getElementById('barStress').style.width=d.stress+'%';document.getElementById('barHRV').style.width=d.hrv+'%';document.getElementById('barSteps').style.width=Math.min(100,steps/50)+'%';
-let c=document.getElementById('chart');c.innerHTML='';hist.slice(-24).forEach(v=>{let e=document.createElement('div');e.style.flex='1';e.style.background='#4da3ff';e.style.height=(v/2)+'%';e.style.borderRadius='2px';c.appendChild(e);});
+.row{
+  display:grid;
+  grid-template-columns:95px 1fr 105px;
+  align-items:center;
+  gap:8px;
+  margin:9px 0;
 }
-function tomar(t){
-document.querySelectorAll('.take button').forEach(b=>b.classList.remove('active'));let id='b'+t.charAt(0).toUpperCase()+t.slice(1);let btn=document.getElementById(id);if(btn)btn.classList.add('active');
-let k=0;let iv=setInterval(()=>{k++;d.hr=70+Math.floor(Math.random()*14);d.spo2=95+Math.floor(Math.random()*4);d.stress=30+Math.floor(Math.random()*20);d.hrv=38+Math.floor(Math.random()*18);hist.push(d.hr);if(hist.length>24)hist.shift();render();document.getElementById('log').textContent='TOMANDO '+t.toUpperCase()+' LIVE • '+d.hr+' BPM • '+d.spo2+'% • '+new Date().toLocaleTimeString();if(k>10)clearInterval(iv);},500);
-}
-function iniciarPasos(){
-document.getElementById('bSteps').classList.add('active');
-if(counting){steps++;render();return}counting=true;document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+steps+' pasos LIVE';
-if(window.DeviceMotionEvent){
-window.addEventListener('devicemotion',e=>{let a=e.accelerationIncludingGravity;if(!a)return;let m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);if(Math.abs(m-lastAcc)>2.2){steps++;render();document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+steps+' pasos LIVE';}lastAcc=m;});
-}else{setInterval(()=>{steps++;render();},900);}
-}
-function openBoard(m){alert('BOARD '+m.toUpperCase()+' desde FIX GRAL • HR '+d.hr+' • Pasos '+steps+' • Este board se abre dentro del fix gral para probar antes de individualizar');}
-function calibrar(){alert('Calibrado • HR '+d.hr);}
-function exportar(){let txt=FITRING v9 FIX GRAL\n${new Date().toLocaleString()}\nHR:${d.hr} SpO2:${d.spo2}% Stress:${d.stress}% Steps:${steps};let b=new Blob([txt],{type:'text/plain'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='fix-gral.txt';a.click();}
 
-// GESTO ANILLO → AUDIO → TEXTO
-async function startRingAudio(){
-document.getElementById('ringBox').style.display='block';
-if(ringRecording){stopRingAudio();return}ringRecording=true;chunksRing=[];
-document.getElementById('ringGesture').textContent='🔴 Grabando con anillo... tap largo 1s para enviar';
-try{
-let s=await navigator.mediaDevices.getUserMedia({audio:true});
-mediaRecorderRing=new MediaRecorder(s);mediaRecorderRing.ondataavailable=e=>chunksRing.push(e.data);
-mediaRecorderRing.onstop=()=>{
-let blob=new Blob(chunksRing,{type:'audio/webm'});document.getElementById('playerRing').src=URL.createObjectURL(blob);document.getElementById('playerRing').style.display='block';
-};
-mediaRecorderRing.start();
-if(window.SpeechRecognition||window.webkitSpeechRecognition){
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=new SR();rec.lang='es-AR';
-rec.onresult=e=>{
-let txt=e.results[0][0].transcript;
-document.getElementById('transcriptRing').innerHTML='📝 Desde anillo: <b>'+txt+'</b><br><span style="font-size:9px">HR '+d.hr+' • Pasos '+steps+'</span>';
-document.getElementById('log').innerHTML+=<div style="margin-top:4px;padding:4px;background:#141e36;border-radius:4px;border-left:2px solid #8b5cf6">💍🎤 ${txt} • ${new Date().toLocaleTimeString()}</div>;
-};rec.start();window._recRing=rec;
+.bar{
+  height:5px;
+  background:#0a1430;
+  border-radius:4px;
+  overflow:hidden;
 }
-}catch(e){document.getElementById('ringGesture').textContent='❌ Sin permiso micro';ringRecording=false;}
+
+.bar div{
+  height:100%;
+  transition:width .4s;
 }
-function stopRingAudio(){
-if(!ringRecording) return;ringRecording=false;document.getElementById('ringGesture').textContent='✅ Nota anillo enviada al FIX GRAL';
-if(mediaRecorderRing&&mediaRecorderRing.state!='inactive')mediaRecorderRing.stop();if(window._recRing)try{window._recRing.stop()}catch(e){}
-navigator.vibrate&&navigator.vibrate([80,40,80]);
+
+.metricValue{
+  text-align:right;
+  font-weight:800;
 }
-async function conectar(){
-try{
-let dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'}],optionalServices:[0x180D,0xFF00]});
-document.getElementById('st').innerHTML='<span class="dot"></span> 🟢 '+dev.name+' + GESTOS';
-let srv=await dev.gatt.connect();let svc=await srv.getPrimaryService(0x180D);let ch=await svc.getCharacteristic(0x2A37);
-await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{
-let hr=e.target.value.getUint8(1);if(hr>40){d.hr=hr;hist.push(hr);render();}
-if(hist.length>2 && Math.abs(hr-hist[hist.length-2])>8){ // doble tap detectado como artefacto
-let now=Date.now();if(now-lastTap<800)startRingAudio();lastTap=now;document.getElementById('ringBox').style.display='block';
+
+.btn{
+  padding:8px 10px;
+  border-radius:8px;
+  border:0;
+  font-weight:800;
+  cursor:pointer;
+  font-size:11px;
 }
-});
-}catch(e){tomar('hr');}
+
+.btnBlue{
+  background:#0a84ff;
+  color:#fff;
 }
-render();
-</script></body></html>
+
+.btnGhost{
+  background:#1a2642;
+  color:#8aa0c8;
+  border:1px solid var(--line);
+}
+
+.live{
+  font-size:9px;
+  color:var(--green);
+}
+
+.mode{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#0c1429;
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  background:#22c55e;
+  border-radius:50%;
+  display:inline-block;
+  animation:blink 1s infinite;
+}
+
+@keyframes blink{
+  50%{opacity:.3}
+}
+
+.take{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  margin:8px 0;
+}
+
+.take button{
+  padding:8px 2px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:#141e36;
+  color:#fff;
+  font-size:9px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.take button.active{
+  border-color:var(--green);
+  box-shadow:0 0 0 1px var(--green) inset;
+}
+
+.source{
+  display:inline-block;
+  margin-left:4px;
+  padding:2px 5px;
+  border-radius:5px;
+  font-size:7px
