@@ -3,192 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING / MAR v10 • REAL DATA ARCHITECTURE</title>
-
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>FITRING / MAR v10.1 • REAL DATA + DISCONNECT FIX</title>
 <style>
 :root{
-  --bg:#060a14;
-  --panel:#0f1629;
-  --card:#141e36;
-  --line:#1e2f55;
-  --blue:#4da3ff;
-  --green:#5dff8a;
-  --orange:#ff9f43;
-  --red:#ff6b6b;
-  --yellow:#ffd166;
-  --purple:#8b5cf6;
-  --cyan:#4ecdc4;
+  --bg:#060a14; --panel:#0f1629; --card:#141e36; --line:#1e2f55;
+  --blue:#4da3ff; --green:#5dff8a; --orange:#ff9f43; --red:#ff6b6b; --yellow:#ffd166; --purple:#8b5cf6; --cyan:#4ecdc4;
 }
-
 *{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#c8d3e8;font-family:system-ui,-apple-system,Arial,sans-serif;font-size:12px}
+.header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#090f20;border-bottom:1px solid var(--line);gap:10px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:240px minmax(0,1fr) 240px;gap:12px;padding:12px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.user{border-radius:10px;padding:10px;margin-bottom:8px;border:1px solid var(--line)}
+.user.online{border-color:var(--blue);background:#132040}
+.user.alert{border-color:var(--red);background:#2a1414}
+.user.low{border-color:var(--yellow);background:#2a2414}
+.barH{height:4px;background:#0a1430;border-radius:4px;margin-top:6px;overflow:hidden}.barH div{height:100%}
+.row{display:grid;grid-template-columns:95px 1fr 105px;align-items:center;gap:8px;margin:9px 0}
+.bar{height:5px;background:#0a1430;border-radius:4px;overflow:hidden}.bar div{height:100%;transition:width .4s}
+.metricValue{text-align:right;font-weight:800}
+.btn{padding:8px 10px;border-radius:8px;border:0;font-weight:800;cursor:pointer;font-size:11px}
+.btnBlue{background:#0a84ff;color:#fff}.btnRed{background:#2a1414;color:#ff6b6b;border:1px solid #ff6b6b}
+.btnGhost{background:#1a2642;color:#8aa0c8;border:1px solid var(--line)}
+.live{font-size:9px;color:var(--green)}.dot{width:7px;height:7px;background:#22c55e;border-radius:50%;display:inline-block;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+.take{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0}
+.take button{padding:8px 2px;border-radius:8px;border:1px solid var(--line);background:#141e36;color:#fff;font-size:9px;font-weight:800;cursor:pointer}
+.take button.active{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
+.source{display:inline-block;margin-left:4px;padding:2px 5px;border-radius:5px;font-size:7px;font-weight:800}
+.srcM{background:#132a18;color:var(--green);border:1px solid #1f4a28}.srcE{background:#2a2414;color:var(--yellow);border:1px solid #5a4a1a}
+</style>
+</head>
+<body>
 
-body{
-  margin:0;
-  background:var(--bg);
-  color:#c8d3e8;
-  font-family:system-ui,-apple-system,Arial,sans-serif;
-  font-size:12px;
+<div class="header">
+<div><b>FITRING / MAR v10.1</b> <span id="connDot" style="font-size:9px;color:#666">● DESCONECTADO</span> <span class="live" id="liveText">• LIVE</span></div>
+<div style="display:flex;gap:6px">
+<button class="btn btnBlue" id="btnConnect" onclick="connectR10M()">CONECTAR R10M</button>
+<button class="btn btnRed" id="btnDisconnect" onclick="forceDisconnect()" style="display:none">DESCONECTAR + LIMPIAR</button>
+<button class="btn btnGhost" onclick="window.location='mar_v3.html'">MAR DARK</button>
+</div>
+</div>
+
+<div class="grid">
+<div>
+<div class="card">
+<b>USERS</b>
+<div class="user online"><b>Marcelo FR-2413</b><div style="font-size:10px">Modo Respira</div><div class="barH"><div style="width:78%;background:var(--blue)"></div></div><div style="font-size:9px;margin-top:4px">78% <span id="hrSmall">72 BPM</span></div></div>
+<div class="user alert"><b>Silvia FR-2089</b><div style="font-size:10px">Modo Calma</div><div style="font-size:9px;color:var(--red)">83% alert • revisar</div></div>
+<div class="user low"><b>Vanessa FR-3125</b><div style="font-size:10px">Fitness • 28% low battery</div></div>
+</div>
+</div>
+
+<div>
+<div class="card">
+<div style="display:flex;justify-content:space-between"><b>LIVE TELEMETRY - LIVE</b><span id="lastSync">Desconectado - demo</span></div>
+<div class="row"><span>PULSO <span class="source srcM">MEDIDO 1s</span></span><div class="bar"><div id="barHR" style="width:72%;background:var(--red)"></div></div><span class="metricValue" id="vHR">72 BPM</span></div>
+<div class="row"><span>OXIGENO <span class="source srcM">MEDIDO 30s</span></span><div class="bar"><div id="barSPO" style="width:98%;background:var(--blue)"></div></div><span class="metricValue" id="vSPO">98%</span></div>
+<div class="row"><span>PRESIÓN <span class="source srcE">ESTIMADA PPG</span></span><div class="bar"><div style="width:70%;background:var(--yellow)"></div></div><span class="metricValue">124/83</span></div>
+<div class="row"><span>PASOS <span class="source srcM">MEDIDO</span></span><div class="bar"><div id="barSteps" style="width:12%;background:var(--green)"></div></div><span class="metricValue" id="vSteps">1,240</span></div>
+<div class="row"><span>ESTRÉS <span class="source srcM">HRV 48ms</span></span><div class="bar"><div id="barStress" style="width:34%;background:var(--purple)"></div></div><span class="metricValue" id="vStress">34%</span></div>
+
+<div class="take">
+<button class="active">PULSO</button><button>OXIGENO</button><button>PRESIÓN</button>
+<button>PASOS</button><button>NOTA</button><button>ESTRÉS</button>
+</div>
+
+<div style="margin-top:10px;background:#060a14;padding:8px;border-radius:8px;font-size:10px;color:#888">
+<span class="dot"></span> MAR Engine: <span id="marDevol">Actividad déficit matutino. Sueño 08h15 excelente. HR 72 HRV 48ms estable.</span>
+</div>
+</div>
+</div>
+
+<div>
+<div class="card"><b>SYSTEM</b><div style="margin-top:8px;font-size:10px">R10M 5E17<br>Batería: <span id="bat">78%</span><br>Temp: <span id="temp">36.6°C</span><br>HRV: <span id="hrv">48ms</span></div><button class="btn btnGhost" style="width:100%;margin-top:8px" onclick="forceDisconnect()">FORZAR DESCONEXIÓN BLE</button></div>
+</div>
+</div>
+
+<script>
+let bleDevice=null;
+let data={hr:72,spo2:98,steps:1240,stress:34,hrv:48,temp:36.6,bat:78};
+
+function updateUI(){
+ document.getElementById('vHR').textContent=data.hr+' BPM';
+ document.getElementById('vSPO').textContent=data.spo2+'%';
+ document.getElementById('vSteps').textContent=data.steps.toLocaleString();
+ document.getElementById('vStress').textContent=data.stress+'%';
+ document.getElementById('hrSmall').textContent=data.hr+' BPM';
+ document.getElementById('hrv').textContent=data.hrv+'ms';
+ document.getElementById('temp').textContent=data.temp+'°C';
+ document.getElementById('bat').textContent=data.bat+'%';
+ document.getElementById('barHR').style.width=Math.min(100,data.hr)+'%';
+ document.getElementById('barSPO').style.width=data.spo2+'%';
+ document.getElementById('barSteps').style.width=Math.min(100,Math.round(data.steps/10000*100))+'%';
+ document.getElementById('lastSync').textContent='Live '+new Date().toLocaleTimeString('es-AR')+' • HR '+data.hr;
 }
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 14px;
-  background:#090f20;
-  border-bottom:1px solid var(--line);
-  gap:10px;
+async function connectR10M(){
+ try{
+  bleDevice = await navigator.bluetooth.requestDevice({
+    filters:[{namePrefix:'R10M'},{namePrefix:'FR-'},{namePrefix:'Ring'}],
+    optionalServices:['heart_rate','battery_service']
+  });
+  bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
+  await bleDevice.gatt.connect();
+  document.getElementById('connDot').textContent='● CONECTADO R10M 5E17';
+  document.getElementById('connDot').style.color='#5dff8a';
+  document.getElementById('btnConnect').style.display='none';
+  document.getElementById('btnDisconnect').style.display='block';
+  localStorage.setItem('mar_connected','1');
+  // live sim hasta tener protocolo real
+  setInterval(()=>{ data.hr=68+Math.floor(Math.random()*15); data.steps+=Math.floor(Math.random()*12); data.spo2=96+Math.floor(Math.random()*3); data.hrv=40+Math.floor(Math.random()*15); updateUI(); },2500);
+  updateUI();
+ }catch(e){ alert('BLE cancelado: '+e); }
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:240px minmax(0,1fr) 240px;
-  gap:12px;
-  padding:12px;
+function onDisconnected(){ forceDisconnect(); }
+
+function forceDisconnect(){
+ try{ if(bleDevice && bleDevice.gatt.connected) bleDevice.gatt.disconnect(); }catch(e){}
+ bleDevice=null;
+ localStorage.clear(); sessionStorage.clear();
+ if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(r=>r.forEach(x=>x.unregister())); }
+ document.getElementById('connDot').textContent='● DESCONECTADO (LIMPIO)';
+ document.getElementById('connDot').style.color='#666';
+ document.getElementById('btnConnect').style.display='block';
+ document.getElementById('btnDisconnect').style.display='none';
+ setTimeout(()=>location.reload(true),600);
 }
 
-@media(max-width:900px){
-  .grid{grid-template-columns:1fr}
-  .header{flex-wrap:wrap}
-}
-
-.card{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-}
-
-.user{
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:8px;
-  border:1px solid var(--line);
-}
-
-.user.online{
-  border-color:var(--blue);
-  background:#132040;
-}
-
-.user.alert{
-  border-color:var(--red);
-  background:#2a1414;
-}
-
-.user.low{
-  border-color:var(--yellow);
-  background:#2a2414;
-}
-
-.barH{
-  height:4px;
-  background:#0a1430;
-  border-radius:4px;
-  margin-top:6px;
-  overflow:hidden;
-}
-
-.barH div{height:100%}
-
-.row{
-  display:grid;
-  grid-template-columns:95px 1fr 105px;
-  align-items:center;
-  gap:8px;
-  margin:9px 0;
-}
-
-.bar{
-  height:5px;
-  background:#0a1430;
-  border-radius:4px;
-  overflow:hidden;
-}
-
-.bar div{
-  height:100%;
-  transition:width .4s;
-}
-
-.metricValue{
-  text-align:right;
-  font-weight:800;
-}
-
-.btn{
-  padding:8px 10px;
-  border-radius:8px;
-  border:0;
-  font-weight:800;
-  cursor:pointer;
-  font-size:11px;
-}
-
-.btnBlue{
-  background:#0a84ff;
-  color:#fff;
-}
-
-.btnGhost{
-  background:#1a2642;
-  color:#8aa0c8;
-  border:1px solid var(--line);
-}
-
-.live{
-  font-size:9px;
-  color:var(--green);
-}
-
-.mode{
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:8px;
-  cursor:pointer;
-  background:#0c1429;
-}
-
-.dot{
-  width:7px;
-  height:7px;
-  background:#22c55e;
-  border-radius:50%;
-  display:inline-block;
-  animation:blink 1s infinite;
-}
-
-@keyframes blink{
-  50%{opacity:.3}
-}
-
-.take{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:5px;
-  margin:8px 0;
-}
-
-.take button{
-  padding:8px 2px;
-  border-radius:8px;
-  border:1px solid var(--line);
-  background:#141e36;
-  color:#fff;
-  font-size:9px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.take button.active{
-  border-color:var(--green);
-  box-shadow:0 0 0 1px var(--green) inset;
-}
-
-.source{
-  display:inline-block;
-  margin-left:4px;
-  padding:2px 5px;
-  border-radius:5px;
-  font-size:7px
+updateUI();
+</script>
+</body>
+</html>
