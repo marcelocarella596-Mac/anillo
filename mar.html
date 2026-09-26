@@ -1,42 +1,84 @@
-<!doctype html>
-<meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>MAR Dark</title>
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>MAR Dark Detalle</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,Inter,system-ui}
-body{background:#0a0a0a;color:#fff;padding-bottom:90px}
-.top{margin:14px 16px;background:#151515;border-radius:20px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.top h1{font-size:18px;font-weight:900}
+body{background:#0a0a0a;color:#fff;padding-bottom:30px}
+.h{margin:14px 16px;background:#151515;border-radius:20px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
 .badge{background:#c7f0c7;color:#0a5a0a;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700}
-.scores{display:flex;gap:12px;padding:20px 16px;justify-content:space-between}
-.sc{width:108px;height:108px;border-radius:50%;background:#121212;border:4px solid #222;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.sc b{font-size:32px;font-weight:900}
-.sc.s1{border-color:#7ed17e}.sc.s2{border-color:#4ecdc4}.sc.s3{border-color:#ff9a57}
-.hero{margin:0 16px;background:#151515;border-radius:20px;padding:16px;display:flex;gap:14px;align-items:center}
-.circ{width:86px;height:86px;border-radius:50%;background:conic-gradient(#ff9a57 47.1%,#2a2a2a 0);display:grid;place-items:center}
-.ci{width:68px;height:68px;background:#0a0a0a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.grid{margin:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:#151515;border-radius:16px;padding:14px}
-.k{font-size:10px;color:#888;font-weight:700}.v{font-size:20px;font-weight:800}.s{font-size:11px;color:#aaa}
-.devol{margin:14px 16px;background:#f6f5f2;color:#111;border-radius:20px;padding:16px}
+.scores{display:flex;gap:12px;padding:12px 16px;justify-content:space-between}
+.sc{width:104px;height:104px;border-radius:50%;background:#121212;border:4px solid #222;display:grid;place-items:center}
+.sc b{font-size:30px}.sc.s1{border-color:#7ed17e}.sc.s2{border-color:#4ecdc4}.sc.s3{border-color:#ff9a57}
+.card{background:#151515;border-radius:18px;padding:14px;margin:10px 16px}
+.k{font-size:10px;color:#888;letter-spacing:.1em;font-weight:700}.v{font-size:22px;font-weight:900;margin:6px 0}.s{font-size:12px;color:#aaa;line-height:1.4}
+.detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222}
+.detail.show{display:block}
+.bar{height:6px;background:#222;border-radius:6px;margin:6px 0;overflow:hidden}
+.fill{height:100%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.mini{background:#0f0f0f;border-radius:12px;padding:10px}
+.timeline{display:flex;gap:4px;align-items:end;height:60px;margin:10px 0}
+.t{width:100%;background:#222;border-radius:4px}
+.t.on{background:linear-gradient(#4ecdc4,#7ed17e)}
+.devol{background:#f6f5f2;color:#111;border-radius:20px;padding:14px;margin:14px 16px}
 </style>
-<div class=top><h1>MAR • R10M 5E17</h1><div class=badge>● CONECTADO</div></div>
+<div class=h><b>MAR • R10M 5E17</b><div class=badge>● CONECTADO</div></div>
 <div class=scores>
-<div><div class="sc s1"><b>82</b></div><div style="color:#7ed17e;text-align:center;font-size:11px">DESCANSO Bueno</div></div>
-<div><div class="sc s2"><b>85</b></div><div style="color:#4ecdc4;text-align:center;font-size:11px">SUEÑO 08h15</div></div>
-<div><div class="sc s3"><b>47</b></div><div style="color:#ff9a57;text-align:center;font-size:11px">4712 pasos</div></div>
+<div><div class="sc s1"><b>82</b></div><div style="font-size:10px;color:#7ed17e;text-align:center;margin-top:6px">DESCANSO Bueno</div></div>
+<div><div class="sc s2"><b>85</b></div><div style="font-size:10px;color:#4ecdc4;text-align:center;margin-top:6px">SUEÑO 08h15</div></div>
+<div><div class="sc s3"><b>47</b></div><div style="font-size:10px;color:#ff9a57;text-align:center;margin-top:6px">4712 pasos</div></div>
 </div>
-<div class=hero><div class=circ><div class=ci><b>4712</b></div></div><div><b>4,712 de 10,000</b><div style="font-size:12px;color:#888">191 kcal • 2.99 km • 47.1%</div></div></div>
-<div class=grid>
-<div class=card><div class=k>SUEÑO 08H15M</div><div class=v>85</div><div class=s>Profundo 2h01 24%<br>REM 1h19</div></div>
-<div class=card><div class=k>RITMO 80 BPM</div><div class=v>80 bpm</div><div class=s>Rango 71-91 • HRV 48ms</div></div>
-<div class=card><div class=k>PRESIÓN</div><div class=v>124/83</div><div class=s>Prom 124/81 estable</div></div>
-<div class=card><div class=k>OXÍGENO</div><div class=v>98%</div><div class=s>Avg 97% • Noche 99%</div></div>
+
+<div class=card onclick="this.querySelector('.detail').classList.toggle('show')">
+<div class=k>ACTIVIDAD • 47.1%</div>
+<div class=v>4,712 de 10,000</div>
+<div class=s>191 kcal • 2.99 km • Proyectado 8.9k<br>▶ Toca para detalle por hora</div>
+<div class=detail>
+<div style="font-size:12px;font-weight:700">Detalle por hora • Medición CONTINUO 1s</div>
+<div class=timeline><div class=t style="height:20%"></div><div class=t on style="height:45%"></div><div class=t on style="height:88%"></div><div class=t on style="height:60%"></div><div class=t style="height:30%"></div></div>
+<div class=grid2><div class=mini><b>15:30 42</b><br><span>Inicio</span></div><div class=mini><b>17:00 210</b></div><div class=mini><b>19:00 465 PICO</b></div><div class=mini><b>20:30 320</b></div></div>
 </div>
-<div class=devol id=dev></div>
-<script>
-document.getElementById('dev').innerHTML=`<h3>DEVOLUCIÓN AUTOMÁTICA • MAR</h3>
-● Actividad 47% Proyectas 8.9k hoy<br>
-● Sueño 08h15 Excelente Profundo 24% REM 1h19<br>
-● FC 80 PA 124/83 estable SpO2 98%<br>
-● Pasos continuo, FC/PA/SpO2 cada 30min, sueño cada 5min`;
-</script>
+</div>
+
+<div class=card onclick="this.querySelector('.detail').classList.toggle('show')">
+<div class=k>SUEÑO • 08H15M EXCELENTE</div>
+<div class=v>85 Score</div>
+<div class=s>Profundo 2h01 24% • Ligero 4h55 • REM 1h19<br>▶ Toca fases</div>
+<div class=detail>
+<div style="font-size:12px;font-weight:700">Fases • Medición 5min noche</div>
+<div class=bar><div class=fill style="width:24%;background:#6d28d9"></div></div><span>Profundo 2h01 24% ideal >20%</span>
+<div class=bar><div class=fill style="width:60%;background:#4ecdc4"></div></div><span>Ligero 4h55 59%</span>
+<div class=bar><div class=fill style="width:16%;background:#f59e0b"></div></div><span>REM 1h19 16% límite 1h20</span>
+</div>
+</div>
+
+<div class=card onclick="this.querySelector('.detail').classList.toggle('show')">
+<div class=k>RITMO CARDÍACO • HR + HRV</div>
+<div class=v>80 bpm • HRV 48ms</div>
+<div class=s>Rango 71-91 • Reposo 72 • Prom 76<br>▶ Toca tendencia</div>
+<div class=detail>
+<div style="font-size:12px;font-weight:700">24h • Medición AUTO 30min (30s) • Deporte 1min</div>
+<div class=timeline><div class=t on style="height:71%"></div><div class=t on style="height:75%"></div><div class=t on style="height:80%"></div><div class=t on style="height:91%"></div><div class=t on style="height:78%"></div></div>
+<div class=grid2><div class=mini><b>Min 71 04:12</b></div><div class=mini><b>Max 91 19:05</b></div><div class=mini><b>HRV 48ms</b></div><div class=mini><b>Reposo 72</b></div></div>
+</div>
+</div>
+
+<div class=card onclick="this.querySelector('.detail').classList.toggle('show')">
+<div class=k>PRESIÓN 124/83</div>
+<div class=v>124/83 mmHg</div>
+<div class=s>Prom 124/81 estable<br>▶ Toca histórico</div>
+<div class=detail>
+<div class=grid2><div class=mini><b>Hoy 124/83</b></div><div class=mini><b>Prom 124/81</b></div><div class=mini><b>Sis 118-128</b></div><div class=mini><b>Dia 79-84</b></div></div>
+</div>
+</div>
+
+<div class=card onclick="this.querySelector('.detail').classList.toggle('show')">
+<div class=k>OXÍGENO 98% Noche 99%</div>
+<div class=v>98% • Noche 99%</div>
+<div class=s>Avg 97% Min 95% Sin <90%<br>▶ Toca detalle</div>
+<div class=detail>
+<div class=bar><div class=fill style="width:98%;background:#10b981"></div></div>
+<div>98% actual 99% noche Avg 97% Min 95% Sin apnea REM 1h19 sostenido</div>
+</div>
+</div>
+
+<div class=devol><div style="font-size:11px;color:#777">DEVOLUCIÓN AUTOMÁTICA • MAR</div>• 47% 4712 pasos 8.9k proy • Sueño 08h15 profundo 24% REM 1h19 • FC 80 71-91 HRV 48ms • PA 124/83 prom 124/81 • SpO2 98% noche 99% • Medición: pasos 1s, resto 30min, sueño 5min</div>
