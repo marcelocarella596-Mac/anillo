@@ -3,1166 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FITRING / MAR v10 • REAL DATA ARCHITECTURE</title>
+<title>FITRING / MAR v10.1 • BLE DISCOVERY</title>
 
 <style>
 :root{
-  --bg:#060a14;
-  --panel:#0f1629;
-  --card:#141e36;
-  --line:#1e2f55;
-  --blue:#4da3ff;
-  --green:#5dff8a;
-  --orange:#ff9f43;
-  --red:#ff6b6b;
-  --yellow:#ffd166;
-  --purple:#8b5cf6;
-  --cyan:#4ecdc4;
+ --bg:#060a14;
+ --panel:#0f1629;
+ --card:#141e36;
+ --line:#1e2f55;
+ --blue:#4da3ff;
+ --green:#5dff8a;
+ --orange:#ff9f43;
+ --red:#ff6b6b;
+ --yellow:#ffd166;
+ --purple:#8b5cf6;
+ --cyan:#4ecdc4;
 }
 
 *{box-sizing:border-box}
 
 body{
-  margin:0;
-  background:var(--bg);
-  color:#c8d3e8;
-  font-family:system-ui,-apple-system,Arial,sans-serif;
-  font-size:12px;
+ margin:0;
+ background:var(--bg);
+ color:#c8d3e8;
+ font-family:system-ui,-apple-system,Arial,sans-serif;
+ font-size:12px;
 }
 
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 14px;
-  background:#090f20;
-  border-bottom:1px solid var(--line);
-  gap:10px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:10px 14px;
+ background:#090f20;
+ border-bottom:1px solid var(--line);
+ gap:10px;
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:240px minmax(0,1fr) 240px;
-  gap:12px;
-  padding:12px;
+ display:grid;
+ grid-template-columns:240px minmax(0,1fr) 240px;
+ gap:12px;
+ padding:12px;
 }
 
 @media(max-width:900px){
-  .grid{grid-template-columns:1fr}
-  .header{flex-wrap:wrap}
+ .grid{grid-template-columns:1fr}
+ .header{flex-wrap:wrap}
 }
 
 .card{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
+ background:var(--panel);
+ border:1px solid var(--line);
+ border-radius:12px;
+ padding:12px;
 }
 
 .user{
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:8px;
-  border:1px solid var(--line);
+ border-radius:10px;
+ padding:10px;
+ margin-bottom:8px;
+ border:1px solid var(--line);
 }
 
 .user.online{
-  border-color:var(--blue);
-  background:#132040;
+ border-color:var(--blue);
+ background:#132040;
 }
 
 .user.alert{
-  border-color:var(--red);
-  background:#2a1414;
+ border-color:var(--red);
+ background:#2a1414;
 }
 
 .user.low{
-  border-color:var(--yellow);
-  background:#2a2414;
+ border-color:var(--yellow);
+ background:#2a2414;
 }
 
 .barH{
-  height:4px;
-  background:#0a1430;
-  border-radius:4px;
-  margin-top:6px;
-  overflow:hidden;
+ height:4px;
+ background:#0a1430;
+ border-radius:4px;
+ margin-top:6px;
+ overflow:hidden;
 }
 
 .barH div{height:100%}
 
 .row{
-  display:grid;
-  grid-template-columns:95px 1fr 105px;
-  align-items:center;
-  gap:8px;
-  margin:9px 0;
+ display:grid;
+ grid-template-columns:95px 1fr 110px;
+ align-items:center;
+ gap:8px;
+ margin:9px 0;
 }
 
 .bar{
-  height:5px;
-  background:#0a1430;
-  border-radius:4px;
-  overflow:hidden;
+ height:5px;
+ background:#0a1430;
+ border-radius:4px;
+ overflow:hidden;
 }
 
 .bar div{
-  height:100%;
-  transition:width .4s;
+ height:100%;
+ transition:width .4s;
 }
 
 .metricValue{
-  text-align:right;
-  font-weight:800;
+ text-align:right;
+ font-weight:800;
 }
 
 .btn{
-  padding:8px 10px;
-  border-radius:8px;
-  border:0;
-  font-weight:800;
-  cursor:pointer;
-  font-size:11px;
+ padding:8px 10px;
+ border-radius:8px;
+ border:0;
+ font-weight:800;
+ cursor:pointer;
+ font-size:11px;
 }
 
 .btnBlue{
-  background:#0a84ff;
-  color:#fff;
+ background:#0a84ff;
+ color:#fff;
 }
 
 .btnGhost{
-  background:#1a2642;
-  color:#8aa0c8;
-  border:1px solid var(--line);
+ background:#1a2642;
+ color:#8aa0c8;
+ border:1px solid var(--line);
 }
 
 .live{
-  font-size:9px;
-  color:var(--green);
+ font-size:9px;
+ color:var(--green);
 }
 
 .mode{
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:8px;
-  cursor:pointer;
-  background:#0c1429;
+ border:1px solid var(--line);
+ border-radius:10px;
+ padding:10px;
+ margin-bottom:8px;
+ cursor:pointer;
+ background:#0c1429;
 }
 
 .dot{
-  width:7px;
-  height:7px;
-  background:#22c55e;
-  border-radius:50%;
-  display:inline-block;
-  animation:blink 1s infinite;
+ width:7px;
+ height:7px;
+ background:#22c55e;
+ border-radius:50%;
+ display:inline-block;
+ animation:blink 1s infinite;
 }
 
 @keyframes blink{
-  50%{opacity:.3}
+ 50%{opacity:.3}
 }
 
 .take{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:5px;
-  margin:8px 0;
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:5px;
+ margin:8px 0;
 }
 
 .take button{
-  padding:8px 2px;
-  border-radius:8px;
-  border:1px solid var(--line);
-  background:#141e36;
-  color:#fff;
-  font-size:9px;
-  font-weight:800;
-  cursor:pointer;
+ padding:8px 2px;
+ border-radius:8px;
+ border:1px solid var(--line);
+ background:#141e36;
+ color:#fff;
+ font-size:9px;
+ font-weight:800;
+ cursor:pointer;
 }
 
 .take button.active{
-  border-color:var(--green);
-  box-shadow:0 0 0 1px var(--green) inset;
+ border-color:var(--green);
+ box-shadow:0 0 0 1px var(--green) inset;
 }
 
 .source{
-  display:inline-block;
-  margin-left:4px;
-  padding:2px 5px;
-  border-radius:5px;
-  font-size:7px;
-  font-weight:900;
-  vertical-align:middle;
+ display:inline-block;
+ margin-left:4px;
+ padding:2px 5px;
+ border-radius:5px;
+ font-size:7px;
+ font-weight:900;
+ vertical-align:middle;
 }
 
-.src-ring{
-  background:#12331c;
-  color:var(--green);
-}
-
-.src-phone{
-  background:#172b44;
-  color:#7ac3ff;
-}
-
-.src-demo{
-  background:#3a2912;
-  color:var(--yellow);
-}
-
-.src-est{
-  background:#3b2118;
-  color:var(--orange);
-}
-
-.src-mar{
-  background:#291c45;
-  color:#c6a8ff;
-}
-
-.src-none{
-  background:#202636;
-  color:#7e8aa5;
-}
+.src-ring{background:#12331c;color:var(--green)}
+.src-phone{background:#172b44;color:#7ac3ff}
+.src-demo{background:#3a2912;color:var(--yellow)}
+.src-est{background:#3b2118;color:var(--orange)}
+.src-mar{background:#291c45;color:#c6a8ff}
+.src-none{background:#202636;color:#7e8aa5}
 
 .statusBox{
-  background:#0c1429;
-  border:1px solid var(--line);
-  padding:8px;
-  border-radius:8px;
-  margin-top:8px;
+ background:#0c1429;
+ border:1px solid var(--line);
+ padding:8px;
+ border-radius:8px;
+ margin-top:8px;
 }
 
 #chart{
-  height:60px;
-  background:#0d1730;
-  border:1px solid var(--line);
-  border-radius:8px;
-  display:flex;
-  align-items:end;
-  gap:2px;
-  padding:4px;
-  margin-top:4px;
+ height:60px;
+ background:#0d1730;
+ border:1px solid var(--line);
+ border-radius:8px;
+ display:flex;
+ align-items:end;
+ gap:2px;
+ padding:4px;
+ margin-top:4px;
 }
 
 .chartBar{
-  flex:1;
-  background:var(--blue);
-  border-radius:2px 2px 0 0;
-  min-height:3px;
+ flex:1;
+ background:var(--blue);
+ border-radius:2px 2px 0 0;
+ min-height:3px;
 }
 
 .marBox{
-  margin-top:12px;
-  background:#10172a;
-  border:1px solid var(--purple);
-  border-radius:10px;
-  padding:10px;
+ margin-top:12px;
+ background:#10172a;
+ border:1px solid var(--purple);
+ border-radius:10px;
+ padding:10px;
 }
 
 .marScore{
-  font-size:28px;
-  font-weight:900;
-  color:#fff;
+ font-size:28px;
+ font-weight:900;
+ color:#fff;
 }
 
 .history{
-  max-height:130px;
-  overflow:auto;
-  margin-top:8px;
-  font-size:9px;
+ max-height:130px;
+ overflow:auto;
+ margin-top:8px;
+ font-size:9px;
 }
 
 .historyItem{
-  padding:5px;
-  border-bottom:1px solid #19233c;
+ padding:5px;
+ border-bottom:1px solid #19233c;
 }
 
 .small{
-  font-size:9px;
-  opacity:.55;
-}
-
-.warn{
-  color:var(--yellow);
-}
-
-.good{
-  color:var(--green);
-}
-
-.bad{
-  color:var(--red);
+ font-size:9px;
+ opacity:.55;
 }
 
 #log{
-  font-size:9px;
-  opacity:.75;
-  margin-top:6px;
-  max-height:110px;
-  overflow:auto;
+ font-size:9px;
+ margin-top:8px;
+ max-height:150px;
+ overflow:auto;
 }
 
 .logItem{
-  padding:4px;
-  background:#111b32;
-  border-radius:4px;
-  margin-bottom:3px;
+ padding:5px;
+ background:#111b32;
+ border-radius:4px;
+ margin-bottom:3px;
 }
 
-.footer{
-  margin:0 12px 20px;
-  padding:10px;
-  border:1px solid #3c3116;
-  background:#17140c;
-  color:#b9aa78;
-  border-radius:10px;
-  font-size:9px;
-  line-height:1.5;
+.logGood{
+ border-left:2px solid var(--green);
 }
 
-@media(max-width:500px){
-  .take{grid-template-columns:1fr 1fr}
-  .row{grid-template-columns:80px 1fr 95px}
-}
-</style>
-</head>
-
-<body>
-
-<!-- ======================================================
-     HEADER
-====================================================== -->
-
-<div class="header">
-
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-    <span style="font-size:18px">⬡</span>
-    <b>FITRING / MAR v10</b>
-
-    <span style="
-      background:#291c45;
-      color:#c6a8ff;
-      padding:2px 8px;
-      border-radius:8px;
-      font-size:9px">
-      REAL DATA ARCHITECTURE
-    </span>
-
-    <span style="opacity:.5">
-      Dashboard General
-    </span>
-  </div>
-
-  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-
-    <button class="btn btnBlue" onclick="conectarR10M()">
-      🔵 CONECTAR R10M
-    </button>
-
-    <button class="btn btnGhost" onclick="toggleDemo()">
-      🧪 DEMO
-    </button>
-
-    <span id="st" style="
-      background:#251b10;
-      color:#ffd166;
-      padding:6px 10px;
-      border-radius:8px;
-      font-size:10px">
-      ● R10M desconectado
-    </span>
-
-  </div>
-
-</div>
-
-
-<div class="grid">
-
-<!-- ======================================================
-     USERS
-====================================================== -->
-
-<div class="card">
-
-  <div style="font-size:10px;opacity:.5;margin-bottom:8px">
-    USERS
-  </div>
-
-  <div class="user online">
-
-    <div style="display:flex;justify-content:space-between">
-      <b>● Marcelo</b>
-      <span style="font-size:9px;opacity:.6">
-        FR-2413
-      </span>
-    </div>
-
-    <div class="barH">
-      <div id="userBatteryBar"
-           style="width:78%;background:var(--blue)">
-      </div>
-    </div>
-
-    <div id="userStatus"
-         style="font-size:9px;color:var(--green);margin-top:4px">
-      ● Sistema activo
-    </div>
-
-  </div>
-
-
-  <div class="user alert">
-
-    <div style="display:flex;justify-content:space-between">
-      <b>⚠️ Silvia</b>
-      <span style="font-size:9px;opacity:.6">
-        FR-2089 • Calma
-      </span>
-    </div>
-
-    <div class="barH">
-      <div style="width:83%;background:var(--red)"></div>
-    </div>
-
-    <div style="font-size:9px;color:var(--red);margin-top:4px">
-      ● Demo usuario
-    </div>
-
-  </div>
-
-
-  <div class="user low">
-
-    <div style="display:flex;justify-content:space-between">
-      <b>Vanessa</b>
-      <span style="font-size:9px;opacity:.6">
-        FR-3125 • Fitness
-      </span>
-    </div>
-
-    <div class="barH">
-      <div style="width:28%;background:var(--yellow)"></div>
-    </div>
-
-    <div style="font-size:9px;color:var(--yellow);margin-top:4px">
-      ● Demo usuario
-    </div>
-
-  </div>
-
-
-  <div class="statusBox">
-
-    <div class="small">SISTEMA</div>
-
-    <div style="margin-top:5px">
-      BLE:
-      <b id="bleStatus">DESCONECTADO</b>
-    </div>
-
-    <div>
-      DEMO:
-      <b id="demoStatus">OFF</b>
-    </div>
-
-    <div>
-      PHONE MOTION:
-      <b id="phoneStatus">OFF</b>
-    </div>
-
-    <div>
-      Registros:
-      <b id="recordCount">0</b>
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     CENTRO
-====================================================== -->
-
-<div class="card">
-
-  <div style="display:flex;justify-content:space-between;gap:8px">
-
-    <b>Live Input Panel</b>
-
-    <span class="live" id="telemetryStatus">
-      ● esperando fuente
-    </span>
-
-  </div>
-
-
-<!-- ======================================================
-     BOTONES
-====================================================== -->
-
-<div class="take">
-
-  <button onclick="tomarDemo('hr')" id="bHr">
-    🫀 PULSO
-  </button>
-
-  <button onclick="tomarDemo('spo2')" id="bSpo2">
-    🩸 OXÍGENO
-  </button>
-
-  <button onclick="tomarDemo('bp')" id="bBp">
-    ❤️ PRESIÓN
-  </button>
-
-  <button onclick="iniciarPasosTelefono()"
-          id="bSteps"
-          style="border-color:var(--yellow)">
-    👣 PASOS TELÉFONO
-  </button>
-
-  <button onclick="startRingAudio()"
-          id="bRing"
-          style="border-color:var(--purple)">
-    💍🎤 NOTA
-  </button>
-
-  <button onclick="tomarDemo('stress')" id="bStress">
-    🧠 ESTRÉS
-  </button>
-
-</div>
-
-
-<!-- ======================================================
-     MÉTRICAS
-====================================================== -->
-
-<div class="row">
-
-  <span>HR (BPM)</span>
-
-  <div class="bar">
-    <div id="barHR"
-         style="width:0;background:var(--blue)">
-    </div>
-  </div>
-
-  <div class="metricValue">
-    <span id="vHR">--</span>
-    <span id="srcHR" class="source src-none">SIN DATO</span>
-  </div>
-
-</div>
-
-
-<div class="row">
-
-  <span>SpO₂ (%)</span>
-
-  <div class="bar">
-    <div id="barSpO2"
-         style="width:0;background:var(--green)">
-    </div>
-  </div>
-
-  <div class="metricValue">
-    <span id="vSpO2">--</span>
-    <span id="srcSpO2" class="source src-none">SIN DATO</span>
-  </div>
-
-</div>
-
-
-<div class="row">
-
-  <span>Stress (%)</span>
-
-  <div class="bar">
-    <div id="barStress"
-         style="width:0;background:var(--orange)">
-    </div>
-  </div>
-
-  <div class="metricValue">
-    <span id="vStress">--</span>
-    <span id="srcStress" class="source src-none">SIN DATO</span>
-  </div>
-
-</div>
-
-
-<div class="row">
-
-  <span>HRV (ms)</span>
-
-  <div class="bar">
-    <div id="barHRV"
-         style="width:0;background:var(--blue)">
-    </div>
-  </div>
-
-  <div class="metricValue">
-    <span id="vHRV">--</span>
-    <span id="srcHRV" class="source src-none">SIN DATO</span>
-  </div>
-
-</div>
-
-
-<div class="row">
-
-  <span>Temp (°C)</span>
-
-  <div class="bar">
-    <div id="barTemp"
-         style="width:0;background:#7ad3ff">
-    </div>
-  </div>
-
-  <div class="metricValue">
-    <span id="vTemp">--</span>
-    <span id="srcTemp" class="source src-none">SIN DATO</span>
-  </div>
-
-</div>
-
-
-<div class="row">
-
-  <span>Steps</span>
-
-  <div class="bar">
-    <div id="barSteps"
-         style="width:0;background:var(--yellow)">
-    </div>
-  </div>
-
-  <div class="metricValue">
-    <span id="vSteps">--</span>
-    <span id="srcSteps" class="source src-none">SIN DATO</span>
-  </div>
-
-</div>
-
-
-<div class="row">
-
-  <span>Presión</span>
-
-  <div class="bar">
-    <div id="barBP"
-         style="width:0;background:var(--red)">
-    </div>
-  </div>
-
-  <div class="metricValue">
-    <span id="vBP">--</span>
-    <span id="srcBP" class="source src-none">SIN DATO</span>
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     CHART
-====================================================== -->
-
-<div style="margin-top:10px;font-size:9px;opacity:.6">
-  Heart Rate Trend
-</div>
-
-<div id="chart"></div>
-
-
-<!-- ======================================================
-     AUDIO
-====================================================== -->
-
-<div id="ringBox" style="
-  margin-top:8px;
-  background:#0c1429;
-  border:1px solid var(--purple);
-  border-radius:8px;
-  padding:8px;
-  display:none">
-
-  <div style="display:flex;justify-content:space-between">
-
-    <span style="font-size:10px">
-      <span class="dot"></span>
-      <span id="ringGesture">
-        💍 Nota esperando...
-      </span>
-    </span>
-
-    <span>💍</span>
-
-  </div>
-
-  <div id="transcriptRing" style="
-    margin-top:6px;
-    background:#141e36;
-    padding:6px;
-    border-radius:6px;
-    font-size:11px">
-  </div>
-
-  <audio id="playerRing"
-         controls
-         style="width:100%;margin-top:6px;display:none">
-  </audio>
-
-  <div class="small" style="margin-top:4px">
-    La grabación utiliza el micrófono autorizado por el navegador.
-    No se presenta como micrófono físico del R10M.
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     MAR ENGINE
-====================================================== -->
-
-<div class="marBox">
-
-  <div style="display:flex;justify-content:space-between">
-
-    <div>
-      <div class="small">
-        MAR ENGINE
-      </div>
-
-      <div class="marScore" id="marScore">
-        --
-      </div>
-    </div>
-
-    <span class="source src-mar">
-      CALCULADO MAR
-    </span>
-
-  </div>
-
-  <div id="marFeedback"
-       style="line-height:1.5;margin-top:5px">
-    Esperando datos suficientes.
-  </div>
-
-  <div class="small" id="marTime"
-       style="margin-top:6px">
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     CONTROLES
-====================================================== -->
-
-<div style="display:flex;gap:6px;margin-top:10px">
-
-  <button class="btn btnGhost"
-          style="flex:1"
-          onclick="calibrar()">
-    Calibrate
-  </button>
-
-  <button class="btn btnBlue"
-          style="flex:1"
-          onclick="exportar()">
-    Export Data
-  </button>
-
-</div>
-
-
-<div id="log">
-
-  <div class="logItem">
-    FITRING / MAR v10 iniciado.
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     HISTORIAL
-====================================================== -->
-
-<div style="margin-top:12px">
-
-  <div style="display:flex;justify-content:space-between">
-
-    <b style="font-size:10px">
-      HISTORIAL DE MEDICIONES
-    </b>
-
-    <button class="btn btnGhost"
-            onclick="limpiarHistorial()">
-      Limpiar
-    </button>
-
-  </div>
-
-  <div class="history" id="history"></div>
-
-</div>
-
-</div>
-
-
-<!-- ======================================================
-     MODOS
-====================================================== -->
-
-<div class="card">
-
-  <div style="font-size:10px;opacity:.5;margin-bottom:8px">
-    MODE PREVIEWS
-  </div>
-
-
-  <div class="mode" onclick="openBoard('calma')">
-
-    <div style="display:flex;justify-content:space-between">
-      <span>🌙 Calma</span>
-      <span class="source src-mar">MAR</span>
-    </div>
-
-    <div class="small">
-      Interpretación orientativa
-    </div>
-
-    <div style="height:22px;display:flex;align-items:end;gap:2px;margin-top:6px">
-      <div style="flex:1;background:var(--purple);height:40%"></div>
-      <div style="flex:1;background:var(--purple);height:70%"></div>
-      <div style="flex:1;background:var(--purple);height:50%"></div>
-    </div>
-
-  </div>
-
-
-  <div class="mode" onclick="openBoard('fitness')">
-
-    <div style="display:flex;justify-content:space-between">
-      <span>🏃 Fitness</span>
-      <span class="source src-mar">MAR</span>
-    </div>
-
-    <div class="small">
-      Actividad y respuesta cardíaca
-    </div>
-
-    <div style="height:22px;display:flex;align-items:end;gap:2px;margin-top:6px">
-      <div style="flex:1;background:var(--orange);height:60%"></div>
-      <div style="flex:1;background:var(--orange);height:90%"></div>
-      <div style="flex:1;background:var(--orange);height:70%"></div>
-    </div>
-
-  </div>
-
-
-  <div class="mode" onclick="openBoard('sueno')">
-
-    <div style="display:flex;justify-content:space-between">
-      <span>🌙 Sueño</span>
-      <span class="source src-est">FUTURO</span>
-    </div>
-
-    <div class="small">
-      Preparado para integrar datos nocturnos
-    </div>
-
-    <div style="height:22px;display:flex;align-items:end;gap:2px;margin-top:6px">
-      <div style="flex:1;background:var(--blue);height:30%"></div>
-      <div style="flex:1;background:var(--blue);height:60%"></div>
-      <div style="flex:1;background:var(--blue);height:40%"></div>
-    </div>
-
-  </div>
-
-
-  <div style="
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px;
-    margin-top:12px">
-
-    <div class="statusBox" style="text-align:center">
-      <div class="small">R10M</div>
-      <b id="ringName" style="font-size:15px">
-        NO CONECTADO
-      </b>
-    </div>
-
-    <div class="statusBox" style="text-align:center">
-      <div class="small">BLE</div>
-      <b id="bleMetric" style="font-size:15px">
-        OFF
-      </b>
-    </div>
-
-    <div class="statusBox" style="text-align:center">
-      <div class="small">Estrés MAR</div>
-      <b id="avgStress" style="font-size:18px">
-        --
-      </b>
-    </div>
-
-    <div class="statusBox" style="text-align:center">
-      <div class="small">Batería</div>
-      <b id="bat" style="font-size:18px">
-        --
-      </b>
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="footer">
-
-<b>FITRING / MAR v10</b><br>
-
-Los datos están identificados según su origen:
-R10M real, teléfono, simulación, estimación o cálculo MAR.
-
-Las funciones de presión, SpO₂, HRV, sueño, estrés y otros indicadores
-no deben interpretarse como diagnóstico médico. La disponibilidad de
-telemetría real depende de las características BLE/SDK que exponga
-el dispositivo R10M.
-
-</div>
-
-
-<script>
-
-/* ==========================================================
-   FITRING / MAR v10
-   ESTADO CENTRAL
-========================================================== */
-
-const MAR_DATA = {
-
-  device:{
-    connected:false,
-    name:null,
-    battery:null,
-    gatt:null,
-    demo:false
-  },
-
-  metrics:{
-
-    hr:{
-      value:null,
-      source:"NONE",
-      timestamp:null
-    },
-
-    spo2:{
-      value:null,
-      source:"NONE",
-      timestamp:null
-    },
-
-    stress:{
-      value:null,
-      source:"NONE",
-      timestamp:null
-    },
-
-    hrv:{
-      value:null,
-      source:"NONE",
-      timestamp:null
-    },
-
-    temp:{
-      value:null,
-      source:"NONE",
-      timestamp:null
-    },
-
-    steps:{
-      value:0,
-      source:"NONE",
-      timestamp:null
-    },
-
-    bp:{
-      systolic:null,
-      diastolic:null,
-      source:"NONE",
-      timestamp:null
-    }
-
-  },
-
-  heartHistory:[],
-
-  history:[],
-
-  phone:{
-    motion:false,
-    lastMagnitude:null,
-    lastStep:0
-  }
-
-};
-
-
-/* ==========================================================
-   UTILIDADES
-========================================================== */
-
-function now(){
-
-  return new Date();
-
+.logWarn{
+ border-left:2px solid var(--yellow);
 }
 
-
-function sourceInfo(source){
-
-  const map={
-
-    R10M:{
-      text:"R10M REAL",
-      cls:"src-ring"
-    },
-
-    PHONE:{
-      text:"TELÉFONO",
-      cls:"src-phone"
-    },
-
-    DEMO:{
-      text:"SIMULADO",
-      cls:"src-demo"
-    },
-
-    ESTIMATED:{
-      text:"ESTIMADO",
-      cls:"src-est"
-    },
-
-    MAR:{
-      text:"MAR",
-      cls:"src-mar"
-    },
-
-    NONE:{
-      text:"SIN DATO",
-      cls:"src-none"
-    }
-
-  };
-
-  return map[source] || map.NONE;
-
+.logError{
+ border-left:2px solid var(--red);
 }
 
-
-function setSource(id,source){
-
-  const e=document.getElementById(id);
-
-  const info=sourceInfo(source);
-
-  e.className="source "+info.cls;
-  e.textContent=info.text;
-
-}
-
-
-function addLog(text){
-
-  const log=document.getElementById("log");
-
-  const div=document.createElement("div");
-
-  div.className="logItem";
-
-  div.textContent=
-    new Date().toLocaleTimeString()+
-    " • "+
-    text;
-
-  log.prepend(div);
-
-}
-
-
-/* ==========================================================
-   REGISTRO
-========================================================== */
-
-function recordMetric(metric,value,source){
-
-  const item={
-
-    metric,
-    value,
-    source,
-    timestamp:new Date().toISOString()
-
-  };
-
-  MAR_DATA.history.push(item);
-
-  if(MAR_DATA.history.length>300){
-
-    MAR_DATA.history.shift();
-
-  }
-
-  renderHistory();
-
-}
-
-
-function renderHistory(){
-
-  const box=document.getElementById("history");
-
-  box.innerHTML="";
-
-  MAR_DATA.history
-  .slice()
-  .reverse()
-  .slice(0,30)
-  .forEach(item=>{
-
-    const div=document.createElement("div");
-
-    div.className="historyItem";
-
-    div.textContent=
-      new Date(item.timestamp).toLocaleTimeString()+
-      " • "+
-      item.metric.toUpperCase()+
-      " = "+
-      item.value+
-      " • "+
-      sourceInfo(item.source).text;
-
-    box.appendChild(div);
-
-  });
-
-  document.getElementById("recordCount").textContent=
-    MAR_DATA.history.length;
-
-}
-
-
-/* =============
+.bleInspector{
+ margin-top:12px;
+ background:#090f20;
+ border:1px solid var(--blue);
+ border-radius:10px;
+ padding:
