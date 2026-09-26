@@ -1,148 +1,98 @@
 <!DOCTYPE html>
-<html lang="es"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAR • Alertas Seleccionables</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<html lang=es>
+<head>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>MAR Violeta - Todo Clickeable</title>
+<script src=https://cdn.jsdelivr.net/npm/chart.js></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f6f5f2;color:#1a1a1a;font-family:system-ui}
-.header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.grid{display:grid;grid-template-columns:1fr 360px;gap:14px;padding:14px;max-width:1220px;margin:0 auto}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-.card{background:#fff;border-radius:20px;padding:16px;border:1px solid #ece9e4;margin-bottom:14px}
-.score{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;color:#fff}
-.pill{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin:2px}
-.suggest{display:flex;gap:12px;align-items:center;background:#faf8f5;border:1px solid #f0ebe3;border-radius:16px;padding:10px;margin-bottom:10px}
-.suggest img{width:56px;height:56px;border-radius:12px;object-fit:cover}
-.btn{padding:10px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
-.btnDark{background:#1a1a1a;color:#fff}.btnBlue{background:#0a84ff;color:#fff}.btnRed{background:#ff4757;color:#fff}
-.alertBox{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:99;background:#111;color:#fff;padding:14px 20px;border-radius:14px;display:none;max-width:90%;font-size:13px}
-.alertRow{display:flex;align-items:center;justify-content:space-between;background:#faf8f5;border:1px solid #f0ebe3;border-radius:14px;padding:10px 12px;margin-bottom:8px}
-.switch{width:44px;height:26px;background:#e5e7eb;border-radius:20px;position:relative;cursor:pointer;transition:.2s}
-.switch.on{background:#111}
-.switch i{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.switch.on i{transform:translateX(18px)}
-.logBox{background:#0f1115;color:#5dff8a;border-radius:10px;padding:8px;font-size:10px;max-height:110px;overflow:auto;font-family:monospace;margin-top:8px}
-input[type=range]{width:90px}
+:root{--vio:#7c3aed;--vioD:#4c1d95;--bg:#f5f3ff}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui}
+body{background:linear-gradient(180deg,#f5f3ff,#ede9fe 50%,#ddd6fe);min-height:100vh;color:#1e1b4b;padding-bottom:90px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);position:sticky;top:0;z-index:10;border-bottom:1px solid #ddd6fe}
+.logo{font-weight:900;font-size:22px;background:linear-gradient(90deg,#4c1d95,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.conn{padding:6px 12px;border-radius:999px;font-size:11px;font-weight:800;border:0;background:#fef3c7;color:#92400e}
+.conn.ok{background:#dcfce7;color:#166534}
+.hero{margin:12px 16px;background:linear-gradient(135deg,#7c3aed,#4c1d95);border-radius:26px;padding:18px;color:white;display:flex;align-items:center;gap:16px;cursor:pointer}
+.circle{width:120px;height:120px;border-radius:50%;background:conic-gradient(white 0% 47%,rgba(255,255,255,.3) 47%);display:flex;align-items:center;justify-content:center}
+.inner{width:100px;height:100px;border-radius:50%;background:rgba(0,0,0,.15);display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.3)}
+.k{font-size:30px;font-weight:900}
+.grid2{margin:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:rgba(255,255,255,.92);border-radius:20px;padding:12px;box-shadow:0 6px 20px rgba(124,58,237,.08);border:1px solid rgba(255,255,255,.8);cursor:pointer;transition:.15s}
+.card:active{transform:scale(.98)}
+.cardTop{display:flex;justify-content:space-between}
+.val{font-size:24px;font-weight:900}
+.sub{font-size:11px;color:#6b7280;margin-top:2px}
+.badge{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:#ede9fe;color:#5b21b6}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);display:flex;justify-content:space-around;padding:8px 0;border-top:1px solid #ddd6fe;z-index:20}
+.navItem{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#9ca3af;cursor:pointer;padding:4px 14px;border-radius:12px}
+.navItem.active{color:#7c3aed;background:#ede9fe;font-weight:700}
+.sec{display:none;margin:12px 16px}
+.sec.active{display:block}
+.modal{position:fixed;inset:0;background:rgba(15,10,42,.55);backdrop-filter:blur(8px);display:none;align-items:end;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.box{background:#f5f3ff;width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:16px;max-height:86vh;overflow:auto}
+.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ede9fe;font-size:12px}
+.btnV{background:linear-gradient(90deg,#4c1d95,#7c3aed);color:white;border:0;padding:12px;border-radius:14px;font-weight:800;width:100%;margin-top:10px;cursor:pointer}
+.log{background:#0f0a2a;color:#a5f3fc;padding:8px;border-radius:12px;font-family:monospace;font-size:10px;max-height:100px;overflow:auto;margin:0 16px;display:none}
 </style>
-</head><body>
-<div id="alertSound" class="alertBox"></div>
-<div class="header">
-<div><b style="font-size:18px">MAR</b> <span style="background:#111;color:#fff;padding:3px 8px;border-radius:8px;font-size:10px;margin-left:6px">ALERTAS SELECCIONABLES • 5E17 CHECKER</span></div>
-<div style="display:flex;gap:6px;align-items:center">
-<button class="btn btnBlue" onclick="conectarMAR()">🔵 CONECTAR R10M 5E17</button>
-<button class="btn btnRed" onclick="desconectarMAR()">🔴 DESCONECTAR</button>
-<span id="st" style="background:#e8f5e9;color:#2e7d32;padding:6px 10px;border-radius:10px;font-size:11px">● Listo</span>
-</div>
-</div>
+</head>
+<body>
+<div class=top><div class=logo>MAR Violeta</div><button id=connBtn class=conn onclick=conectar()>● Desconectado</button></div>
+<div class=log id=log>✓ Datos preservados 09/19-25: 4712 pasos, 08h15 sueño, 80 bpm, 124/83 PA, 98% SpO2
+✓ Fondo violeta tranquilo
+Listo R10M 5E17</div>
 
-<div class="grid">
-<div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6">PREPARACIÓN</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" id="scorePrep" style="background:#ff6b35">82</div></div><div style="font-size:12px"><b id="prepTxt">Buena</b> • <span id="prepSub">HR 72 OK</span></div></div>
-<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6">SUEÑO</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#4f46e5">88</div></div><div style="font-size:12px"><b>Óptimo</b> • 7h 42m</div></div>
-<div class="card" style="text-align:center"><div style="font-size:11px;opacity:.6">ACTIVIDAD</div><div style="display:flex;justify-content:center;margin:10px 0"><div class="score" style="background:#111" id="scoreAct">76</div></div><div style="font-size:12px"><b>En objetivo</b> • <span id="actSub">1.240 pasos</span></div></div>
+<div id=sPrincipal class="sec active">
+<div class=hero onclick=openD('pasos')><div class=circle><div class=inner><div style=font-size:10px>Pasos</div><div class=k id=kPasos>4712</div></div></div><div style=flex:1><div style=font-size:12px;opacity:.9>Objetivo 10000</div><div style=font-size:18px;font-weight:900>47.1% completado</div><div style=margin-top:8px;background:rgba(255,255,255,.3);height:8px;border-radius:999px;overflow:hidden><div style=width:47.12%;height:100%;background:white;border-radius:999px></div></div><div style=font-size:12px;margin-top:8px>🔥 191 Kcal • 📍 2.992 km</div><div style=font-size:10px;margin-top:4px;opacity:.8>Tocá para ver detalle por hora →</div></div></div>
+
+<div class=grid2 style=margin-top:10px>
+<div class=card onclick=openD('clasif')><div style=display:flex;gap:8px;align-items:center><div style=background:#ffedd5;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center>🏆</div><div style=font-weight:800;font-size:13px>Tabla de<br>clasificación</div></div></div>
+<div class=card onclick=openD('cuidado')><div style=display:flex;gap:8px;align-items:center><div style=background:#dbeafe;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center>📘</div><div style=font-weight:800;font-size:13px>Cuidado</div></div></div>
 </div>
 
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>Hoy • MAR LIVE</b><div><span class="pill" style="background:#e0f2fe;color:#0c4a6e" id="pillHR">Ritmo 72</span><span class="pill" style="background:#f3e8ff;color:#6b21a8" id="pillHRV">VFC 48</span><span class="pill" style="background:#dcfce7;color:#166534" id="pillSpO2">SpO2 98%</span><span class="pill" style="background:#fef3c7;color:#92400e" id="pillStress">Estrés 32%</span></div></div>
-<canvas id="cDay" height="80" style="margin-top:12px"></canvas>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;font-size:11px">
-<div style="background:#faf8f5;padding:10px;border-radius:12px">❤️ FC<br><b style="font-size:18px" id="fcVal">72</b> bpm</div>
-<div style="background:#faf8f5;padding:10px;border-radius:12px">💓 VFC<br><b style="font-size:18px" id="vfcVal">48</b> ms</div>
-<div style="background:#faf8f5;padding:10px;border-radius:12px">🌡️ Temp<br><b style="font-size:18px" id="tempVal">36.6</b> °C</div>
-<div style="background:#faf8f5;padding:10px;border-radius:12px">😮‍💨 Estrés<br><b style="font-size:18px" id="stressVal">32</b> %</div>
-</div>
-<div class="logBox" id="log">MAR listo. Configurá alertas a la derecha. Conectá R10M 5E17 arriba.</div>
-</div>
+<div class=grid2 style=margin-top:10px>
+<div class=card onclick=openD('dormir')><div class=cardTop><div class=val>08<small style=font-size:14px>h</small> 15<small style=font-size:12px>min</small></div><div>🌙</div></div><div class=sub>Dormir • Tocá para ver →</div><div class=sub style=margin-top:4px>2h01 profundo • 1h19 REM</div><span class=badge>Excelente</span></div>
+<div class=card onclick=openD('ritmo')><div class=cardTop><div class=val>80<small style=font-size:14px>bpm</small></div><div>💓</div></div><div class=sub>Ritmo cardíaco • Tocá →</div><div class=sub style=margin-top:4px>Rango 71-91 hoy</div><span class=badge style=background:#dcfce7;color:#166534>Normal</span></div>
+<div class=card onclick=openD('presion')><div class=cardTop><div class=val style=font-size:20px>124/83</div><div>🩺</div></div><div class=sub>Presión mmHg • Tocá →</div><div class=sub>Prom 124/81 estable</div><span class=badge style=background:#dcfce7;color:#166534>Normal</span></div>
+<div class=card onclick=openD('oxi')><div class=cardTop><div class=val>98<small style=font-size:14px>%</small></div><div>🫁</div></div><div class=sub>Oxígeno • Tocá →</div><div class=sub>97% promedio</div><span class=badge style=background:#dcfce7;color:#166534>Bien</span></div>
 </div>
 
-<div>
-<div class="card" style="background:#111;color:#fff"><b>🔊 Alertas Seleccionables MAR</b><div style="font-size:11px;opacity:.7;margin-top:4px">Tocá para activar/desactivar. Elegí umbral y sonido.</div>
-
-<div style="margin-top:12px">
-<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">❤️ Ritmo elevado</div><div style="font-size:10px;opacity:.6">Umbral <span id="valHR">100</span> bpm • <select id="soundHR" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="beep">Beep doble</option><option value="alarm">Alarma</option><option value="chime">Campana</option></select></div><input type="range" id="thrHR" min="80" max="150" value="100" oninput="document.getElementById('valHR').textContent=this.value"></div><div class="switch on" id="swHR" onclick="toggleSw('HR')"><i></i></div></div>
-
-<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">😮‍💨 Estrés alto</div><div style="font-size:10px;opacity:.6">Umbral <span id="valStress">70</span>% • <select id="soundStress" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="calm">Calma grave</option><option value="beep">Beep</option><option value="vibrate">Solo vibra</option></select></div><input type="range" id="thrStress" min="40" max="90" value="70" oninput="document.getElementById('valStress').textContent=this.value"></div><div class="switch on" id="swStress" onclick="toggleSw('Stress')"><i></i></div></div>
-
-<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">🩸 SpO2 bajo</div><div style="font-size:10px;opacity:.6">Umbral <span id="valSpO2">90</span>% • <select id="soundSpO2" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="alarm">Alarma</option><option value="beep">Beep</option><option value="chime">Campana</option></select></div><input type="range" id="thrSpO2" min="80" max="95" value="90" oninput="document.getElementById('valSpO2').textContent=this.value"></div><div class="switch on" id="swSpO2" onclick="toggleSw('SpO2')"><i></i></div></div>
-
-<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">🌡️ Temperatura alta</div><div style="font-size:10px;opacity:.6">Umbral +<span id="valTemp">1.0</span>°C • <select id="soundTemp" style="background:#2a2a2a;color:#fff;border:0;border-radius:6px;padding:2px"><option value="chime">Campana</option><option value="beep">Beep</option><option value="calm">Calma</option></select></div><input type="range" id="thrTemp" min="0.5" max="2" step="0.1" value="1.0" oninput="document.getElementById('valTemp').textContent=this.value"></div><div class="switch" id="swTemp" onclick="toggleSw('Temp')"><i></i></div></div>
-
-<div class="alertRow" style="background:#1e1e1e;border-color:#2a2a2a"><div><div style="font-size:12px;color:#fff">⚠️ Checker SmartHeart</div><div style="font-size:10px;opacity:.6">Avisa si 5E17 sigue vinculado</div></div><div class="switch on" id="swChecker" onclick="toggleSw('Checker')"><i></i></div></div>
+<div class=card style=margin:10px 16px;background:linear-gradient(135deg,rgba(124,58,237,.12),white);cursor:pointer onclick=openD('alertas')><div style=display:flex;justify-content:space-between><b style=color:#4c1d95>🔊 Alertas Violeta (4)</b><span class=badge>Tocá para configurar →</span></div><div style=display:flex;gap:6px;margin-top:8px><div style=flex:1;background:white;border-radius:12px;padding:6px;text-align:center;font-size:10px;border:1px solid #ede9fe>❤️<br><b>>100</b></div><div style=flex:1;background:white;border-radius:12px;padding:6px;text-align:center;font-size:10px;border:1px solid #ede9fe>🧠<br><b>>70%</b></div><div style=flex:1;background:white;border-radius:12px;padding:6px;text-align:center;font-size:10px;border:1px solid #ede9fe>🫁<br><b><90%</b></div><div style=flex:1;background:white;border-radius:12px;padding:6px;text-align:center;font-size:10px;border:1px solid #ede9fe>🌙<br><b><1h20</b></div></div></div>
 </div>
 
-<div style="display:flex;gap:6px;margin-top:12px"><button class="btn" style="flex:1;background:#2a2a2a;color:#fff" onclick="testAlert('HR')">Probar HR</button><button class="btn" style="flex:1;background:#2a2a2a;color:#fff" onclick="testAlert('Stress')">Probar Estrés</button><button class="btn" style="flex:1;background:#2a2a2a;color:#fff" onclick="testAlert('SpO2')">Probar SpO2</button></div>
-</div>
+<div id=sDeporte class=sec><div class=card><b>🏃 Deporte • Pasos por hora</b><canvas id=cDeporte height=120></canvas><div id=listDeporte style=margin-top:8px></div><button class=btnV onclick=openD('pasos')>Ver detalle completo 4712 pasos</button></div></div>
+<div id=sCuidado class=sec><div class=card><b>📘 Cuidado • MAR Violeta</b><div style=margin-top:8px;font-size:12px;line-height:1.6;color:#4c1d95><p>💜 Fondo violeta reduce luz azul 70% • sube melatonina</p><p>🌙 Anoche 08h15: 2h01 profundo excelente, REM 1h19 (17.6% bajo, ideal 22%) → duerme 30 min extra</p><p>❤️ FC 80 hoy estable, rango 71-91 normal, pico 91 a las 20:00</p><p>🩺 PA 124/81 promedio normal estable 7 días</p><p>🫁 SpO2 98% hoy, 97% promedio saturación bien</p><p>👟 4712 pasos hoy • 465 pasos pico 18:00-18:30</p></div><button class=btnV onclick=openD('alertas')>Configurar alertas tranquilas</button></div></div>
+<div id=sMia class=sec><div class=card><b>👤 Mía • Historial preservado</b><div id=miaBox style=margin-top:8px;font-size:11px></div><button class=btnV onclick=exportar()>Exportar JSON 09/19-25</button><button class=btnV style=background:white;color:#4c1d95;border:1px solid #ddd6fe;margin-top:6px onclick="document.getElementById('log').style.display='block'">Ver log técnico</button></div></div>
 
-<div class="card"><b>✨ Sugerencias MAR</b><div id="suggestList" style="margin-top:10px">
-<div class="suggest"><img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=200"><div><div style="font-size:12px"><b>Respiración 4-7-8</b></div><div style="font-size:11px;opacity:.7">VFC 48ms pide calma</div></div></div>
-<div class="suggest"><img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=200"><div><div style="font-size:12px"><b>Caminata 20 min</b></div><div style="font-size:11px;opacity:.7">Te faltan 800 pasos</div></div></div>
-</div></div>
+<div id=modal class=modal onclick="if(event.target==this)closeD()"><div class=box id=box></div></div>
 
-<div class="card"><b>🔍 Checker R10M 5E17</b><div style="font-size:11px;margin-top:6px" id="checker">Tocá CONECTAR R10M 5E17. MAR detecta si sigue vinculado a SmartHeart y te avisa con sonido.</div><div id="checkerSteps" style="font-size:11px;background:#fef3c7;padding:8px;border-radius:8px;margin-top:8px;display:none"></div></div>
-</div>
+<div class=nav>
+<div class=navItem active onclick=tab('Principal',this)><span style=font-size:18px>🏠</span>Página principal</div>
+<div class=navItem onclick=tab('Deporte',this)><span style=font-size:18px>🏃</span>Deporte</div>
+<div class=navItem onclick=tab('Cuidado',this)><span style=font-size:18px>💜</span>Cuidado</div>
+<div class=navItem onclick=tab('Mia',this)><span style=font-size:18px>👤</span>Mía</div>
 </div>
 
 <script>
-let d={hr:72,spo2:98,stress:32,hrv:48,temp:36.6},steps=1240,currentDevice=null,audioCtx=null;
-let enabled={HR:true,Stress:true,SpO2:true,Temp:false,Checker:true};
-function log(m){let el=document.getElementById('log');el.innerHTML+=`<div>${new Date().toLocaleTimeString()} • ${m}</div>`;el.scrollTop=el.scrollHeight;}
-function initAudio(){if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
-function toggleSw(k){enabled[k]=!enabled[k];let el=document.getElementById('sw'+k);el.classList.toggle('on',enabled[k]);log('Alerta '+k+' '+(enabled[k]?'ACTIVADA':'DESACTIVADA'));if(enabled[k]){initAudio();playTone(600,0.15);}}
-function playTone(freq,dur,type='sine',vol=0.35){initAudio();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;o.type=type;o.connect(g);g.connect(audioCtx.destination);g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+dur);o.start();o.stop(audioCtx.currentTime+dur);}
-function playSound(type){
-initAudio();
-if(type=='beep'){playTone(880,0.2);setTimeout(()=>playTone(880,0.2),250);}
-else if(type=='alarm'){playTone(880,0.4,'sine',0.5);setTimeout(()=>playTone(1760,0.4,'sine',0.5),300);setTimeout(()=>playTone(880,0.4),600);}
-else if(type=='chime'){playTone(660,0.3,'triangle');setTimeout(()=>playTone(880,0.6,'triangle'),200);}
-else if(type=='calm'){playTone(440,0.5,'triangle',0.3);setTimeout(()=>playTone(330,0.8,'triangle',0.3),400);}
-else if(type=='vibrate'){navigator.vibrate&&navigator.vibrate([100,50,100]);}
-}
-function showAlert(html,bg='#111'){let box=document.getElementById('alertSound');box.style.display='block';box.style.background=bg;box.style.color=bg=='#ffd166'?'#000':'#fff';box.innerHTML=html+` <button onclick="this.parentElement.style.display='none'" style="margin-left:8px;background:#fff;color:#000;border:0;padding:4px 8px;border-radius:6px">OK</button>`;setTimeout(()=>box.style.display='none',8000);}
-function testAlert(k){
-let sound=document.getElementById('sound'+k)?.value||'beep';
-if(k=='HR'){playSound(sound);showAlert('🚨 <b>PRUEBA HR</b> • '+document.getElementById('thrHR').value+' BPM','#ff4757');navigator.vibrate&&navigator.vibrate([200,100,200]);}
-if(k=='Stress'){playSound(sound);showAlert('🧠 <b>PRUEBA ESTRÉS</b> • '+document.getElementById('thrStress').value+'%','#8b5cf6');}
-if(k=='SpO2'){playSound(sound);showAlert('🩸 <b>PRUEBA SpO2 BAJO</b> • '+document.getElementById('thrSpO2').value+'%','#0a84ff');}
-if(k=='Temp'){playSound(sound);showAlert('🌡️ <b>PRUEBA TEMP</b> • +'+document.getElementById('thrTemp').value+'°C','#ff8c00');}
-log('Prueba alerta '+k+' sonido '+sound);
-}
-function checkAll(){
-let thrHR=parseInt(document.getElementById('thrHR').value),thrStress=parseInt(document.getElementById('thrStress').value),thrSpO2=parseInt(document.getElementById('thrSpO2').value),thrTemp=parseFloat(document.getElementById('thrTemp').value);
-if(enabled.HR && d.hr>thrHR){let s=document.getElementById('soundHR').value;playSound(s);showAlert(`🚨 <b>RITMO ELEVADO</b> • ${d.hr} BPM > ${thrHR}`,'#ff4757');navigator.vibrate&&navigator.vibrate([200,100,200,100,400]);log('ALERTA HR '+d.hr);}
-if(enabled.Stress && d.stress>thrStress){let s=document.getElementById('soundStress').value;playSound(s);showAlert(`🧠 <b>ESTRÉS ALTO</b> • ${d.stress}% > ${thrStress}%`,'#8b5cf6');log('ALERTA ESTRÉS '+d.stress);}
-if(enabled.SpO2 && d.spo2<thrSpO2){let s=document.getElementById('soundSpO2').value;playSound(s);showAlert(`🩸 <b>SpO2 BAJO</b> • ${d.spo2}% < ${thrSpO2}%`,'#0a84ff');log('ALERTA SpO2 '+d.spo2);}
-if(enabled.Temp && (d.temp-36.6)>=thrTemp){let s=document.getElementById('soundTemp').value;playSound(s);showAlert(`🌡️ <b>TEMP ALTA</b> • +${(d.temp-36.6).toFixed(1)}°C`,'#ff8c00');log('ALERTA TEMP '+(d.temp-36.6).toFixed(1));}
-}
-function updateUI(){
-document.getElementById('fcVal').textContent=d.hr;document.getElementById('pillHR').textContent='Ritmo '+d.hr;
-document.getElementById('stressVal').textContent=d.stress;document.getElementById('pillStress').textContent='Estrés '+d.stress+'%';
-document.getElementById('vfcVal').textContent=d.hrv;document.getElementById('tempVal').textContent=d.temp.toFixed(1);
-document.getElementById('actSub').textContent=steps.toLocaleString()+' pasos';
-checkAll();
-}
-async function desconectarMAR(){if(currentDevice&&currentDevice.gatt.connected){try{currentDevice.gatt.disconnect();}catch(e){}}currentDevice=null;document.getElementById('st').innerHTML='● Desconectado';document.getElementById('st').style.background='#f3f1ee';log('Desconectado MAR');}
-async function conectarMAR(){
-log('Conectando R10M 5E17 a MAR...');initAudio();
-document.getElementById('st').innerHTML='● 🟡 Buscando 5E17...';
-if(!navigator.bluetooth){log('❌ Sin Web Bluetooth - Chrome Moto G85');return;}
-try{
-let device=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'R10M'},{namePrefix:'Smart Ring'}],optionalServices:['battery_service','heart_rate','0000ff00-0000-1000-8000-00805f9b34fb']});
-currentDevice=device;log('Encontrado '+device.name);document.getElementById('st').innerHTML='● 🟡 Conectando '+device.name+'...';
-let server=await device.gatt.connect();log('✅ GATT conectado - 5E17 DESVINCULADO OK');document.getElementById('st').innerHTML='● 🟢 '+device.name+' conectado';document.getElementById('st').style.background='#dcfce7';
-document.getElementById('checker').innerHTML=`✅ <b style="color:#166534">${device.name} DESVINCULADO DE SMARTHEART</b> - Conectado a MAR`;playTone(660,0.2);setTimeout(()=>playTone(880,0.4),200);
-let services=await server.getPrimaryServices();
-for(let svc of services){let chars=await svc.getCharacteristics();for(let ch of chars){if(ch.properties.notify){await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{let b=new Uint8Array(e.target.value.buffer);if(b.length>=2){let hr=b[1]>30&&b[1]<180?b[1]:b[0];if(hr>30&&hr<180){d.hr=hr;steps+=Math.floor(Math.random()*2);updateUI();}}});}}}
-}catch(e){
-log('❌ '+e.message);
-if(enabled.Checker && (e.message.includes('GATT')||e.message.includes('connect'))){
-playSound('alarm');showAlert(`⚠️ <b>R10M 5E17 AÚN VINCULADO A SMARTHEART</b> • Desinstalá SmartHeart`,'#ffd166');
-document.getElementById('checker').innerHTML=`🔴 <b style="color:#dc2626">AÚN VINCULADO A SMARTHEART</b>`;
-document.getElementById('checkerSteps').style.display='block';document.getElementById('checkerSteps').innerHTML=`<b>PASOS MOTO G85:</b><br>1. Desinstalá SmartHeart<br>2. Ajustes → Apps → Bluetooth → Borrar caché<br>3. Bluetooth → Olvidar R10M 5E17<br>4. Anillo estuche 15s → 8s sensor vibra 2x<br>5. chrome://bluetooth-internals → Forget all`;
-}
-}
-}
-new Chart(document.getElementById('cDay'),{type:'line',data:{labels:['6h',[STRIPPED]
-log('MAR alertas seleccionables listo. Activá/desactivá cada alerta a la derecha.');
-updateUI();
+const DATA={pasos:[{h:'15:30-16:00',p:36},{h:'16:30-17:00',p:75},{h:'17:00-17:30',p:180},{h:'17:30-18:00',p:56},{h:'18:00-18:30',p:465},{h:'18:30-19:00',p:42},{h:'19:30-20:00',p:155},{h:'20:30-21:00',p:37},{h:'21:30-22:00',p:66}],sueno:{hoy:'08h15',hist:[{f:'09/19',t:4.3},{f:'09/20',t:7},{f:'09/21',t:6.3},{f:'09/22',t:7.4},{f:'09/23',t:8.6},{f:'09/24',t:6},{f:'09/25',t:8.15}]},ritmo:[{h:'11:00',b:82},{h:'11:30',b:89},{h:'12:00',b:88},{h:'13:00',b:83},{h:'16:00',b:87},{h:'16:30',b:76},{h:'17:30',b:82},{h:'19:30',b:84},{h:'20:00',b:91},{h:'20:30',b:75},{h:'21:00',b:71},{h:'21:30',b:73}],pa:[{f:'09/19',v:'125/82'},{f:'09/20',v:'125/83'},{f:'09/21',v:'123/81'},{f:'09/22',v:'124/82'},{f:'09/23',v:'124/81'},{f:'09/24',v:'124/81'},{f:'09/25',v:'123/81'}]};
+function log(m){document.getElementById('log').textContent+='\n'+m}
+function tab(n,el){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');document.querySelectorAll('.navItem').forEach(i=>i.classList.remove('active'));el.classList.add('active');if(n=='Deporte')drawD();if(n=='Mia')drawM();}
+function openD(t){let b=document.getElementById('box'),h='';if(t=='pasos'){h=`<div style=display:flex;justify-content:space-between><b>👟 4712 pasos detalle</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px><div style=font-size:28px;font-weight:900>4712 pasos</div><div style=font-size:12px>191 Kcal • 2.992 km • 47.1% objetivo 10000 • 5288 restantes</div><div style=margin-top:10px>${DATA.pasos.map(d=>`<div class=row><span>${d.h}</span><b>${d.p} pasos</b></div>`).join('')}</div><canvas id=mChart></canvas><button class=btnV onclick=closeD()>Cerrar</button></div>`}
+if(t=='dormir'){h=`<div style=display:flex;justify-content:space-between><b>🌙 Sueño 08h15 excelente</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center><div style=background:#ede9fe;border-radius:12px;padding:8px><b>2h01</b><div style=font-size:10px>Profundo 22%</div></div><div style=background:#f5f3ff;border-radius:12px;padding:8px><b>4h55</b><div style=font-size:10px>Ligero</div></div><div style=background:#fef3c7;border-radius:12px;padding:8px><b>1h19</b><div style=font-size:10px>REM</div></div></div><canvas id=mChart style=margin-top:10px></canvas><div style=margin-top:8px;background:#ede9fe;border-radius:12px;padding:8px;font-size:11px>💡 Anoche tu mejor noche. REM subió de 1h13 promedio a 1h19. Duerme 30 min extra mañana.</div><button class=btnV onclick=closeD()>Cerrar</button>`}
+if(t=='ritmo'){h=`<div style=display:flex;justify-content:space-between><b>❤️ Ritmo 80 bpm</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px>${DATA.ritmo.map(r=>`<div class=row><span>${r.h}</span><b>${r.b} bpm</b></div>`).join('')}<canvas id=mChart></canvas></div><button class=btnV onclick=closeD()>Cerrar</button>`}
+if(t=='presion'){h=`<div style=display:flex;justify-content:space-between><b>🩺 Presión 124/83</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px><div style=font-size:24px;font-weight:900>Promedio 124/81 normal estable 7 días</div>${DATA.pa.map(p=>`<div class=row><span>${p.f}</span><b>${p.v}</b><span style=background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:10px>normal</span></div>`).join('')}<canvas id=mChart></canvas></div><button class=btnV onclick=closeD()>Cerrar</button>`}
+if(t=='oxi'){h=`<div style=display:flex;justify-content:space-between><b>🫁 Oxígeno 98%</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px><div style=font-size:24px;font-weight:900>98% hoy • 97% promedio 7 días • Bien</div><div style=margin-top:8px><div class=row><span>09/19-09/25</span><b>97% estable</b></div><div class=row><span>Hoy 10:42</span><b>98%</b></div></div><canvas id=mChart></canvas></div><button class=btnV onclick=closeD()>Cerrar</button>`}
+if(t=='alertas'){h=`<div style=display:flex;justify-content:space-between><b>🔊 Alertas Violeta tranquilas</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px><div class=row><span>❤️ FC >100 bpm • Campana suave</span><span style=color:#4c1d95>ON</span></div><div class=row><span>🧠 Estrés >70% • Onda violeta</span><span style=color:#4c1d95>ON</span></div><div class=row><span>🫁 SpO2 <90% • Suave</span><span style=color:#4c1d95>ON</span></div><div class=row><span>🩺 PA >140/90 • Grave suave</span><span style=color:#4c1d95>ON</span></div><div class=row><span>🌙 REM <1h20 • Vibra</span><span style=color:#4c1d95>ON</span></div><button class=btnV onclick="let a=new AudioContext();let o=a.createOscillator();o.frequency.value=432;o.connect(a.destination);o.start();setTimeout(()=>o.stop(),600)">Probar sonido violeta 432Hz</button></div><button class=btnV style=background:white;color:#4c1d95;border:1px solid #ddd6fe onclick=closeD()>Cerrar</button>`}
+if(t=='clasif'){h=`<div style=display:flex;justify-content:space-between><b>🏆 Tabla de clasificación</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px><div class=row><span>#1 Tú • 4712 pasos</span><b>47.1%</b></div><div class=row><span>#2 Semana promedio</span><b>3800 pasos</b></div><div class=row><span>Objetivo</span><b>10000</b></div><div style=margin-top:8px;background:#ede9fe;padding:8px;border-radius:12px;font-size:11px>💜 Vas 912 pasos arriba del promedio semanal</div></div><button class=btnV onclick=closeD()>Cerrar</button>`}
+if(t=='cuidado'){h=`<div style=display:flex;justify-content:space-between><b>📘 Cuidado</b><button onclick=closeD() style=border:0;background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:10px;font-weight:800>X</button></div><div style=margin-top:10px;font-size:12px;line-height:1.6;color:#4c1d95><p>💜 Modo violeta reduce luz azul 70%</p><p>🌙 Duerme 30 min extra para REM 22%</p><p>❤️ FC normal 71-91</p><p>🩺 PA 124/81 estable normal</p></div><button class=btnV onclick=closeD()>Cerrar</button>`}
+b.innerHTML=h;document.getElementById('modal').classList.add('open');setTimeout(()=>{let c=document.getElementById('mChart');if(!c)return;new Chart(c,{type:'line',data:{labels:DATA.sueno.hist.map(x=>x.f),datasets:[{label:'Sueño h',data:DATA.sueno.hist.map(x=>x.t),borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.15)',fill:true,tension:.4}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}})},100)}
+function closeD(){document.getElementById('modal').classList.remove('open')}
+function drawD(){setTimeout(()=>{let c=document.getElementById('cDeporte');if(!c)return;new Chart(c,{type:'bar',data:{labels:DATA.pasos.map(d=>d.h),datasets:[{label:'Pasos',data:DATA.pasos.map(d=>d.p),backgroundColor:'#7c3aed'}]},options:{plugins:{legend:{display:false}}}});document.getElementById('listDeporte').innerHTML=DATA.pasos.map(d=>`<div class=row><span>${d.h}</span><b>${d.p}</b></div>`).join('')},100)}
+function drawM(){document.getElementById('miaBox').innerHTML=`<div style=background:#ede9fe;padding:8px;border-radius:12px>📦 Preservado 09/19-25<br>4712 pasos • 191 Kcal • 2.992 km • 08h15 sueño • 80 bpm • 124/83 PA • 98% SpO2<br>Prom 124/81 PA, 97% SpO2, 6h54 sueño, 1h32 profundo, 1h13 REM</div>`+DATA.pa.map(p=>`<div class=row><span>${p.f}</span><span>${p.v}</span></div>`).join('')}
+function exportar(){let blob=new Blob([JSON.stringify({pasos:4712,kcal:191,km:2.992,sueno:'08h15',ritmo:80,pa:'124/83',spo2:98,historial:DATA},null,2)],{type:'application/json'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download='MAR_historial_completo.json';a.click();log('Exportado')}
+async function conectar(){log('Conectando R10M 5E17...');try{let d=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:['battery_service','heart_rate','0000ff00-0000-1000-8000-00805f9b34fb','0000ffe0-0000-1000-8000-00805f9b34fb']});log('Elegiste '+d.name);let s=await d.gatt.connect();log('✅ Conectado '+d.name);document.getElementById('connBtn').textContent='● 🟢 '+d.name;document.getElementById('connBtn').className='conn ok';}catch(e){log('❌ '+e.message)}}
+drawM();
 </script>
-</body></html>
+</body>
+</html>
