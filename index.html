@@ -1,382 +1,374 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#060a14">
-<title>FITRING / MAR v11 • TRIPLE TEST</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#04101c">
+<title>FITRING / MAR v12</title>
 <style>
 :root{
-  --bg:#060a14;
-  --panel:#0e1628;
-  --card:#131e35;
-  --card2:#0b1324;
-  --line:#20304f;
-  --text:#dce6f7;
-  --muted:#7888a5;
-  --blue:#42a5ff;
-  --cyan:#25d8d1;
-  --green:#5dff8a;
-  --orange:#ff9f43;
-  --red:#ff626e;
-  --yellow:#ffd166;
-  --purple:#a56cff;
+  --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
+  --txt:#edf7ff;--muted:#7893a9;--blue:#168cff;--cyan:#21d7e7;--green:#22e58a;
+  --purple:#a45cff;--red:#ff626f;--orange:#ff9e43;--yellow:#ffd166;--shadow:0 20px 60px #0006
 }
-
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:
+ radial-gradient(circle at 45% -8%,#15365d 0,#071522 28%,#030a12 68%);
+ color:var(--txt);font:14px system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.top{position:sticky;top:0;z-index:100;background:#04101cf2;backdrop-filter:blur(16px);border-bottom:1px solid #12314d}
+.topin{max-width:1480px;margin:auto;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:950;font-size:18px;letter-spacing:.3px}.brand b{color:var(--cyan)}
+.grow{flex:1}.status{font-size:11px;color:#8aa5bb}.status.ok{color:var(--green)}
+.btn{border:1px solid var(--line);background:#0a2035;color:#fff;padding:9px 11px;border-radius:11px;font-weight:850;font-size:11px}
+.btn.primary{background:#087ff5;border-color:#2997ff}.btn.green{background:#103b29;border-color:#23734e;color:#7dffba}
+.btn.purple{background:#271b40;border-color:#6841a0}.btn.red{background:#3b171d;border-color:#7f303c;color:#ffadb4}
+.wrap{max-width:1480px;margin:auto;padding:12px 14px 32px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.tab{border:1px solid var(--line);background:#071523;color:#91a8ba;border-radius:12px;padding:11px 5px;font-weight:900}
+.tab.on{color:white;background:#0c2b4b;border-color:var(--blue);box-shadow:0 0 24px #168cff22}
+.view{display:none}.view.on{display:block}
+.hero,.panel,.metric,.module{background:linear-gradient(145deg,#0b2034,#071624);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.hero{padding:17px;margin-bottom:12px}.herohead{display:flex;justify-content:space-between;gap:12px}.hero h1{margin:0;font-size:24px}
+.sub{color:var(--muted);font-size:11px;margin-top:4px}.tag{border:1px solid #285d84;border-radius:20px;padding:6px 9px;font-size:9px;font-weight:900}
+.overview{display:grid;grid-template-columns:1.18fr .82fr;gap:12px}.panel{padding:15px}.ringbox{display:flex;align-items:center;gap:18px;min-height:165px}
+.ring{width:112px;height:112px;border:13px solid #557185;border-radius:50%;box-shadow:inset 0 0 20px #000,0 0 38px #168cff2b;transform:rotate(-18deg);position:relative}
+.ring:after{content:"";position:absolute;inset:-8px;border:2px solid #cbe9fa;border-radius:50%;opacity:.34}
+.score{font-size:54px;font-weight:950;line-height:1}.score small{font-size:14px;color:var(--muted)}.ok{color:var(--green)}.warn{color:var(--yellow)}.bad{color:var(--red)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.metric{padding:14px;min-height:124px;position:relative;overflow:hidden}.metric.prio{border-color:#247fca;box-shadow:0 0 22px #168cff15}
+.mlabel{font-size:10px;font-weight:850;color:#91a8ba}.mval{font-size:28px;font-weight:950;margin-top:10px}.unit{font-size:10px;color:#91a8ba}
+.src{position:absolute;right:9px;top:9px;font-size:8px;color:var(--green)}
+.spark{height:32px;margin-top:8px;display:flex;align-items:flex-end;gap:2px}.spark i{display:block;flex:1;background:linear-gradient(var(--cyan),var(--blue));border-radius:2px 2px 0 0}
+.two{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px}.title{font-weight:900;margin-bottom:10px}
+.chart{height:160px;background:#04101c;border-radius:12px;padding:10px;display:flex;gap:4px;align-items:flex-end;overflow:hidden}
+.chart i{flex:1;min-width:2px;border-radius:3px 3px 0 0;background:linear-gradient(var(--cyan),#187ad7)}
+.alert{padding:10px;border:1px solid #27455c;border-radius:10px;background:#081928;margin:7px 0;font-size:11px}.alert.hot{border-color:#74353e;color:#ffadb4}
+.modegrid{display:grid;grid-template-columns:1.45fr .55fr;gap:12px}.scene{min-height:300px;border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 50% 35%,#174d70,#071521 68%)}
+.circle{width:185px;height:185px;border:10px solid var(--cyan);border-radius:50%;display:grid;place-items:center;font-size:48px;font-weight:950;box-shadow:0 0 55px #20d9e852;transition:transform 4s ease}
+.circle.in{transform:scale(1.13)}.circle.out{transform:scale(.84)}
+.contacts .row,.row{display:grid;grid-template-columns:38px 1fr auto;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid #17334a}
+.avatar{width:38px;height:38px;border-radius:50%;background:#183b58;display:grid;place-items:center;font-weight:950}.row small{display:block;color:var(--muted)}
+.field{background:#051521;border:1px solid var(--line);color:white;border-radius:9px;padding:8px}.configrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.modules{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.module{padding:13px;min-height:235px}.module h3{margin:0 0 5px;font-size:13px}.module p{font-size:10px;color:var(--muted)}
+.list{font-size:10px}.list>div{padding:7px 0;border-bottom:1px solid #153047}.drop{display:block;border:1px dashed #496a83;border-radius:12px;padding:18px 8px;text-align:center;color:#9fb6c8;margin:10px 0}
+.blelog{font:9px ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;background:#03101b;border-radius:9px;padding:8px;max-height:150px;overflow:auto;color:#91b8d4}
+.pills{display:flex;gap:6px;flex-wrap:wrap}.pill{font-size:9px;border:1px solid #28516f;padding:5px 8px;border-radius:20px;color:#a9c1d3}
+.footer{text-align:center;color:#607d94;font-size:9px;padding:18px}
+.modal{position:fixed;inset:0;background:#000a;display:none;place-items:center;z-index:200;padding:16px}.modal.on{display:grid}.dialog{width:min(520px,96vw);background:#081a2a;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 30px 90px #000}
+.dialog h3{margin-top:0}.dialog .field{width:100%;margin:5px 0 10px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kpi .panel{text-align:center}.kpi .mval{font-size:24px}
+@media(max-width:1050px){.overview,.two,.modegrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.modules{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.wrap{padding:8px}.topin{gap:6px}.brand{font-size:14px}.top .btn{font-size:9px;padding:7px}.status{display:none}.tabs{position:sticky;top:55px;z-index:80;background:#04101c;padding:5px 0}.tab{font-size:10px;padding:9px 3px}.metrics{grid-template-columns:repeat(2,1fr)}.modules{grid-template-columns:1fr}.ringbox{flex-direction:column;text-align:center}.hero h1{font-size:20px}.score{font-size:46px}.mval{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <div class="brand">◉ FITRING / <b>MAR</b> v12</div><div class="grow"></div>
+  <span id="conn" class="status">● R10M desconectado</span>
+  <span class="status">▣ <span id="battery">--</span>%</span>
+  <button id="connect" class="btn primary">Conectar R10M</button>
+  <button id="demo" class="btn purple">Demo</button>
+</div></header>
 
-body{
-  margin:0;
-  background:
-    radial-gradient(circle at 50% -20%,#17254a 0,#060a14 42%);
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  min-height:100vh;
+<div class="wrap">
+<nav class="tabs">
+  <button class="tab on" data-view="general">GENERAL</button>
+  <button class="tab" data-view="respira">RESPIRA</button>
+  <button class="tab" data-view="calma">CALMA</button>
+  <button class="tab" data-view="fitness">FITNESS</button>
+</nav>
+
+<section id="general" class="view on"></section>
+<section id="respira" class="view"></section>
+<section id="calma" class="view"></section>
+<section id="fitness" class="view"></section>
+
+<section class="modules">
+  <article class="module">
+    <h3>👥 Contactos y alertas compartidas</h3>
+    <p>Familiares, cuidadores o profesionales autorizados.</p>
+    <div id="contactList"></div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="pickPhoneContact()">Agenda del celular</button>
+      <button class="btn" onclick="openContactModal()">+ Manual</button>
+    </div>
+    <div class="list" style="margin-top:8px">
+      <div><label><input id="shareResp" type="checkbox" checked> Compartir alertas RESPIRA</label></div>
+      <div><label><input id="shareCalma" type="checkbox" checked> Compartir alertas CALMA</label></div>
+      <div><label><input id="shareDaily" type="checkbox"> Resumen diario</label></div>
+    </div>
+  </article>
+
+  <article class="module">
+    <h3>📈 Historial y registros</h3>
+    <p>SmartHealth importado + R10M Live + Demo separado.</p>
+    <div id="history" class="list"></div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="exportData()">Exportar JSON</button>
+      <label class="btn" for="importJson">Importar</label><input id="importJson" type="file" accept=".json" hidden>
+    </div>
+  </article>
+
+  <article class="module">
+    <h3>📄 Estudios de salud · XEO</h3>
+    <p>Los PDF deben ir a un servicio privado, no al repositorio público.</p>
+    <label class="drop" for="pdf">＋ Seleccionar estudio PDF<br><small>Laboratorio · informe · cardiología · otros</small></label>
+    <input id="pdf" type="file" accept="application/pdf" hidden>
+    <div id="pdfState" class="list"><div>XEO: endpoint no configurado</div></div>
+    <button class="btn" onclick="openSettings()">Configurar XEO</button>
+  </article>
+
+  <article class="module">
+    <h3>⚙️ Configuración</h3>
+    <p>Fuentes, reglas y almacenamiento local.</p>
+    <div class="list">
+      <div>Fuente activa: <b id="sourceLabel">DATA CORE</b></div>
+      <div>Persistencia: localStorage</div>
+      <div>SmartHealth: histórico inicial cargado</div>
+    </div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="openSettings()">Parámetros</button>
+      <button class="btn red" onclick="clearDemo()">Limpiar Demo</button>
+    </div>
+  </article>
+
+  <article class="module">
+    <h3>⌁ R10M · BLE Inspector</h3>
+    <p>Descubre servicios y características reales del anillo.</p>
+    <div id="blelog" class="blelog">Esperando conexión…</div>
+  </article>
+</section>
+
+<div class="footer">FITRING / MAR v12 · monitoreo y acompañamiento. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+</div>
+
+<div id="contactModal" class="modal"><div class="dialog">
+  <h3>Agregar contacto autorizado</h3>
+  <label>Nombre</label><input id="cName" class="field">
+  <label>Rol / vínculo</label><input id="cRole" class="field" placeholder="Ej. hija, cuidador, médico">
+  <label>Teléfono</label><input id="cPhone" class="field" placeholder="+54...">
+  <label>Email</label><input id="cEmail" class="field" type="email">
+  <div class="configrow"><button class="btn primary" onclick="saveContact()">Guardar</button><button class="btn" onclick="closeModal('contactModal')">Cancelar</button></div>
+</div></div>
+
+<div id="settingsModal" class="modal"><div class="dialog">
+  <h3>Parámetros de monitoreo</h3>
+  <label>SpO₂ mínima para alerta configurada</label><input id="sSpO2" class="field" type="number">
+  <label>FC mínima</label><input id="sHrLow" class="field" type="number">
+  <label>FC máxima</label><input id="sHrHigh" class="field" type="number">
+  <label>Estrés - umbral</label><input id="sStress" class="field" type="number">
+  <label>Estrés - duración sostenida (min)</label><input id="sStressMin" class="field" type="number">
+  <label>Endpoint privado XEO</label><input id="sXeo" class="field" placeholder="https://.../api/studies">
+  <div class="configrow"><button class="btn primary" onclick="saveSettings()">Guardar</button><button class="btn" onclick="closeModal('settingsModal')">Cancelar</button></div>
+</div></div>
+
+<script>
+const KEY='fitring_mar_v12_state';
+const defaults={
+  latest:{hr:72,hrv:48,spo2:97,stress:32,temp:36.4,steps:6324,sleep:7.3,sys:124,dia:82,recovery:78,load:67},
+  records:[],contacts:[],demo:false,seeded:false,xeoEndpoint:'',
+  thresholds:{spo2:94,hrLow:50,hrHigh:120,stress:70,stressMinutes:20}
+};
+let S=Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'));
+S.latest=Object.assign({},defaults.latest,S.latest||{});
+S.thresholds=Object.assign({},defaults.thresholds,S.thresholds||{});
+S.records=S.records||[];S.contacts=S.contacts||[];
+
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function seedSmartHealth(){
+  if(S.seeded)return;
+  const activity=[['2026-09-28',7591,4.820,298],['2026-09-27',1850,1.273,68],['2026-09-26',2673,1.773,100],['2026-09-25',4741,3.002,184],['2026-09-24',5488,3.583,213],['2026-09-23',3369,2.133,130],['2026-09-22',4249,2.717,163]];
+  activity.forEach(x=>S.records.push({at:x[0]+'T12:00:00',type:'actividad',steps:x[1],km:x[2],kcal:x[3],source:'SMARTHEALTH_IMPORT'}));
+  [['2026-09-26',2.5,.4,1.8,.3,'Mala'],['2026-09-24',8.3,2,4.9,1.3,'Excelente'],['2026-09-24',6.2,1.4,4,.7,'Buena'],['2026-09-23',8.7,2,5.1,1.5,'Excelente'],['2026-09-21',7.5,1.5,4.1,1.9,'Excelente'],['2026-09-25',8.25,2.02,4.92,1.32,'Excelente']].forEach(x=>S.records.push({at:x[0]+'T08:00:00',type:'sueño',sleep:x[1],deep:x[2],light:x[3],rem:x[4],sourceRating:x[5],source:'SMARTHEALTH_IMPORT'}));
+  S.seeded=true;save();
 }
+seedSmartHealth();
 
-button,input,select{font:inherit}
+const metricMeta={hr:['FC','lpm'],hrv:['HRV','ms'],spo2:['SpO₂','%'],stress:['Estrés',''],sleep:['Sueño','h'],steps:['Pasos',''],temp:['Temperatura','°C'],bp:['Presión','mmHg']};
+const orders={
+ general:['hr','hrv','spo2','stress','sleep','steps','temp','bp'],
+ respira:['hr','spo2','bp','hrv','stress','sleep','steps','temp'],
+ calma:['stress','hrv','hr','sleep','spo2','temp','steps','bp'],
+ fitness:['steps','hr','hrv','sleep','stress','spo2','temp','bp']
+};
+function metricVal(k){return k==='bp'?S.latest.sys+'/'+S.latest.dia:(S.latest[k]??'—')}
+function spark(){return '<div class="spark">'+Array.from({length:14},(_,i)=>`<i style="height:${25+((i*19+37)%68)}%"></i>`).join('')+'</div>'}
+function cards(mode){return orders[mode].map((k,i)=>`<div class="metric ${i<4?'prio':''}"><span class="src">${S.demo?'DEMO':'DATA CORE'}</span><div class="mlabel">${metricMeta[k][0]}</div><div class="mval">${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span></div>${spark()}</div>`).join('')}
+function chartBars(seed=0,n=42){return Array.from({length:n},(_,i)=>`<i style="height:${18+((i*23+seed*17)%76)}%"></i>`).join('')}
 
-.header{
-  position:sticky;
-  top:0;
-  z-index:50;
-  background:rgba(6,10,20,.94);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--line);
-  padding:12px 14px;
+function activeAlerts(){
+  const a=[];
+  if(S.latest.spo2<S.thresholds.spo2)a.push({node:'RESPIRA',text:`SpO₂ ${S.latest.spo2}% por debajo del umbral configurado (${S.thresholds.spo2}%)`});
+  if(S.latest.hr<S.thresholds.hrLow||S.latest.hr>S.thresholds.hrHigh)a.push({node:'RESPIRA',text:`FC ${S.latest.hr} lpm fuera del rango configurado ${S.thresholds.hrLow}-${S.thresholds.hrHigh}`});
+  if(S.latest.stress>S.thresholds.stress)a.push({node:'CALMA',text:`Estrés ${S.latest.stress} supera el umbral configurado ${S.thresholds.stress}`});
+  return a;
 }
+function render(){
+  const alerts=activeAlerts();
+  document.getElementById('general').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Dashboard General</h1><div class="sub">Centro de control · R10M + SmartHealth + MAR Alert Engine + XEO</div></div><span class="tag">HOY</span></div></div>
+   <div class="overview">
+    <div class="panel ringbox"><div class="ring"></div><div><div class="title">Estado actual</div><div class="ok">● Sistema operativo</div><div class="sub">Última actualización ${new Date().toLocaleTimeString()}</div><div class="pills" style="margin-top:10px"><span class="pill">R10M</span><span class="pill">SmartHealth</span><span class="pill">MAR</span><span class="pill">XEO ready</span></div></div></div>
+    <div class="panel"><div class="title">Bienestar general</div><div class="score">84 <small>/100</small></div><div class="ok">● Estable</div><div class="sub">Índice visual de demo; no es un diagnóstico médico.</div></div>
+   </div>
+   <div class="metrics">${cards('general')}</div>
+   <div class="two"><div class="panel"><div class="title">Tendencia últimas 24 h</div><div class="chart">${chartBars(1)}</div></div>
+   <div class="panel"><div class="title">Alertas recientes</div>${alerts.length?alerts.map((a,i)=>`<div class="alert hot"><b>${a.node}</b><br>${a.text}<br><button class="btn" style="margin-top:7px" onclick="shareAlert(${i})">Compartir</button></div>`).join(''):'<div class="alert">Sin alertas según los umbrales configurados.</div>'}</div></div>`;
 
-.headTop{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
+  document.getElementById('respira').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Nodo RESPIRA</h1><div class="sub">Adultos mayores · respiración · cardiovascular · monitoreo compartido</div></div><span class="tag">RESPIRA</span></div></div>
+   <div class="modegrid">
+    <div class="scene"><div><div class="title">Guía de respiración</div><div id="breathCircle" class="circle">4</div><p id="breathText">Lista para iniciar</p><button class="btn green" onclick="toggleBreath()">Iniciar / detener 4×4</button></div></div>
+    <div class="panel contacts"><div class="title">Monitoreo compartido</div><div class="sub">Contactos autorizados y alertas configuradas.</div><div id="respContactList"></div><div class="configrow" style="margin-top:10px"><button class="btn" onclick="pickPhoneContact()">Agenda</button><button class="btn" onclick="openContactModal()">+ Contacto</button></div><hr style="border-color:#173b5a"><div class="title">Reglas activas</div><div class="list"><div>SpO₂ &lt; ${S.thresholds.spo2}%</div><div>FC fuera de ${S.thresholds.hrLow}-${S.thresholds.hrHigh}</div></div></div>
+   </div>
+   <div class="metrics">${cards('respira')}</div>`;
+
+  document.getElementById('calma').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Nodo CALMA</h1><div class="sub">Estrés · HRV · sueño · tendencia sostenida</div></div><span class="tag">CALMA</span></div></div>
+   <div class="overview"><div class="panel"><div class="title">Calma actual</div><div class="score">${Math.max(0,100-S.latest.stress)} <small>/100</small></div><div class="chart">${chartBars(2)}</div></div>
+   <div class="panel"><div class="title">Alerta programada</div><div class="alert">Si estrés &gt; <b>${S.thresholds.stress}</b> durante <b>${S.thresholds.stressMinutes} min</b>, generar evento de monitoreo.</div><button class="btn purple" onclick="openSettings()">Editar regla</button><p class="sub">La regla describe una tendencia de monitoreo; no diagnostica estrés clínico.</p></div></div>
+   <div class="metrics">${cards('calma')}</div>`;
+
+  document.getElementById('fitness').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Nodo FITNESS</h1><div class="sub">Actividad · recuperación · carga · sueño</div></div><span class="tag">FITNESS</span></div></div>
+   <div class="overview"><div class="panel"><div class="title">Recuperación</div><div class="score">${S.latest.recovery} <small>/100</small></div><div class="chart">${chartBars(3)}</div></div>
+   <div class="panel"><div class="title">Estado de entrenamiento</div><div class="mval">${S.latest.load} <span class="unit">carga</span></div><div class="ok">Preparación ${S.latest.recovery}</div><div class="kpi" style="margin-top:12px"><div class="panel"><div class="mlabel">Pasos</div><div class="mval">${S.latest.steps}</div></div><div class="panel"><div class="mlabel">FC</div><div class="mval">${S.latest.hr}</div></div><div class="panel"><div class="mlabel">Sueño</div><div class="mval">${S.latest.sleep}h</div></div></div></div></div>
+   <div class="metrics">${cards('fitness')}</div>`;
+
+  renderContacts();renderHistory();
+  document.getElementById('sourceLabel').textContent=S.demo?'DEMO':'DATA CORE';
 }
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-weight:900;
+function renderContacts(){
+  const html=S.contacts.length?S.contacts.map((c,i)=>`<div class="row"><span class="avatar">${(c.name||'?')[0].toUpperCase()}</span><span><b>${c.name}</b><small>${c.role||'Contacto autorizado'} · ${c.phone||c.email||''}</small></span><span><button class="btn" onclick="sendContact(${i})">Enviar</button> <button class="btn red" onclick="removeContact(${i})">×</button></span></div>`).join(''):'<div class="sub">Sin contactos cargados.</div>';
+  document.getElementById('contactList').innerHTML=html;
+  const r=document.getElementById('respContactList');if(r)r.innerHTML=html;
 }
-
-.version{
-  color:#d4a9ff;
-  background:#281b3b;
-  padding:3px 8px;
-  border-radius:20px;
-  font-size:9px;
+function renderHistory(){
+  const rows=[...S.records].sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0,8).map(r=>{
+    let val=r.type==='actividad'?`${r.steps} pasos · ${r.km} km`:r.type==='sueño'?`${r.sleep} h`:r.hr?`FC ${r.hr}`:r.spo2?`SpO₂ ${r.spo2}%`:'registro';
+    return `<div>${(r.at||'').replace('T',' ').slice(0,16)} · ${val}<br><small>${r.source||''}</small></div>`
+  }).join('');
+  document.getElementById('history').innerHTML=rows||'<div>Sin registros</div>';
 }
-
-.actions{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
+function openContactModal(){document.getElementById('contactModal').classList.add('on')}
+function openSettings(){
+  sSpO2.value=S.thresholds.spo2;sHrLow.value=S.thresholds.hrLow;sHrHigh.value=S.thresholds.hrHigh;sStress.value=S.thresholds.stress;sStressMin.value=S.thresholds.stressMinutes;sXeo.value=S.xeoEndpoint||'';
+  document.getElementById('settingsModal').classList.add('on')
 }
-
-.btn{
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:9px 11px;
-  background:#16213a;
-  color:#fff;
-  cursor:pointer;
-  font-weight:800;
-  font-size:11px;
+function closeModal(id){document.getElementById(id).classList.remove('on')}
+function saveContact(){
+  const name=cName.value.trim();if(!name)return alert('Ingresá un nombre.');
+  S.contacts.push({name,role:cRole.value.trim(),phone:cPhone.value.trim(),email:cEmail.value.trim(),created:new Date().toISOString()});
+  save();closeModal('contactModal');cName.value=cRole.value=cPhone.value=cEmail.value='';render()
 }
-
-.btn.blue{
-  background:#087ff5;
-  border-color:#168cff;
+function saveSettings(){
+  S.thresholds.spo2=+sSpO2.value;S.thresholds.hrLow=+sHrLow.value;S.thresholds.hrHigh=+sHrHigh.value;
+  S.thresholds.stress=+sStress.value;S.thresholds.stressMinutes=+sStressMin.value;S.xeoEndpoint=sXeo.value.trim();
+  save();closeModal('settingsModal');render()
 }
-
-.btn.green{
-  background:#123d25;
-  border-color:#257747;
-  color:var(--green);
+function removeContact(i){S.contacts.splice(i,1);save();render()}
+async function pickPhoneContact(){
+  try{
+    if(!('contacts' in navigator)||!('ContactsManager' in window))throw new Error('Contact Picker no disponible en este navegador.');
+    const res=await navigator.contacts.select(['name','tel','email'],{multiple:false});
+    if(!res.length)return;const c=res[0];
+    S.contacts.push({name:(c.name&&c.name[0])||'Contacto',role:'Contacto del celular',phone:(c.tel&&c.tel[0])||'',email:(c.email&&c.email[0])||'',created:new Date().toISOString()});
+    save();render()
+  }catch(e){alert(e.message+' Podés cargarlo manualmente.')}
 }
-
-.btn.purple{
-  background:#281d43;
-  border-color:#6942a5;
+function alertText(a){return `FITRING / MAR - ${a.node}\n${a.text}\nHora: ${new Date().toLocaleString()}\nEvento de monitoreo, no diagnóstico.`}
+async function shareAlert(i){
+  const a=activeAlerts()[i];if(!a)return;
+  const text=alertText(a);
+  try{if(navigator.share){await navigator.share({title:'FITRING / MAR',text});return}}catch(e){}
+  await navigator.clipboard?.writeText(text);alert('Alerta copiada para compartir.')
 }
-
-.btn.red{
-  background:#3a161c;
-  border-color:#7c2834;
-  color:#ff9da6;
+function sendContact(i){
+  const c=S.contacts[i],a=activeAlerts()[0]||{node:'FITRING',text:'Resumen de monitoreo sin alertas activas.'},text=encodeURIComponent(alertText(a));
+  if(c.phone){window.open(`https://wa.me/${c.phone.replace(/\D/g,'')}?text=${text}`,'_blank')}
+  else if(c.email){location.href=`mailto:${encodeURIComponent(c.email)}?subject=FITRING%20MAR&body=${text}`}
+  else alert('El contacto no tiene teléfono ni email.')
 }
-
-.statusbar{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:10px;
-  font-size:10px;
+let breathTimer=null,phase=true;
+function toggleBreath(){
+  const c=document.getElementById('breathCircle'),t=document.getElementById('breathText');if(!c)return;
+  if(breathTimer){clearInterval(breathTimer);breathTimer=null;c.className='circle';t.textContent='Pausada';return}
+  const run=()=>{c.className='circle '+(phase?'in':'out');t.textContent=phase?'Inhalá · 4 segundos':'Exhalá · 4 segundos';phase=!phase};
+  run();breathTimer=setInterval(run,4000)
 }
-
-.pill{
-  background:#101a2e;
-  border:1px solid var(--line);
-  padding:5px 9px;
-  border-radius:20px;
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');document.getElementById(b.dataset.view).classList.add('on')
+});
+function addLive(data,source='R10M_LIVE'){
+  Object.assign(S.latest,data);S.records.push({at:new Date().toISOString(),type:'vitales',source,...data});save();render()
 }
-
-.dot{
-  width:7px;
-  height:7px;
-  display:inline-block;
-  border-radius:50%;
-  background:var(--green);
-  margin-right:4px;
+function demoTick(){
+  if(!S.demo)return;
+  addLive({hr:62+Math.floor(Math.random()*28),hrv:35+Math.floor(Math.random()*35),spo2:95+Math.floor(Math.random()*5),stress:20+Math.floor(Math.random()*65),temp:+(36.0+Math.random()).toFixed(1),steps:S.latest.steps+Math.floor(Math.random()*12)},'DEMO');
+  setTimeout(demoTick,4500)
 }
-
-.nav{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:7px;
-  padding:10px 12px;
-  max-width:1200px;
-  margin:auto;
+demo.onclick=()=>{S.demo=!S.demo;demo.textContent=S.demo?'Detener demo':'Demo';save();if(S.demo)demoTick()}
+function clearDemo(){S.records=S.records.filter(r=>r.source!=='DEMO');S.demo=false;demo.textContent='Demo';save();render()}
+async function connectBLE(){
+  const log=document.getElementById('blelog');
+  if(!navigator.bluetooth){alert('Web Bluetooth no está disponible. Usá Chrome/Edge compatible sobre HTTPS.');return}
+  try{
+    const device=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:['heart_rate','battery_service']});
+    device.addEventListener('gattserverdisconnected',()=>{conn.textContent='● R10M desconectado';conn.classList.remove('ok')});
+    const server=await device.gatt.connect();conn.textContent='● '+(device.name||'BLE')+' conectado';conn.classList.add('ok');
+    log.textContent=`DISPOSITIVO: ${device.name||'sin nombre'}\nID: ${device.id}\n\n`;
+    const services=await server.getPrimaryServices();
+    for(const s of services){
+      log.textContent+=`SERVICE ${s.uuid}\n`;
+      try{
+        const chars=await s.getCharacteristics();
+        for(const c of chars){
+          const props=Object.entries(c.properties).filter(x=>x[1]===true).map(x=>x[0]).join(', ');
+          log.textContent+=`  CHAR ${c.uuid} [${props}]\n`;
+          if(c.uuid.toLowerCase().includes('2a37')&&c.properties.notify){
+            await c.startNotifications();
+            c.addEventListener('characteristicvaluechanged',e=>{
+              const v=e.target.value,flags=v.getUint8(0),hr=(flags&1)?v.getUint16(1,true):v.getUint8(1);
+              addLive({hr},'R10M_LIVE')
+            });
+            log.textContent+='    ↳ Heart Rate notifications activas\n';
+          }
+          if(c.uuid.toLowerCase().includes('2a19')&&c.properties.read){
+            const v=await c.readValue();battery.textContent=v.getUint8(0)
+          }
+        }
+      }catch(e){log.textContent+='  acceso limitado: '+e.message+'\n'}
+    }
+  }catch(e){log.textContent='BLE: '+e.message}
 }
+connect.onclick=connectBLE;
 
-.nav button{
-  border:1px solid var(--line);
-  background:#0d1628;
-  color:#91a0ba;
-  border-radius:11px;
-  padding:10px 4px;
-  font-weight:800;
-  cursor:pointer;
+pdf.onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  pdfState.innerHTML=`<div>📄 ${f.name}</div><div>${(f.size/1024/1024).toFixed(2)} MB</div><div>Preparado para XEO privado.</div>`;
+  if(!S.xeoEndpoint)return;
+  if(!confirm('¿Enviar este PDF al endpoint privado XEO configurado?'))return;
+  try{
+    const fd=new FormData();fd.append('file',f);fd.append('source','FITRING_MAR');
+    const r=await fetch(S.xeoEndpoint,{method:'POST',body:fd});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json().catch(()=>({}));
+    pdfState.innerHTML+=`<div class="ok">XEO: archivo enviado correctamente.</div><div>${data.status||''}</div>`;
+  }catch(err){pdfState.innerHTML+=`<div class="bad">XEO: ${err.message}</div>`}
 }
-
-.nav button.active{
-  color:#fff;
-  border-color:var(--blue);
-  background:#142646;
-  box-shadow:0 0 20px #1787ff22;
+function exportData(){
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='FITRING_MAR_v12_backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)
 }
-
-main{
-  max-width:1200px;
-  margin:auto;
-  padding:0 12px 40px;
+importJson.onchange=async e=>{
+  try{const x=JSON.parse(await e.target.files[0].text());if(!x.latest||!x.records)throw new Error('Formato no reconocido');S=x;save();render();alert('Backup importado.')}catch(err){alert(err.message)}
 }
-
-.page{display:none}
-.page.active{display:block}
-
-.hero{
-  background:linear-gradient(135deg,#101b31,#10182a);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:12px;
-}
-
-.heroTitle{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-}
-
-.hero h1{
-  margin:0;
-  font-size:20px;
-}
-
-.sub{
-  color:var(--muted);
-  font-size:11px;
-  margin-top:4px;
-}
-
-.modeTag{
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:9px;
-  font-weight:900;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-
-.metric{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:12px;
-  min-height:125px;
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
-}
-
-.metric.priority{
-  border-color:#368ee9;
-  box-shadow:0 0 18px #2088ff18;
-}
-
-.metric .label{
-  color:#91a0ba;
-  font-size:10px;
-  font-weight:800;
-}
-
-.metric .value{
-  font-size:27px;
-  font-weight:950;
-  margin:8px 0 2px;
-}
-
-.metric .unit{
-  font-size:11px;
-  color:#9ba9bf;
-}
-
-.source{
-  position:absolute;
-  right:8px;
-  top:8px;
-  font-size:8px;
-  padding:3px 6px;
-  border-radius:8px;
-  background:#202a3d;
-  color:#9aa8bd;
-}
-
-.source.real{
-  background:#113c28;
-  color:var(--green);
-}
-
-.source.demo{
-  background:#392a13;
-  color:var(--yellow);
-}
-
-.source.none{
-  background:#252a36;
-  color:#8994a8;
-}
-
-.bar{
-  height:5px;
-  border-radius:10px;
-  background:#081126;
-  margin-top:9px;
-  overflow:hidden;
-}
-
-.fill{
-  height:100%;
-  width:0;
-  background:var(--blue);
-  transition:.4s;
-}
-
-.small{
-  color:var(--muted);
-  font-size:9px;
-  margin-top:7px;
-}
-
-.section{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px;
-  margin-top:12px;
-}
-
-.sectionTitle{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-  gap:10px;
-}
-
-.sectionTitle b{font-size:13px}
-
-.triple{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-
-.modeCard{
-  border:1px solid var(--line);
-  background:#0c1528;
-  border-radius:15px;
-  padding:14px;
-  cursor:pointer;
-}
-
-.modeCard:hover{
-  border-color:var(--blue);
-}
-
-.modeCard h3{
-  margin:0 0 4px;
-}
-
-.modeCard .big{
-  font-size:24px;
-  font-weight:950;
-  margin-top:12px;
-}
-
-.chart{
-  height:120px;
-  display:flex;
-  align-items:flex-end;
-  gap:3px;
-  background:#091224;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:8px;
-  overflow:hidden;
-}
-
-.chart div{
-  flex:1;
-  min-width:3px;
-  background:linear-gradient(var(--cyan),var(--blue));
-  border-radius:3px 3px 0 0;
-}
-
-.session{
-  text-align:center;
-  padding:20px 10px;
-  background:radial-gradient(circle,#18334b,#0b1426 65%);
-  border:1px solid var(--line);
-  border-radius:18px;
-}
-
-.breathCircle{
-  width:145px;
-  height:145px;
-  margin:14px auto;
-  border:3px solid var(--cyan);
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  box-shadow:0 0 35px #25d8d126;
-  transition:transform 4s ease;
-}
-
-.breathCircle.inhale{
-  transform:scale(1.16);
-}
-
-.breathCircle.exhale{
-  transform:scale(.82);
-}
-
-.b
+render();
+</script>
+</body>
+</html>
