@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v12</title>
+<title>FITRING / MAR v12.1</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -66,7 +66,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v12</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v12.1</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -142,7 +142,7 @@ button{cursor:pointer}
   </article>
 </section>
 
-<div class="footer">FITRING / MAR v12 · monitoreo y acompañamiento. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v12.1 · monitoreo y acompañamiento. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
 
 <div id="contactModal" class="modal"><div class="dialog">
@@ -389,7 +389,7 @@ pdf.onchange=async e=>{
 }
 function exportData(){
   const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');
-  a.href=URL.createObjectURL(b);a.download='FITRING_MAR_v12_backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)
+  a.href=URL.createObjectURL(b);a.download='FITRING_MAR_v12_1_backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)
 }
 importJson.onchange=async e=>{
   try{const x=JSON.parse(await e.target.files[0].text());if(!x.latest||!x.records)throw new Error('Formato no reconocido');S=x;save();render();alert('Backup importado.')}catch(err){alert(err.message)}
