@@ -2,923 +2,1050 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover">
-
-<title>FITRING • R10M YCBT DISCOVERY</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FITRING LAB v13 • R10M</title>
 
 <style>
+:root{
+  --bg:#061018;
+  --card:#0c1a24;
+  --line:#1d3542;
+  --text:#e9f7f4;
+  --muted:#86a4af;
+  --green:#16c9a5;
+  --yellow:#ffd166;
+  --red:#ff6677;
+  --blue:#66b7ff;
+}
+*{box-sizing:border-box}
 body{
-  margin:0;
-  background:#071019;
-  color:#eaf7f4;
-  font:15px system-ui;
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,sans-serif
 }
-
-main{
-  max-width:780px;
-  margin:auto;
-  padding:20px;
-}
-
+main{max-width:1050px;margin:auto;padding:18px}
+h1{margin:4px 0;font-size:28px}
+h2{font-size:17px;margin:0 0 12px}
+small,.muted{color:var(--muted)}
 .card{
-  background:#0d1b26;
-  border:1px solid #203543;
-  border-radius:18px;
-  padding:16px;
-  margin:12px 0;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:18px;padding:16px;margin:12px 0
 }
-
 button{
-  border:0;
-  border-radius:13px;
-  padding:14px 16px;
-  margin:5px;
-  background:#16c9a5;
-  color:#03120f;
-  font-weight:800;
+  border:0;border-radius:12px;padding:12px 14px;margin:4px;
+  background:var(--green);color:#02120e;font-weight:800
 }
-
-.stop{
-  background:#ff6677;
+button.secondary{background:var(--yellow)}
+button.danger{background:var(--red)}
+button.dark{background:#1a2c37;color:var(--text);border:1px solid #294451}
+button:disabled{opacity:.4}
+.top{
+  display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center
 }
-
-.muted{
-  color:#8faab7;
+.connection{
+  display:flex;gap:7px;align-items:center;flex-wrap:wrap
 }
-
-.metric{
-  font-size:34px;
-  font-weight:800;
+.dot{
+  width:11px;height:11px;border-radius:50%;background:#60727b;display:inline-block
 }
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
+.dot.live{background:var(--green);box-shadow:0 0 10px var(--green)}
+.nodes{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px
 }
-
+.node{
+  background:#091721;border:1px solid #1b3543;border-radius:16px;
+  padding:14px;min-height:145px;cursor:pointer;position:relative
+}
+.node:hover{border-color:#3c6576}
+.node-title{font-weight:800;font-size:16px}
+.value{font-size:27px;font-weight:850;margin:13px 0 8px}
+.state{
+  display:inline-block;border-radius:20px;padding:4px 8px;
+  font-size:10px;font-weight:900;letter-spacing:.4px;
+  background:#263640;color:#b5c5cc
+}
+.state.testing{background:#55471e;color:#ffe392}
+.state.live{background:#0e594b;color:#70f0ce}
+.state.unsupported{background:#572d34;color:#ff9ca8}
+.source{font-size:11px;color:var(--muted);margin-top:8px}
+.detail-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  font:12px ui-monospace,monospace
+}
+.detail-grid div{background:#07121a;border-radius:9px;padding:9px}
 .log{
-  white-space:pre-wrap;
-  word-break:break-all;
-  background:#050b10;
-  padding:12px;
-  border-radius:12px;
-  max-height:380px;
-  overflow:auto;
-  font:12px ui-monospace,monospace;
+  background:#03090d;border-radius:12px;padding:12px;
+  white-space:pre-wrap;word-break:break-all;
+  max-height:330px;overflow:auto;
+  font:12px ui-monospace,monospace;color:#b9d2d8
 }
-
-.ok{
-  color:#55e6a5;
-}
-
-.warn{
-  color:#ffd166;
-}
-
-h1{
-  margin-bottom:5px;
-}
-
-.version{
-  color:#55e6a5;
-  font-weight:bold;
+.ok{color:#55e6a5}
+.warn{color:#ffd166}
+.bad{color:#ff7787}
+.tabs{display:flex;gap:5px;flex-wrap:wrap}
+.tabContent{display:none}
+.tabContent.active{display:block}
+@media(max-width:750px){
+  .nodes{grid-template-columns:repeat(2,1fr)}
+  .detail-grid{grid-template-columns:1fr}
+  .top{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
-
 <main>
 
-<h1>FITRING • R10M</h1>
-
-<p class="version">
-YCBT DISCOVERY TEST
-</p>
-
-<p class="muted">
-Descubrimiento BLE abierto + prueba directa del servicio YCBT BE940000.
-Usar Chrome/Android y HTTPS.
-</p>
-
-
-<div class="card">
-
-<button id="connect">
-Buscar dispositivos BLE
-</button>
-
-<button id="info">
-Leer info/capacidades
-</button>
-
-<div id="status" class="muted">
-Desconectado
-</div>
-
-</div>
-
-
-<div class="grid">
-
-<div class="card">
-FC
-<div id="hr" class="metric">—</div>
+<div class="top">
+  <div>
+    <h1>FITRING LAB v13</h1>
+    <div class="muted">R10M • BLE / YCBT • Hardware Discovery Lab</div>
+  </div>
+  <div class="connection">
+    <span id="dot" class="dot"></span>
+    <span id="status">DESCONECTADO</span>
+  </div>
 </div>
 
 <div class="card">
-SpO₂
-<div id="spo2" class="metric">—</div>
+  <button id="scan">🔎 DESCUBRIR BLE</button>
+  <button id="disconnect" class="danger">DESCONECTAR</button>
+  <button id="info" class="secondary">INFO YCBT</button>
+
+  <div id="deviceInfo" class="muted" style="margin-top:10px">
+    Ningún dispositivo seleccionado.
+  </div>
 </div>
 
 <div class="card">
-Presión
-<div id="bp" class="metric">—</div>
+<h2>NODOS DEL ANILLO</h2>
+
+<div class="nodes" id="nodes"></div>
 </div>
 
 <div class="card">
-HRV
-<div id="hrv" class="metric">—</div>
+<h2>NODO SELECCIONADO</h2>
+
+<div id="nodeTitle" style="font-size:22px;font-weight:850">FC</div>
+
+<div class="detail-grid" style="margin-top:12px">
+ <div>VALOR<br><b id="detailValue">—</b></div>
+ <div>ESTADO<br><b id="detailState">NO PROBADO</b></div>
+ <div>FUENTE<br><b id="detailSource">R10M</b></div>
+ <div>UUID / COMANDO<br><b id="detailProtocol">—</b></div>
 </div>
 
+<div style="margin-top:12px">
+ <button id="testNode">PROBAR NODO</button>
+ <button id="stopNode" class="danger">DETENER</button>
 </div>
 
+<div id="nodeMessage" class="muted"></div>
+</div>
 
 <div class="card">
 
-<b>Medición real</b>
+<div class="tabs">
+ <button class="dark" onclick="tab('lab')">BLE LAB</button>
+ <button class="dark" onclick="tab('raw')">RAW TX/RX</button>
+</div>
 
-<br>
+<div id="lab" class="tabContent active">
 
-<button onclick="measure(0)">
-FC
-</button>
+<h2 style="margin-top:15px">DIAGNÓSTICO BLE / YCBT</h2>
 
-<button onclick="measure(2)">
-SpO₂
-</button>
+<div id="diagnostic" class="muted">
+Esperando dispositivo.
+</div>
 
-<button onclick="measure(1)">
-Presión
-</button>
-
-<button onclick="measure(10)">
-HRV
-</button>
-
-<button class="stop"
-        onclick="stopCurrent()">
-Detener
-</button>
+<div class="detail-grid" style="margin-top:10px">
+ <div>GATT<br><b id="gattState">—</b></div>
+ <div>YCBT BE940000<br><b id="ycbtState">—</b></div>
+ <div>CMD BE940001<br><b id="cmdState">—</b></div>
+ <div>STREAM BE940003<br><b id="streamState">—</b></div>
+</div>
 
 </div>
 
+<div id="raw" class="tabContent">
 
-<div class="card">
+<h2 style="margin-top:15px">RAW / PROTOCOLO</h2>
 
-<b>RAW / protocolo</b>
+<button class="dark" onclick="clearLog()">LIMPIAR</button>
 
 <div id="log" class="log"></div>
 
 </div>
 
+</div>
+
+</main>
 
 <script>
 
-/* =========================================================
-   FITRING R10M
-   YCBT DISCOVERY
-   ========================================================= */
+/* ==========================================================
+   FITRING LAB v13
+   ========================================================== */
+
+const S='be940000-7333-be46-b7ae-689e71722bd5';
+const C='be940001-7333-be46-b7ae-689e71722bd5';
+const T='be940003-7333-be46-b7ae-689e71722bd5';
+
+let dev=null;
+let server=null;
+let cmd=null;
+let stream=null;
+let currentMode=null;
+let selectedNode='hr';
+let buf=[];
+
+const $=id=>document.getElementById(id);
+
+/* ==========================================================
+   NODOS
+   ========================================================== */
+
+const nodes={
+ hr:{
+   name:'FC',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'YCBT mode 0x00',
+   mode:0
+ },
+ spo2:{
+   name:'SpO₂',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'YCBT mode 0x02',
+   mode:2
+ },
+ bp:{
+   name:'Presión',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'YCBT mode 0x01',
+   mode:1
+ },
+ hrv:{
+   name:'HRV',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'YCBT mode 0x0A',
+   mode:10
+ },
+ stress:{
+   name:'Estrés',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'Por descubrir'
+ },
+ temp:{
+   name:'Temperatura',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'Por descubrir'
+ },
+ steps:{
+   name:'Pasos',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'Por descubrir'
+ },
+ battery:{
+   name:'Batería',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'Por descubrir'
+ },
+ sleep:{
+   name:'Sueño',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'Por descubrir'
+ },
+ movement:{
+   name:'Movimiento',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'Por descubrir'
+ },
+ gestures:{
+   name:'Gestos',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M',
+   protocol:'Por descubrir'
+ },
+ audio:{
+   name:'Audio',
+   value:'—',
+   state:'NO PROBADO',
+   source:'R10M / teléfono',
+   protocol:'Experimental'
+ }
+};
 
 
-/* ---------- UUID YCBT ---------- */
+/* ==========================================================
+   UI NODOS
+   ========================================================== */
 
-const S =
-'be940000-7333-be46-b7ae-689e71722bd5';
+function renderNodes(){
 
-const C =
-'be940001-7333-be46-b7ae-689e71722bd5';
+ const box=$('nodes');
+ box.innerHTML='';
 
-const T =
-'be940003-7333-be46-b7ae-689e71722bd5';
+ Object.entries(nodes).forEach(([id,n])=>{
+
+   const div=document.createElement('div');
+
+   div.className='node';
+
+   div.onclick=()=>selectNode(id);
+
+   let stateClass='';
+
+   if(n.state==='PROBANDO')
+     stateClass='testing';
+
+   if(n.state==='LIVE')
+     stateClass='live';
+
+   if(n.state==='NO SOPORTADO')
+     stateClass='unsupported';
+
+   div.innerHTML=`
+     <div class="node-title">${n.name}</div>
+     <div class="value">${n.value}</div>
+     <span class="state ${stateClass}">
+       ${n.state}
+     </span>
+     <div class="source">${n.source}</div>
+   `;
+
+   box.appendChild(div);
+
+ });
+
+ updateDetail();
+
+}
 
 
-let dev = null;
-let cmd = null;
-let stream = null;
+function selectNode(id){
 
-let currentMode = null;
+ selectedNode=id;
+ updateDetail();
 
-let buf = [];
-
-
-/* ---------- UI ---------- */
-
-const $ = x =>
-document.getElementById(x);
+}
 
 
-function log(s){
+function updateDetail(){
 
-  $('log').textContent =
-  new Date().toLocaleTimeString()
-  +' '
-  +s
-  +'\n'
-  +$('log').textContent;
+ const n=nodes[selectedNode];
 
+ $('nodeTitle').textContent=n.name;
+ $('detailValue').textContent=n.value;
+ $('detailState').textContent=n.state;
+ $('detailSource').textContent=n.source;
+ $('detailProtocol').textContent=n.protocol;
+
+}
+
+
+function setNode(id,value,state='LIVE'){
+
+ if(value!==undefined)
+   nodes[id].value=value;
+
+ nodes[id].state=state;
+
+ renderNodes();
+
+}
+
+
+/* ==========================================================
+   LOG
+   ========================================================== */
+
+function log(msg){
+
+ const line=
+ new Date().toLocaleTimeString()
+ +' '
+ +msg;
+
+ $('log').textContent=
+ line+'\n'+$('log').textContent;
+
+ console.log(line);
+
+}
+
+
+function clearLog(){
+ $('log').textContent='';
 }
 
 
 function hex(a){
 
-  return [...a]
-  .map(
-    x =>
-    x.toString(16)
-    .padStart(2,'0')
-  )
-  .join(' ');
+ return [...a]
+ .map(x=>x.toString(16).padStart(2,'0'))
+ .join(' ');
 
 }
 
 
-/* =========================================================
-   CRC16
-   ========================================================= */
+/* ==========================================================
+   TABS
+   ========================================================== */
+
+function tab(id){
+
+ document.querySelectorAll('.tabContent')
+ .forEach(x=>x.classList.remove('active'));
+
+ $(id).classList.add('active');
+
+}
+
+
+/* ==========================================================
+   CRC / FRAME
+   ========================================================== */
 
 function crc16(a){
 
-  let crc = 0xffff;
+ let crc=0xffff;
 
-  for(const b of a){
+ for(const b of a){
 
-    crc ^= b << 8;
+   crc^=b<<8;
 
-    for(let i=0;i<8;i++){
+   for(let i=0;i<8;i++){
 
-      crc =
-      (crc & 0x8000)
+     crc=(crc&0x8000)
+     ?((crc<<1)^0x1021)&0xffff
+     :(crc<<1)&0xffff;
 
-      ? ((crc << 1) ^ 0x1021) & 0xffff
+   }
 
-      : (crc << 1) & 0xffff;
+ }
 
-    }
-
-  }
-
-  return crc;
+ return crc;
 
 }
 
-
-/* =========================================================
-   FRAME YCBT
-   ========================================================= */
 
 function frame(type,c,p=[]){
 
-  let n = p.length + 6;
+ const n=p.length+6;
 
-  let a = [
-    type,
-    c,
-    n & 255,
-    n >> 8,
-    ...p
-  ];
+ const a=[
+   type,c,
+   n&255,
+   n>>8,
+   ...p
+ ];
 
-  let crc = crc16(a);
+ const crc=crc16(a);
 
-  return new Uint8Array([
-    ...a,
-    crc & 255,
-    crc >> 8
-  ]);
+ return new Uint8Array([
+   ...a,
+   crc&255,
+   crc>>8
+ ]);
 
 }
 
-
-/* =========================================================
-   SEND
-   ========================================================= */
 
 async function send(t,c,p=[]){
 
-  if(!cmd)
-    throw Error('No conectado');
+ if(!cmd)
+   throw Error('YCBT no conectado');
 
-  let f = frame(t,c,p);
+ const f=frame(t,c,p);
 
-  log(
-    'TX '+
-    hex(f)
-  );
+ log('TX '+hex(f));
 
-  await cmd.writeValue(f);
+ await cmd.writeValue(f);
 
 }
 
 
-/* =========================================================
-   RECEPCIÓN
-   ========================================================= */
+/* ==========================================================
+   RX
+   ========================================================== */
 
 function ingest(v,src){
 
-  let a =
-  new Uint8Array(
-    v.buffer.slice(
-      v.byteOffset,
-      v.byteOffset + v.byteLength
-    )
-  );
+ const a=new Uint8Array(
+   v.buffer.slice(
+     v.byteOffset,
+     v.byteOffset+v.byteLength
+   )
+ );
 
-  log(
-    'RX '+
-    src+
-    ' '+
-    hex(a)
-  );
+ log('RX '+src+' '+hex(a));
 
-  buf.push(...a);
+ buf.push(...a);
 
+ while(buf.length>=4){
 
-  while(buf.length >= 4){
+   const len=
+   buf[2] |
+   (buf[3]<<8);
 
-    let len =
-    buf[2] |
-    buf[3] << 8;
+   if(len<6 || len>4096){
+     buf.shift();
+     continue;
+   }
 
+   if(buf.length<len)
+     break;
 
-    if(
-      len < 6 ||
-      len > 4096
-    ){
+   decode(buf.splice(0,len));
 
-      buf.shift();
-      continue;
-
-    }
-
-
-    if(buf.length < len)
-      break;
-
-
-    decode(
-      buf.splice(
-        0,
-        len
-      )
-    );
-
-  }
+ }
 
 }
 
 
-/* =========================================================
+/* ==========================================================
    DECODER
-   ========================================================= */
+   ========================================================== */
 
 function decode(f){
 
-  let type = f[0];
+ const type=f[0];
+ const c=f[1];
+ const p=f.slice(4,-2);
 
-  let c = f[1];
-
-  let p =
-  f.slice(
-    4,
-    -2
-  );
-
-
-  /* FC */
-
-  if(
-    type === 6 &&
-    c === 1 &&
-    p[0]
-  ){
-
-    $('hr').textContent =
-    p[0]+' bpm';
-
-  }
+ /*
+    IMPORTANTE:
+    sólo actualizamos cuando existe RX real.
+ */
 
 
-  /* SpO2 */
+ /* HR */
 
-  if(
-    type === 6 &&
-    c === 2 &&
-    p[0]
-  ){
+ if(type===6 && c===1 && p[0]){
 
-    $('spo2').textContent =
-    p[0]+' %';
+   setNode(
+     'hr',
+     p[0]+' bpm',
+     'LIVE'
+   );
 
-  }
-
-
-  /* BP + HR + HRV */
-
-  if(
-    type === 6 &&
-    c === 3
-  ){
-
-    if(
-      p[0] &&
-      p[1]
-    ){
-
-      $('bp').textContent =
-      p[0]+'/'+p[1];
-
-    }
+ }
 
 
-    if(p[2]){
+ /* SpO2 */
 
-      $('hr').textContent =
-      p[2]+' bpm';
+ if(type===6 && c===2 && p[0]){
 
-    }
+   setNode(
+     'spo2',
+     p[0]+' %',
+     'LIVE'
+   );
 
-
-    if(p[3]){
-
-      $('hrv').textContent =
-      p[3]+' ms';
-
-    }
-
-  }
+ }
 
 
-  /* medición realtime */
+ /* BP / HR / HRV */
 
-  if(
-    type === 4 &&
-    c === 0x13 &&
-    p.length >= 3
-  ){
+ if(type===6 && c===3){
 
-    let m = p[0];
+   if(p[0] && p[1])
+     setNode(
+       'bp',
+       p[0]+'/'+p[1]+' mmHg',
+       'LIVE'
+     );
 
-    let v = p[2];
+   if(p[2])
+     setNode(
+       'hr',
+       p[2]+' bpm',
+       'LIVE'
+     );
 
-    let fr =
-    p[3] || 0;
+   if(p[3])
+     setNode(
+       'hrv',
+       p[3]+' ms',
+       'LIVE'
+     );
 
-
-    if(
-      m === 0 &&
-      v
-    ){
-
-      $('hr').textContent =
-      v+' bpm';
-
-    }
-
-
-    if(
-      m === 1 &&
-      v &&
-      fr
-    ){
-
-      $('bp').textContent =
-      v+'/'+fr;
-
-    }
+ }
 
 
-    if(
-      m === 2 &&
-      v
-    ){
+ /* realtime */
 
-      $('spo2').textContent =
-      v+' %';
+ if(
+   type===4 &&
+   c===0x13 &&
+   p.length>=3
+ ){
 
-    }
+   const mode=p[0];
+   const value=p[2];
+   const extra=p[3]||0;
 
-  }
+   if(mode===0 && value)
+     setNode(
+       'hr',
+       value+' bpm',
+       'LIVE'
+     );
+
+   if(mode===1 && value && extra)
+     setNode(
+       'bp',
+       value+'/'+extra+' mmHg',
+       'LIVE'
+     );
+
+   if(mode===2 && value)
+     setNode(
+       'spo2',
+       value+' %',
+       'LIVE'
+     );
+
+ }
 
 
-  /* INFO */
-
-  if(
-    type === 2 &&
-    c === 0 &&
-    p.length >= 6
-  ){
-
-    $('status').innerHTML =
-    '<span class="ok">Conectado</span>'
-    +' • FW '
-    +p[3]+'.'
-    +String(p[2]).padStart(2,'0')
-    +' • batería '
-    +p[5]
-    +'%';
-
-  }
-
-
-  /* capacidades */
-
-  if(
-    type === 2 &&
-    c === 1
-  ){
-
-    log(
-      'CAP bitmap: '
-      +hex(p)
-    );
-
-  }
+ /* dejamos todo lo desconocido en RAW */
 
 }
 
 
-/* =========================================================
-   DISCOVERY BLE
-   ========================================================= */
+/* ==========================================================
+   DISCOVERY
+   ========================================================== */
 
-$('connect').onclick =
-async()=>{
+$('scan').onclick=async()=>{
 
-try{
+ try{
 
-  log(
-    'DISCOVERY: buscando TODOS los dispositivos BLE...'
-  );
+   log('===== BLE DISCOVERY =====');
 
+   $('diagnostic').innerHTML=
+   '<span class="warn">Abriendo selector BLE...</span>';
 
-  /* IMPORTANTE:
-     NO filtramos por R10M
-     NO filtramos por BE940000
+   dev=
+   await navigator.bluetooth.requestDevice({
 
-     Chrome deberá mostrar todos los BLE
-     que pueda ofrecer mediante Web Bluetooth.
-  */
+     acceptAllDevices:true,
 
-  dev =
-  await navigator.bluetooth.requestDevice({
+     optionalServices:[
+       S,
+       'battery_service',
+       'heart_rate'
+     ]
 
-    acceptAllDevices:true,
+   });
 
-    optionalServices:[
-      S
-    ]
 
-  });
+   const name=
+   dev.name || '(SIN NOMBRE)';
 
 
-  log(
-    'SELECCIONADO: '
-    +(dev.name || '(sin nombre)')
-    +' | ID '
-    +dev.id
-  );
+   $('deviceInfo').innerHTML=
+   'Nombre: <b>'+name+'</b><br>'
+   +'ID: '+dev.id;
 
 
-  $('status').textContent =
-  'Seleccionado: '
-  +(dev.name || 'BLE sin nombre');
+   log(
+     'SELECT '+name+
+     ' ID='+dev.id
+   );
 
 
-  dev.addEventListener(
-    'gattserverdisconnected',
-    ()=>{
+   dev.addEventListener(
+     'gattserverdisconnected',
+     disconnected
+   );
 
-      $('status').textContent =
-      'Desconectado';
 
-      log(
-        'GATT desconectado'
-      );
+   $('status').textContent='CONECTANDO...';
 
-    }
-  );
 
+   server=
+   await dev.gatt.connect();
 
-  log(
-    'Conectando GATT...'
-  );
 
+   $('gattState').textContent='OK';
 
-  let g =
-  await dev.gatt.connect();
+   $('dot').classList.add('live');
 
+   $('status').textContent='GATT CONECTADO';
 
-  log(
-    'GATT CONECTADO'
-  );
+   log('GATT OK');
 
 
-  log(
-    'Buscando servicio YCBT: '
-    +S
-  );
+   /* =======================================
+      YCBT
+      ======================================= */
 
+   let service;
 
-  let s =
-  await g.getPrimaryService(S);
+   try{
 
+     service=
+     await server.getPrimaryService(S);
 
-  log(
-    'SERVICIO YCBT ENCONTRADO'
-  );
+   }
+   catch(e){
 
+     $('ycbtState').textContent='NO ENCONTRADO';
 
-  cmd =
-  await s.getCharacteristic(C);
+     $('diagnostic').innerHTML=
+     '<span class="bad">'
+     +'Este candidato no expuso BE940000.'
+     +'</span>';
 
+     log(
+       'BE940000 NO ENCONTRADO'
+     );
 
-  log(
-    'CMD encontrado: '
-    +C
-  );
+     return;
 
+   }
 
-  stream =
-  await s.getCharacteristic(T);
 
+   $('ycbtState').textContent='ENCONTRADO';
 
-  log(
-    'STREAM encontrado: '
-    +T
-  );
+   log(
+     '★★★★★ BE940000 FOUND ★★★★★'
+   );
 
 
-  await cmd.startNotifications();
+   cmd=
+   await service.getCharacteristic(C);
 
+   $('cmdState').textContent='OK';
 
-  log(
-    'CMD notifications OK'
-  );
+   log('BE940001 OK');
 
 
-  await stream.startNotifications();
+   stream=
+   await service.getCharacteristic(T);
 
+   $('streamState').textContent='OK';
 
-  log(
-    'STREAM notifications OK'
-  );
+   log('BE940003 OK');
 
 
-  cmd.addEventListener(
-    'characteristicvaluechanged',
-    e =>
-    ingest(
-      e.target.value,
-      'CMD'
-    )
-  );
+   await cmd.startNotifications();
 
+   await stream.startNotifications();
 
-  stream.addEventListener(
-    'characteristicvaluechanged',
-    e =>
-    ingest(
-      e.target.value,
-      'STREAM'
-    )
-  );
 
+   cmd.addEventListener(
+     'characteristicvaluechanged',
+     e=>ingest(
+       e.target.value,
+       'CMD'
+     )
+   );
 
-  $('status').innerHTML =
-  '<span class="ok">'
-  +'YCBT conectado'
-  +'</span> • '
-  +(dev.name || 'sin nombre');
 
+   stream.addEventListener(
+     'characteristicvaluechanged',
+     e=>ingest(
+       e.target.value,
+       'STREAM'
+     )
+   );
 
-  log(
-    'GATT YCBT listo'
-  );
 
+   $('status').textContent='YCBT LISTO';
 
-  /* pedir info */
 
-  await send(
-    2,
-    0,
-    [0x47,0x43]
-  );
+   $('diagnostic').innerHTML=
+   '<span class="ok">'
+   +'YCBT BE940000 operativo.'
+   +'</span>';
 
 
-  /* pedir capacidades */
+   log(
+     '★★★★★ YCBT READY ★★★★★'
+   );
 
-  await send(
-    2,
-    1,
-    [0x47,0x46]
-  );
 
+   /* consulta inicial */
 
-}
-catch(e){
+   await send(
+     2,0,
+     [0x47,0x43]
+   );
 
-  log(
-    'ERROR '
-    +e.name
-    +': '
-    +e.message
-  );
+   await send(
+     2,1,
+     [0x47,0x46]
+   );
 
 
-  $('status').innerHTML =
-  '<span class="warn">'
-  +e.name
-  +': '
-  +e.message
-  +'</span>';
+ }
+ catch(e){
 
-}
+   $('status').textContent='ERROR';
+
+   $('diagnostic').innerHTML=
+   '<span class="bad">'
+   +e.name+': '+e.message
+   +'</span>';
+
+   log(
+     'ERROR '
+     +e.name+': '
+     +e.message
+   );
+
+ }
 
 };
 
 
-/* =========================================================
+/* ==========================================================
+   DISCONNECT
+   ========================================================== */
+
+function disconnected(){
+
+ $('dot').classList.remove('live');
+
+ $('status').textContent='DESCONECTADO';
+
+ $('gattState').textContent='—';
+ $('ycbtState').textContent='—';
+ $('cmdState').textContent='—';
+ $('streamState').textContent='—';
+
+ cmd=null;
+ stream=null;
+ server=null;
+ currentMode=null;
+
+ log('BLE DISCONNECTED');
+
+}
+
+
+$('disconnect').onclick=()=>{
+
+ if(dev?.gatt?.connected)
+   dev.gatt.disconnect();
+
+};
+
+
+/* ==========================================================
    INFO
-   ========================================================= */
+   ========================================================== */
 
-$('info').onclick =
-async()=>{
+$('info').onclick=async()=>{
 
-try{
+ try{
 
-  await send(
-    2,
-    0,
-    [0x47,0x43]
-  );
+   await send(
+     2,0,
+     [0x47,0x43]
+   );
 
+   await send(
+     2,1,
+     [0x47,0x46]
+   );
 
-  await send(
-    2,
-    1,
-    [0x47,0x46]
-  );
+   await send(
+     2,0x1b,
+     []
+   );
 
+   await send(
+     2,3,
+     [0x47,0x50]
+   );
 
-  await send(
-    2,
-    0x1b,
-    []
-  );
+ }
+ catch(e){
 
+   log(
+     'INFO ERROR: '
+     +e.message
+   );
 
-  await send(
-    2,
-    3,
-    [0x47,0x50]
-  );
-
-
-}
-catch(e){
-
-  log(
-    'ERROR '
-    +e.name
-    +': '
-    +e.message
-  );
-
-}
+ }
 
 };
 
 
-/* =========================================================
-   MEDICIONES
-   ========================================================= */
+/* ==========================================================
+   TEST NODE
+   ========================================================== */
 
-window.measure =
-async m=>{
+$('testNode').onclick=async()=>{
 
-try{
+ const n=nodes[selectedNode];
 
-  if(currentMode !== null){
-
-    await send(
-      3,
-      0x2f,
-      [
-        0,
-        currentMode
-      ]
-    );
-
-  }
+ $('nodeMessage').textContent='';
 
 
-  currentMode = m;
+ /*
+    Los nodos cuyo comando todavía
+    no fue verificado NO envían nada.
+ */
+
+ if(n.mode===undefined){
+
+   $('nodeMessage').innerHTML=
+   '<span class="warn">'
+   +'Comando todavía no descubierto. '
+   +'No se enviará información al anillo.'
+   +'</span>';
+
+   log(
+     'NODE '+n.name+
+     ' pendiente de descubrimiento'
+   );
+
+   return;
+
+ }
 
 
-  await send(
-    3,
-    0x2f,
-    [
-      1,
-      m
-    ]
-  );
+ if(!cmd){
+
+   $('nodeMessage').innerHTML=
+   '<span class="bad">'
+   +'Primero conectá un dispositivo YCBT.'
+   +'</span>';
+
+   return;
+
+ }
 
 
-  log(
-    'Medición iniciada mode=0x'
-    +m.toString(16)
-  );
+ try{
+
+   if(currentMode!==null){
+
+     await send(
+       3,0x2f,
+       [0,currentMode]
+     );
+
+   }
 
 
-}
-catch(e){
+   currentMode=n.mode;
 
-  log(
-    'ERROR '
-    +e.name
-    +': '
-    +e.message
-  );
+   n.state='PROBANDO';
 
-}
-
-};
+   renderNodes();
 
 
-/* =========================================================
-   STOP
-   ========================================================= */
-
-window.stopCurrent =
-async()=>{
-
-try{
-
-  if(
-    currentMode !== null
-  ){
-
-    await send(
-      3,
-      0x2f,
-      [
-        0,
-        currentMode
-      ]
-    );
+   await send(
+     3,0x2f,
+     [1,n.mode]
+   );
 
 
-    log(
-      'Medición detenida mode=0x'
-      +currentMode.toString(16)
-    );
+   log(
+     'NODE TEST '
+     +n.name+
+     ' mode=0x'
+     +n.mode.toString(16)
+   );
 
 
-    currentMode = null;
+   $('nodeMessage').innerHTML=
+   '<span class="warn">'
+   +'Esperando RX real del R10M...'
+   +'</span>';
 
-  }
 
-}
-catch(e){
+ }
+ catch(e){
 
-  log(
-    'ERROR '
-    +e.name
-    +': '
-    +e.message
-  );
+   log(
+     'NODE ERROR '
+     +e.message
+   );
 
-}
+ }
 
 };
 
 
-log(
-  'FITRING YCBT DISCOVERY cargado'
-);
+/* ==========================================================
+   STOP NODE
+   ========================================================== */
 
-log(
-  'Esperando búsqueda BLE...'
-);
+$('stopNode').onclick=async()=>{
+
+ try{
+
+   if(
+     currentMode!==null &&
+     cmd
+   ){
+
+     await send(
+       3,0x2f,
+       [0,currentMode]
+     );
+
+
+     log(
+       'MEASURE STOP 0x'
+       +currentMode.toString(16)
+     );
+
+
+     currentMode=null;
+
+   }
+
+ }
+ catch(e){
+
+   log(
+     'STOP ERROR '
+     +e.message
+   );
+
+ }
+
+};
+
+
+/* ==========================================================
+   START
+   ========================================================== */
+
+renderNodes();
+
+log('FITRING LAB v13 READY');
+log('Todos los nodos comienzan NO PROBADO');
+log('No se generan mediciones simuladas');
 
 </script>
-
-</main>
-
 </body>
 </html>
