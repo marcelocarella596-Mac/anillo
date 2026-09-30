@@ -195,6 +195,32 @@ const orders={
  fitness:['steps','hr','hrv','sleep','stress','spo2','temp','bp']
 };
 function metricVal(k){return k==='bp'?S.latest.sys+'/'+S.latest.dia:(S.latest[k]??'—')}
+const takeMap={
+ general:['hr','spo2','bp','hrv','stress','temp','steps'],
+ respira:['hr','spo2','bp','hrv'],
+ calma:['stress','hrv','hr','spo2'],
+ fitness:['hr','hrv','steps','temp']
+};
+function measureButtons(mode){return takeMap[mode].map(k=>`<button class="btn" onclick="requestTake('${mode}','${k}')">Tomar ${metricMeta[k][0]}</button>`).join('')}
+async function requestTake(mode,k){
+ const box=document.getElementById('take-'+mode); if(box) box.innerHTML=`Solicitando <b>${metricMeta[k][0]}</b>…`;
+ if(k==='hr'){
+   if(box) box.innerHTML='FC: esperando la próxima notificación real del R10M (0x2A37)…';
+   S.pendingTake={mode,k,at:new Date().toISOString()}; save(); return;
+ }
+ // Hasta conocer el protocolo propietario del R10M, no fingimos comandos BLE para estas métricas.
+ const raw=prompt(`El R10M aún no expone un comando conocido para ${metricMeta[k][0]}. Ingresá una lectura manual para registrarla, o Cancelar para no guardar:`);
+ if(raw===null){if(box)box.textContent='Toma cancelada.';return}
+ if(k==='bp'){
+   const m=raw.match(/(\d{2,3})\D+(\d{2,3})/); if(!m){alert('Usá formato 120/80');return}
+   S.latest.sys=+m[1];S.latest.dia=+m[2];S.records.push({at:new Date().toISOString(),type:'toma',sys:S.latest.sys,dia:S.latest.dia,metric:'bp',source:'MANUAL'});
+ }else{
+   const v=Number(String(raw).replace(',','.'));if(!Number.isFinite(v)){alert('Valor inválido');return}
+   S.latest[k]=v;S.records.push({at:new Date().toISOString(),type:'toma',metric:k,value:v,source:'MANUAL'});
+ }
+ save();render(); const b=document.getElementById('take-'+mode);if(b)b.innerHTML=`Registrado ${metricMeta[k][0]}: <b>${metricVal(k)} ${metricMeta[k][1]}</b> · MANUAL`;
+}
+
 function spark(){return '<div class="spark">'+Array.from({length:14},(_,i)=>`<i style="height:${25+((i*19+37)%68)}%"></i>`).join('')+'</div>'}
 function cards(mode){return orders[mode].map((k,i)=>`<div class="metric ${i<4?'prio':''}"><span class="src">${S.demo?'DEMO':'DATA CORE'}</span><div class="mlabel">${metricMeta[k][0]}</div><div class="mval">${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span></div>${spark()}</div>`).join('')}
 function chartBars(seed=0,n=42){return Array.from({length:n},(_,i)=>`<i style="height:${18+((i*23+seed*17)%76)}%"></i>`).join('')}
@@ -214,7 +240,7 @@ function render(){
     <div class="panel ringbox"><div class="ring"></div><div><div class="title">Estado actual</div><div class="ok">● Sistema operativo</div><div class="sub">Última actualización ${new Date().toLocaleTimeString()}</div><div class="pills" style="margin-top:10px"><span class="pill">R10M</span><span class="pill">SmartHealth</span><span class="pill">MAR</span><span class="pill">XEO ready</span></div></div></div>
     <div class="panel"><div class="title">Bienestar general</div><div class="score">84 <small>/100</small></div><div class="ok">● Estable</div><div class="sub">Índice visual de demo; no es un diagnóstico médico.</div></div>
    </div>
-   <div class="metrics">${cards('general')}</div>
+   <div class="metrics">${cards('general')}</div><div class="panel" style="margin-top:12px"><div class="title">Toma manual a elección</div><div class="sub">Elegí qué medición querés solicitar/registrar en el estado actual.</div><div class="configrow" style="margin-top:10px">${measureButtons('general')}</div><div id="take-general" class="alert">Esperando selección.</div></div>
    <div class="two"><div class="panel"><div class="title">Tendencia últimas 24 h</div><div class="chart">${chartBars(1)}</div></div>
    <div class="panel"><div class="title">Alertas recientes</div>${alerts.length?alerts.map((a,i)=>`<div class="alert hot"><b>${a.node}</b><br>${a.text}<br><button class="btn" style="margin-top:7px" onclick="shareAlert(${i})">Compartir</button></div>`).join(''):'<div class="alert">Sin alertas según los umbrales configurados.</div>'}</div></div>`;
 
@@ -224,19 +250,19 @@ function render(){
     <div class="scene"><div><div class="title">Guía de respiración</div><div id="breathCircle" class="circle">4</div><p id="breathText">Lista para iniciar</p><button class="btn green" onclick="toggleBreath()">Iniciar / detener 4×4</button></div></div>
     <div class="panel contacts"><div class="title">Monitoreo compartido</div><div class="sub">Contactos autorizados y alertas configuradas.</div><div id="respContactList"></div><div class="configrow" style="margin-top:10px"><button class="btn" onclick="pickPhoneContact()">Agenda</button><button class="btn" onclick="openContactModal()">+ Contacto</button></div><hr style="border-color:#173b5a"><div class="title">Reglas activas</div><div class="list"><div>SpO₂ &lt; ${S.thresholds.spo2}%</div><div>FC fuera de ${S.thresholds.hrLow}-${S.thresholds.hrHigh}</div></div></div>
    </div>
-   <div class="metrics">${cards('respira')}</div>`;
+   <div class="metrics">${cards('respira')}</div><div class="panel" style="margin-top:12px"><div class="title">Tomas RESPIRA</div><div class="configrow">${measureButtons('respira')}</div><div id="take-respira" class="alert">Elegí una toma.</div></div>`;
 
   document.getElementById('calma').innerHTML=`
    <div class="hero"><div class="herohead"><div><h1>Nodo CALMA</h1><div class="sub">Estrés · HRV · sueño · tendencia sostenida</div></div><span class="tag">CALMA</span></div></div>
    <div class="overview"><div class="panel"><div class="title">Calma actual</div><div class="score">${Math.max(0,100-S.latest.stress)} <small>/100</small></div><div class="chart">${chartBars(2)}</div></div>
    <div class="panel"><div class="title">Alerta programada</div><div class="alert">Si estrés &gt; <b>${S.thresholds.stress}</b> durante <b>${S.thresholds.stressMinutes} min</b>, generar evento de monitoreo.</div><button class="btn purple" onclick="openSettings()">Editar regla</button><p class="sub">La regla describe una tendencia de monitoreo; no diagnostica estrés clínico.</p></div></div>
-   <div class="metrics">${cards('calma')}</div>`;
+   <div class="metrics">${cards('calma')}</div><div class="panel" style="margin-top:12px"><div class="title">Tomas CALMA</div><div class="configrow">${measureButtons('calma')}</div><div id="take-calma" class="alert">Elegí una toma.</div></div>`;
 
   document.getElementById('fitness').innerHTML=`
    <div class="hero"><div class="herohead"><div><h1>Nodo FITNESS</h1><div class="sub">Actividad · recuperación · carga · sueño</div></div><span class="tag">FITNESS</span></div></div>
    <div class="overview"><div class="panel"><div class="title">Recuperación</div><div class="score">${S.latest.recovery} <small>/100</small></div><div class="chart">${chartBars(3)}</div></div>
    <div class="panel"><div class="title">Estado de entrenamiento</div><div class="mval">${S.latest.load} <span class="unit">carga</span></div><div class="ok">Preparación ${S.latest.recovery}</div><div class="kpi" style="margin-top:12px"><div class="panel"><div class="mlabel">Pasos</div><div class="mval">${S.latest.steps}</div></div><div class="panel"><div class="mlabel">FC</div><div class="mval">${S.latest.hr}</div></div><div class="panel"><div class="mlabel">Sueño</div><div class="mval">${S.latest.sleep}h</div></div></div></div></div>
-   <div class="metrics">${cards('fitness')}</div>`;
+   <div class="metrics">${cards('fitness')}</div><div class="panel" style="margin-top:12px"><div class="title">Tomas FITNESS</div><div class="configrow">${measureButtons('fitness')}</div><div id="take-fitness" class="alert">Elegí una toma.</div></div>`;
 
   renderContacts();renderHistory();
   document.getElementById('sourceLabel').textContent=S.demo?'DEMO':'DATA CORE';
@@ -305,7 +331,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
   b.classList.add('on');document.getElementById(b.dataset.view).classList.add('on')
 });
 function addLive(data,source='R10M_LIVE'){
-  Object.assign(S.latest,data);S.records.push({at:new Date().toISOString(),type:'vitales',source,...data});save();render()
+  Object.assign(S.latest,data);S.records.push({at:new Date().toISOString(),type:'vitales',source,...data}); if(S.pendingTake&&S.pendingTake.k==='hr'&&data.hr!=null){S.records.push({at:new Date().toISOString(),type:'toma',metric:'hr',value:data.hr,source});S.pendingTake=null;} save();render()
 }
 function demoTick(){
   if(!S.demo)return;
