@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v14.3 BLE STABLE</title>
+<title>FITRING / MAR v14.3.1 BLE HOTFIX</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -68,7 +68,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v14.3</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.3.1</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -146,7 +146,7 @@ button{cursor:pointer}
 
 
 <section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
-<div class="footer">FITRING / MAR v14.3 BLE STABLE · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v14.3.1 BLE HOTFIX · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
 
 <div id="contactModal" class="modal"><div class="dialog">
@@ -341,8 +341,22 @@ function demoTick(){
   addLive({hr:62+Math.floor(Math.random()*28),hrv:35+Math.floor(Math.random()*35),spo2:95+Math.floor(Math.random()*5),stress:20+Math.floor(Math.random()*65),temp:+(36.0+Math.random()).toFixed(1),steps:S.latest.steps+Math.floor(Math.random()*12)},'DEMO');
   setTimeout(demoTick,4500)
 }
-demo.onclick=()=>{S.demo=!S.demo;demo.textContent=S.demo?'Detener demo':'Demo';save();if(S.demo)demoTick()}
-function clearDemo(){S.records=S.records.filter(r=>r.source!=='DEMO');S.demo=false;demo.textContent='Demo';save();render()}
+const demoButton=document.getElementById('demo');
+if(demoButton){
+  demoButton.addEventListener('click',()=>{
+    S.demo=!S.demo;
+    demoButton.textContent=S.demo?'Detener demo':'Demo';
+    save();
+    if(S.demo)demoTick();
+  });
+}
+function clearDemo(){
+  S.records=S.records.filter(r=>r.source!=='DEMO');
+  S.demo=false;
+  const b=document.getElementById('demo');
+  if(b)b.textContent='Demo';
+  save();render();
+}
 const YS='be940000-7333-be46-b7ae-689e71722bd5',YC='be940001-7333-be46-b7ae-689e71722bd5',YT='be940003-7333-be46-b7ae-689e71722bd5';
 let yDev,yCmd,yStream,yCmdBuf=[],yStreamBuf=[],yMode=null;
 function yhex(a){return [...a].map(x=>x.toString(16).padStart(2,'0')).join(' ')}
@@ -350,14 +364,24 @@ function ycrc(a){let crc=0xffff;for(const b of a){crc^=b<<8;for(let i=0;i<8;i++)
 function yframe(type,c,p=[]){let n=p.length+6,a=[type,c,n&255,n>>8,...p],crc=ycrc(a);return new Uint8Array([...a,crc&255,crc>>8])}
 async function ysend(t,c,p=[]){if(!yCmd)throw Error('R10M YCBT no conectado');let f=yframe(t,c,p);document.getElementById('blelog').textContent+='TX '+yhex(f)+'\\n';await yCmd.writeValue(f)}
 function yingest(v,src){let a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));let log=document.getElementById('blelog');log.textContent+='RX '+src+' '+yhex(a)+'\\n';log.scrollTop=log.scrollHeight;let b=src==='CMD'?yCmdBuf:yStreamBuf;b.push(...a);while(b.length>=4){let len=b[2]|b[3]<<8;if(len<6||len>4096){b.shift();continue}if(b.length<len)break;ydecode(b.splice(0,len),src)}}
-function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){battery.textContent=p[5];conn.textContent='● R10M YCBT conectado · FW '+p[3]+'.'+String(p[2]).padStart(2,'0');conn.classList.add('ok')}}
+function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){
+  const batteryEl=document.getElementById('battery');
+  const connEl=document.getElementById('conn');
+  if(batteryEl)batteryEl.textContent=p[5];
+  if(connEl){
+    connEl.textContent='● R10M YCBT conectado · FW '+p[3]+'.'+String(p[2]).padStart(2,'0');
+    connEl.classList.add('ok');
+  }
+}}
 async function ymeasure(k){const modes={hr:0,bp:1,spo2:2,hrv:10};if(!(k in modes))return false;if(!yCmd)return false;let m=modes[k];if(yMode!==null)await ysend(3,0x2f,[0,yMode]);yMode=m;await ysend(3,0x2f,[1,m]);return true}
 
 async function connectBLE(){
   const log=document.getElementById('blelog');
+  const conn=document.getElementById('conn');
+  if(!log || !conn){ alert('Error UI: faltan nodos BLE.'); return; }
   const step=(msg,cls='')=>{log.innerHTML+=`<div class="${cls}">${new Date().toLocaleTimeString()} ${msg}</div>`;log.scrollTop=log.scrollHeight};
   log.innerHTML='';
-  step('FITRING v14.3 · BLE STABLE');
+  step('FITRING v14.3.1 · BLE HOTFIX');
   step('Botón Conectar recibido correctamente.','ok');
   conn.textContent='● BLE: iniciando…';conn.classList.remove('ok');
 
@@ -426,12 +450,12 @@ const connectButton=document.getElementById('connect');
 if(connectButton){
   connectButton.addEventListener('click',connectBLE);
   const l=document.getElementById('blelog');
-  if(l) l.textContent='v14.3 BLE STABLE listo · botón Conectar enlazado.\n';
+  if(l) l.textContent='v14.3.1 BLE HOTFIX listo · botón Conectar enlazado.\n';
 }
 
-pdf.onchange=async e=>{
+document.getElementById('pdf').onchange=async e=>{
   const f=e.target.files[0];if(!f)return;
-  pdfState.innerHTML=`<div>📄 ${f.name}</div><div>${(f.size/1024/1024).toFixed(2)} MB</div><div>Preparado para XEO privado.</div>`;
+  document.getElementById('pdfState').innerHTML=`<div>📄 ${f.name}</div><div>${(f.size/1024/1024).toFixed(2)} MB</div><div>Preparado para XEO privado.</div>`;
   if(!S.xeoEndpoint)return;
   if(!confirm('¿Enviar este PDF al endpoint privado XEO configurado?'))return;
   try{
@@ -439,18 +463,18 @@ pdf.onchange=async e=>{
     const r=await fetch(S.xeoEndpoint,{method:'POST',body:fd});
     if(!r.ok)throw new Error('HTTP '+r.status);
     const data=await r.json().catch(()=>({}));
-    pdfState.innerHTML+=`<div class="ok">XEO: archivo enviado correctamente.</div><div>${data.status||''}</div>`;
-  }catch(err){pdfState.innerHTML+=`<div class="bad">XEO: ${err.message}</div>`}
+    document.getElementById('pdfState').innerHTML+=`<div class="ok">XEO: archivo enviado correctamente.</div><div>${data.status||''}</div>`;
+  }catch(err){document.getElementById('pdfState').innerHTML+=`<div class="bad">XEO: ${err.message}</div>`}
 }
 function exportData(){
   const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');
   a.href=URL.createObjectURL(b);a.download='FITRING_MAR_v12_1_backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)
 }
-importJson.onchange=async e=>{
+document.getElementById('importJson').onchange=async e=>{
   try{const x=JSON.parse(await e.target.files[0].text());if(x.latest&&x.records){S=x}else if(Array.isArray(x)){S.records.push(...x.map(r=>({...r,source:r.source||'SMARTHEALTH_IMPORT'})))}else if(x.records){S.records.push(...x.records.map(r=>({...r,source:r.source||'SMARTHEALTH_IMPORT'})))}else throw new Error('Formato no reconocido');save();render();alert('Historial importado.')}catch(err){alert(err.message)}
 }
 render();
-\n// ===== FITRING v14 INTELLIGENCE LAYER =====
+// ===== FITRING v14 INTELLIGENCE LAYER =====
 S.contextEvents=S.contextEvents||[];
 function clamp(v,a=0,b=100){return Math.max(a,Math.min(b,v))}
 function numericRecords(key,days=30){const cut=Date.now()-days*864e5;return S.records.filter(r=>new Date(r.at).getTime()>=cut).map(r=>key==='bp'?null:(r[key]??(r.metric===key?r.value:null))).filter(Number.isFinite)}
