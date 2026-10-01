@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v14.3.2 NODES</title>
+<title>FITRING / MAR v14.4 NODE ACTIONS</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -64,11 +64,23 @@ button{cursor:pointer}
 @media(max-width:650px){.wrap{padding:8px}.topin{gap:6px}.brand{font-size:14px}.top .btn{font-size:9px;padding:7px}.status{display:none}.tabs{position:sticky;top:55px;z-index:80;background:#04101c;padding:5px 0}.tab{font-size:10px;padding:9px 3px}.metrics{grid-template-columns:repeat(2,1fr)}.modules{grid-template-columns:1fr}.ringbox{flex-direction:column;text-align:center}.hero h1{font-size:20px}.score{font-size:46px}.mval{font-size:24px}}
 
 .intelgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.intelcard{background:#071622;border:1px solid #173b5a;border-radius:16px;padding:14px}.intelbig{font-size:34px;font-weight:850}.ctx{display:flex;flex-wrap:wrap;gap:7px}.ctx button{padding:9px 11px}.corr{border-left:3px solid #20d6b5;padding:9px 12px;margin:8px 0;background:#071622;border-radius:8px}@media(max-width:760px){.intelgrid{grid-template-columns:repeat(2,1fr)}}
+
+.nodeActions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.nodeAction{border:1px solid #245276;background:#071b2c;color:#fff;border-radius:14px;padding:13px;text-align:left;font-weight:850}
+.measureRun{display:none;margin-top:12px;padding:16px;border:1px solid #247fca;border-radius:16px;background:#061a2b;overflow:hidden;position:relative}
+.measureRun.on{display:block}
+.measurePulse{width:72px;height:72px;margin:8px auto;border:7px solid var(--cyan);border-radius:50%;animation:mpulse 1.05s infinite;box-shadow:0 0 30px #21d7e755}
+@keyframes mpulse{0%{transform:scale(.82);opacity:.45}50%{transform:scale(1.08);opacity:1}100%{transform:scale(.82);opacity:.45}}
+.measureBar{height:8px;background:#102c43;border-radius:20px;overflow:hidden;margin-top:10px}.measureBar i{display:block;height:100%;width:32%;background:linear-gradient(90deg,var(--blue),var(--cyan));animation:scan 1.2s infinite}
+@keyframes scan{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+.histModalList{max-height:55vh;overflow:auto}
+.histItem{padding:11px;border-bottom:1px solid #173b5a}
+@media(max-width:650px){.nodeActions{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v14.3.2</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.4</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -146,8 +158,21 @@ button{cursor:pointer}
 
 
 <section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
-<div class="footer">FITRING / MAR v14.3.2 NODES · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v14.4 NODE ACTIONS · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
+
+
+<div id="nodeModal" class="modal"><div class="dialog">
+ <h3 id="nodeTitle">Nodo</h3>
+ <div id="nodeNow" class="mval"></div>
+ <div class="nodeActions">
+  <button id="nodeMeasureBtn" class="nodeAction">▶ Ejecutar medición ahora</button>
+  <button id="nodeHistoryBtn" class="nodeAction">▤ Registro histórico</button>
+ </div>
+ <div id="measureRun" class="measureRun"><div class="measurePulse"></div><div id="measureText" style="text-align:center;font-weight:900">Midiendo…</div><div class="measureBar"><i></i></div><div class="sub" style="text-align:center;margin-top:8px">Mantené el anillo colocado y permanecé quieto.</div></div>
+ <div id="nodeHistory" class="histModalList" style="display:none;margin-top:12px"></div>
+ <div class="configrow" style="margin-top:12px"><button class="btn" onclick="closeNodeModal()">Cerrar</button></div>
+</div></div>
 
 <div id="contactModal" class="modal"><div class="dialog">
   <h3>Agregar contacto autorizado</h3>
@@ -216,8 +241,51 @@ async function requestTake(mode,k){
 }
 
 
+
+let activeNode={mode:'general',k:'hr'};
+function openNode(mode,k){
+ activeNode={mode,k};
+ document.getElementById('nodeTitle').textContent='Nodo · '+metricMeta[k][0];
+ document.getElementById('nodeNow').innerHTML=`${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span>`;
+ document.getElementById('measureRun').classList.remove('on');
+ document.getElementById('nodeHistory').style.display='none';
+ document.getElementById('nodeModal').classList.add('on');
+ document.getElementById('nodeMeasureBtn').onclick=()=>runNodeMeasure(mode,k);
+ document.getElementById('nodeHistoryBtn').onclick=()=>showNodeHistory(k);
+}
+function closeNodeModal(){document.getElementById('nodeModal').classList.remove('on')}
+function showNodeHistory(k){
+ const el=document.getElementById('nodeHistory'); el.style.display='block';
+ const rows=[...S.records].filter(r=>{
+   if(k==='bp')return r.metric==='bp'||(r.sys!=null&&r.dia!=null);
+   return r.metric===k||r[k]!=null;
+ }).sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0,40);
+ el.innerHTML=rows.length?rows.map(r=>{
+   let v=k==='bp'?`${r.sys??'—'}/${r.dia??'—'} mmHg`:`${r[k]??r.value??'—'} ${metricMeta[k][1]}`;
+   return `<div class="histItem"><b>${v}</b><br><small>${localStamp(r.at)} · ${r.source||''}</small></div>`;
+ }).join(''):'<div class="alert">Todavía no hay registros para este nodo.</div>';
+}
+async function runNodeMeasure(mode,k){
+ const run=document.getElementById('measureRun'),txt=document.getElementById('measureText');
+ run.classList.add('on');document.getElementById('nodeHistory').style.display='none';
+ txt.textContent='Iniciando '+metricMeta[k][0]+'…';
+ try{
+   if(await ymeasure(k)){
+     S.pendingTake={mode,k,at:nowISO()};save();
+     txt.textContent='Midiendo '+metricMeta[k][0]+' con R10M…';
+     setTimeout(()=>{if(S.pendingTake&&S.pendingTake.k===k)txt.textContent='Medición en curso · esperando respuesta del R10M…'},3500);
+     return;
+   }
+   if(['stress','temp','steps'].includes(k)&&yCmd){
+     await discoverNode(k);S.pendingTake={mode,k,at:nowISO()};save();
+     txt.textContent='Consultando nodo '+metricMeta[k][0]+' · esperando trama YCBT…';return;
+   }
+   txt.textContent='R10M no conectado. Conectalo para ejecutar una medición real.';
+ }catch(e){txt.textContent='Error: '+e.message}
+}
+
 function spark(){return '<div class="spark">'+Array.from({length:14},(_,i)=>`<i style="height:${25+((i*19+37)%68)}%"></i>`).join('')+'</div>'}
-function cards(mode){return orders[mode].map((k,i)=>`<div class="metric ${i<4?'prio':''}"><span class="src">${S.demo?'DEMO':'DATA CORE'}</span><div class="mlabel">${metricMeta[k][0]}</div><div class="mval">${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span></div>${spark()}</div>`).join('')}
+function cards(mode){return orders[mode].map((k,i)=>`<div class="metric ${i<4?'prio':''}" onclick="openNode('${mode}','${k}')" role="button" tabindex="0"><span class="src">${S.demo?'DEMO':'DATA CORE'}</span><div class="mlabel">${metricMeta[k][0]}</div><div class="mval">${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span></div>${spark()}<div class="sub" style="margin-top:5px">Tocar para medir / historial</div></div>`).join('')}
 function chartBars(seed=0,n=42){return Array.from({length:n},(_,i)=>`<i style="height:${18+((i*23+seed*17)%76)}%"></i>`).join('')}
 
 function activeAlerts(){
@@ -348,6 +416,14 @@ function clearDemo(){
   const b=document.getElementById('demo');
   if(b)b.textContent='Demo';
   save();render();
+ if(S.pendingTake===null && document.getElementById('nodeModal')?.classList.contains('on')){
+   const k=activeNode.k, txt=document.getElementById('measureText');
+   if(txt && (data[k]!=null || (k==='bp'&&data.sys!=null))) {
+     txt.innerHTML='✓ Medición recibida: <b>'+metricVal(k)+' '+metricMeta[k][1]+'</b>';
+     document.getElementById('nodeNow').innerHTML=`${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span>`;
+     setTimeout(()=>document.getElementById('measureRun')?.classList.remove('on'),2500);
+   }
+ }
 }
 const YS='be940000-7333-be46-b7ae-689e71722bd5',YC='be940001-7333-be46-b7ae-689e71722bd5',YT='be940003-7333-be46-b7ae-689e71722bd5';
 let yDev,yCmd,yStream,yCmdBuf=[],yStreamBuf=[],yMode=null;
@@ -443,7 +519,7 @@ const connectButton=document.getElementById('connect');
 if(connectButton){
   connectButton.addEventListener('click',connectBLE);
   const l=document.getElementById('blelog');
-  if(l) l.textContent='v14.3.2 NODES listo · botón Conectar enlazado.\n';
+  if(l) l.textContent='v14.4 NODE ACTIONS listo · botón Conectar enlazado.\n';
 }
 
 document.getElementById('pdf').onchange=async e=>{
