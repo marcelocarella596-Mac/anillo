@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v14.4 NODE ACTIONS</title>
+<title>FITRING / MAR v14.5 MEASUREMENT MANAGER</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -76,11 +76,21 @@ button{cursor:pointer}
 .histModalList{max-height:55vh;overflow:auto}
 .histItem{padding:11px;border-bottom:1px solid #173b5a}
 @media(max-width:650px){.nodeActions{grid-template-columns:1fr 1fr}}
+
+.autoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.autoChip{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #214a69;border-radius:12px;background:#071b2c}
+.autoState{padding:12px;border:1px solid #1e5277;border-radius:14px;background:#061a2b;margin:10px 0}
+.autoDot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#687b89;margin-right:7px}
+.autoDot.on{background:#20d6a5;box-shadow:0 0 12px #20d6a588}
+.autoProgress{height:8px;background:#102c43;border-radius:20px;overflow:hidden;margin-top:9px}
+.autoProgress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .35s}
+@media(max-width:650px){.autoGrid{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v14.4</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.5</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -142,6 +152,8 @@ button{cursor:pointer}
       <div>Fuente activa: <b id="sourceLabel">DATA CORE</b></div>
       <div>Persistencia: localStorage</div>
       <div>SmartHealth: histórico inicial cargado</div>
+      <div id="autoConfigLine">AutoScan R10M: detenido</div>
+      <div id="autoNextLine">Próxima medición: —</div>
     </div>
     <div class="configrow" style="margin-top:10px">
       <button class="btn" onclick="openSettings()">Parámetros</button>
@@ -158,7 +170,7 @@ button{cursor:pointer}
 
 
 <section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
-<div class="footer">FITRING / MAR v14.4 NODE ACTIONS · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v14.5 MEASUREMENT MANAGER · YCBT probado + Intelligence Layer · Measurement Manager + AutoScan 10/15/30 min · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
 
 
@@ -190,6 +202,30 @@ button{cursor:pointer}
   <label>FC máxima</label><input id="sHrHigh" class="field" type="number">
   <label>Estrés - umbral</label><input id="sStress" class="field" type="number">
   <label>Estrés - duración sostenida (min)</label><input id="sStressMin" class="field" type="number">
+
+  <hr style="border:0;border-top:1px solid #173b5a;margin:18px 0">
+  <h3 style="margin-bottom:5px">⌁ R10M · Vigilancia automática</h3>
+  <label class="autoChip"><input id="sAutoEnabled" type="checkbox"> Activar AutoScan mientras FITRING esté abierto y el R10M conectado</label>
+  <label>Intervalo</label>
+  <select id="sAutoInterval" class="field">
+    <option value="10">Cada 10 minutos</option>
+    <option value="15">Cada 15 minutos</option>
+    <option value="30">Cada 30 minutos</option>
+  </select>
+  <div class="autoGrid">
+    <label class="autoChip"><input id="a_hr" type="checkbox"> FC</label>
+    <label class="autoChip"><input id="a_spo2" type="checkbox"> SpO₂</label>
+    <label class="autoChip"><input id="a_bp" type="checkbox"> Presión</label>
+    <label class="autoChip"><input id="a_hrv" type="checkbox"> HRV</label>
+    <label class="autoChip"><input id="a_stress" type="checkbox"> Estrés</label>
+    <label class="autoChip"><input id="a_temp" type="checkbox"> Temperatura</label>
+    <label class="autoChip"><input id="a_steps" type="checkbox"> Pasos</label>
+  </div>
+  <div class="autoState">
+    <div><span id="autoDotSettings" class="autoDot"></span><b id="autoStateSettings">AutoScan detenido</b></div>
+    <small id="autoNextSettings">Próxima medición: —</small>
+  </div>
+
   <label>Endpoint privado XEO</label><input id="sXeo" class="field" placeholder="https://.../api/studies">
   <div class="configrow"><button class="btn primary" onclick="saveSettings()">Guardar</button><button class="btn" onclick="closeModal('settingsModal')">Cancelar</button></div>
 </div></div>
@@ -199,12 +235,15 @@ const KEY='fitring_mar_v12_state'; // conserva datos v13/v12
 const defaults={
   latest:{hr:72,hrv:48,spo2:97,stress:32,temp:36.4,steps:6324,sleep:7.3,sys:124,dia:82,recovery:78,load:67},
   records:[],contacts:[],demo:false,seeded:false,xeoEndpoint:'',
-  thresholds:{spo2:94,hrLow:50,hrHigh:120,stress:70,stressMinutes:20}
+  thresholds:{spo2:94,hrLow:50,hrHigh:120,stress:70,stressMinutes:20},
+  autoScan:{enabled:false,interval:30,metrics:{hr:true,spo2:true,bp:true,hrv:true,stress:true,temp:true,steps:true},lastRun:null,nextRun:null}
 };
 let S=Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'));
 S.latest=Object.assign({},defaults.latest,S.latest||{});
 S.thresholds=Object.assign({},defaults.thresholds,S.thresholds||{});
 S.records=S.records||[];S.contacts=S.contacts||[];
+S.autoScan=Object.assign({},defaults.autoScan,S.autoScan||{});
+S.autoScan.metrics=Object.assign({},defaults.autoScan.metrics,(S.autoScan&&S.autoScan.metrics)||{});
 
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 function localStamp(iso){const d=new Date(iso);if(Number.isNaN(d.getTime()))return String(iso||'');return new Intl.DateTimeFormat('es-AR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d)}
@@ -345,6 +384,9 @@ function renderHistory(){
 function openContactModal(){document.getElementById('contactModal').classList.add('on')}
 function openSettings(){
   sSpO2.value=S.thresholds.spo2;sHrLow.value=S.thresholds.hrLow;sHrHigh.value=S.thresholds.hrHigh;sStress.value=S.thresholds.stress;sStressMin.value=S.thresholds.stressMinutes;sXeo.value=S.xeoEndpoint||'';
+  sAutoEnabled.checked=!!S.autoScan.enabled;sAutoInterval.value=String(S.autoScan.interval||30);
+  ['hr','spo2','bp','hrv','stress','temp','steps'].forEach(k=>{const e=document.getElementById('a_'+k);if(e)e.checked=S.autoScan.metrics[k]!==false});
+  updateAutoUI();
   document.getElementById('settingsModal').classList.add('on')
 }
 function closeModal(id){document.getElementById(id).classList.remove('on')}
@@ -356,7 +398,10 @@ function saveContact(){
 function saveSettings(){
   S.thresholds.spo2=+sSpO2.value;S.thresholds.hrLow=+sHrLow.value;S.thresholds.hrHigh=+sHrHigh.value;
   S.thresholds.stress=+sStress.value;S.thresholds.stressMinutes=+sStressMin.value;S.xeoEndpoint=sXeo.value.trim();
-  save();closeModal('settingsModal');render()
+  S.autoScan.enabled=!!sAutoEnabled.checked;S.autoScan.interval=+[10,15,30].includes(+sAutoInterval.value)?+sAutoInterval.value:30;
+  ['hr','spo2','bp','hrv','stress','temp','steps'].forEach(k=>{const e=document.getElementById('a_'+k);if(e)S.autoScan.metrics[k]=!!e.checked});
+  if(S.autoScan.enabled) armAutoScan(true); else stopAutoScan();
+  save();closeModal('settingsModal');render();updateAutoUI()
 }
 function removeContact(i){S.contacts.splice(i,1);save();render()}
 async function pickPhoneContact(){
@@ -394,7 +439,24 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
   b.classList.add('on');document.getElementById(b.dataset.view).classList.add('on')
 });
 function addLive(data,source='R10M_LIVE'){
-  Object.assign(S.latest,data);S.records.push({at:new Date().toISOString(),type:'vitales',source,...data}); if(S.pendingTake&&S.pendingTake.k==='hr'&&data.hr!=null){S.records.push({at:new Date().toISOString(),type:'toma',metric:'hr',value:data.hr,source});S.pendingTake=null;} save();render()
+  Object.assign(S.latest,data);
+  S.records.push({at:new Date().toISOString(),type:'vitales',source,...data});
+  if(S.pendingTake){
+    const k=S.pendingTake.k;
+    const got=(k==='bp')?(data.sys!=null&&data.dia!=null):data[k]!=null;
+    if(got){
+      const rec={at:new Date().toISOString(),type:'toma',metric:k,source};
+      if(k==='bp'){rec.sys=data.sys;rec.dia=data.dia}else rec.value=data[k],rec[k]=data[k];
+      S.records.push(rec);S.pendingTake=null;
+      if(document.getElementById('nodeModal')?.classList.contains('on')&&activeNode.k===k){
+        const txt=document.getElementById('measureText');
+        if(txt)txt.innerHTML='✓ Medición recibida: <b>'+metricVal(k)+' '+metricMeta[k][1]+'</b>';
+        const now=document.getElementById('nodeNow');if(now)now.innerHTML=`${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span>`;
+        setTimeout(()=>document.getElementById('measureRun')?.classList.remove('on'),2200);
+      }
+    }
+  }
+  save();render();updateAutoUI()
 }
 function demoTick(){
   if(!S.demo)return;
@@ -404,26 +466,64 @@ function demoTick(){
 const demoButton=document.getElementById('demo');
 if(demoButton){
   demoButton.addEventListener('click',()=>{
-    S.demo=!S.demo;
-    demoButton.textContent=S.demo?'Detener demo':'Demo';
-    save();
-    if(S.demo)demoTick();
+    S.demo=!S.demo;demoButton.textContent=S.demo?'Detener demo':'Demo';save();if(S.demo)demoTick();
   });
 }
 function clearDemo(){
-  S.records=S.records.filter(r=>r.source!=='DEMO');
-  S.demo=false;
-  const b=document.getElementById('demo');
-  if(b)b.textContent='Demo';
-  save();render();
- if(S.pendingTake===null && document.getElementById('nodeModal')?.classList.contains('on')){
-   const k=activeNode.k, txt=document.getElementById('measureText');
-   if(txt && (data[k]!=null || (k==='bp'&&data.sys!=null))) {
-     txt.innerHTML='✓ Medición recibida: <b>'+metricVal(k)+' '+metricMeta[k][1]+'</b>';
-     document.getElementById('nodeNow').innerHTML=`${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span>`;
-     setTimeout(()=>document.getElementById('measureRun')?.classList.remove('on'),2500);
-   }
- }
+  S.records=S.records.filter(r=>r.source!=='DEMO');S.demo=false;
+  const b=document.getElementById('demo');if(b)b.textContent='Demo';
+  save();render();updateAutoUI();
+}
+
+// ===== v14.5 R10M MEASUREMENT MANAGER / AUTOSCAN =====
+let autoTimer=null,autoBusy=false;
+const autoOrder=['hr','spo2','bp','hrv','stress','temp','steps'];
+function autoLog(msg){
+  const l=document.getElementById('blelog');if(l){l.textContent+=new Date().toLocaleTimeString()+' AUTOSCAN '+msg+'\\n';l.scrollTop=l.scrollHeight}
+}
+function fmtNext(){
+  if(!S.autoScan.nextRun)return '—';
+  const d=new Date(S.autoScan.nextRun);return Number.isNaN(d.getTime())?'—':d.toLocaleString('es-AR',{hour12:false});
+}
+function updateAutoUI(){
+  const running=!!(S.autoScan.enabled&&autoTimer);
+  const txt=S.autoScan.enabled?`activo · cada ${S.autoScan.interval} min`:'detenido';
+  const c=document.getElementById('autoConfigLine');if(c)c.textContent='AutoScan R10M: '+txt;
+  const n=document.getElementById('autoNextLine');if(n)n.textContent='Próxima medición: '+fmtNext();
+  const ss=document.getElementById('autoStateSettings');if(ss)ss.textContent=S.autoScan.enabled?'AutoScan activo · '+S.autoScan.interval+' min':'AutoScan detenido';
+  const sn=document.getElementById('autoNextSettings');if(sn)sn.textContent='Próxima medición: '+fmtNext();
+  const dot=document.getElementById('autoDotSettings');if(dot)dot.classList.toggle('on',running);
+}
+function stopAutoScan(){
+  if(autoTimer){clearTimeout(autoTimer);autoTimer=null}
+  S.autoScan.nextRun=null;autoBusy=false;save();updateAutoUI();
+}
+function armAutoScan(reset=false){
+  if(autoTimer){clearTimeout(autoTimer);autoTimer=null}
+  if(!S.autoScan.enabled){stopAutoScan();return}
+  const delay=Math.max(1,+S.autoScan.interval||30)*60000;
+  S.autoScan.nextRun=new Date(Date.now()+delay).toISOString();save();updateAutoUI();
+  autoTimer=setTimeout(async()=>{await runAutoScan();armAutoScan(true)},delay);
+}
+async function runAutoScan(){
+  if(autoBusy||!S.autoScan.enabled)return;
+  if(!yCmd){autoLog('omitido: R10M no conectado');return}
+  autoBusy=true;S.autoScan.lastRun=nowISO();save();updateAutoUI();
+  const selected=autoOrder.filter(k=>S.autoScan.metrics[k]);
+  autoLog('inicio ['+selected.join(', ')+']');
+  for(const k of selected){
+    try{
+      autoLog('→ '+k);
+      if(['hr','spo2','bp','hrv'].includes(k)){
+        const ok=await ymeasure(k);
+        if(ok){S.pendingTake={mode:'autoscan',k,at:nowISO()};save();await new Promise(r=>setTimeout(r,6500))}
+      }else{
+        // Stress/temp/steps siguen en discovery hasta confirmar su comando YCBT real.
+        await discoverNode(k);await new Promise(r=>setTimeout(r,1800));
+      }
+    }catch(e){autoLog(k+' ERROR '+e.message)}
+  }
+  autoLog('fin');autoBusy=false;save();updateAutoUI();
 }
 const YS='be940000-7333-be46-b7ae-689e71722bd5',YC='be940001-7333-be46-b7ae-689e71722bd5',YT='be940003-7333-be46-b7ae-689e71722bd5';
 let yDev,yCmd,yStream,yCmdBuf=[],yStreamBuf=[],yMode=null;
@@ -474,7 +574,7 @@ async function connectBLE(){
     yDev.addEventListener('gattserverdisconnected',()=>{
       conn.textContent='● R10M desconectado';conn.classList.remove('ok');
       yCmd=null;yStream=null;yMode=null;yCmdBuf=[];yStreamBuf=[];
-      step('BLE DISCONNECTED','warn');
+      step('BLE DISCONNECTED','warn');if(autoTimer){clearTimeout(autoTimer);autoTimer=null}updateAutoUI();
     });
 
     const server=await yDev.gatt.connect();
@@ -503,6 +603,7 @@ async function connectBLE(){
 
     conn.textContent='● '+name+' · YCBT LISTO';conn.classList.add('ok');
     step('★★★★★ YCBT READY ★★★★★','ok');
+    if(S.autoScan.enabled)armAutoScan(true);
 
     await ysend(2,0,[0x47,0x43]);
     await ysend(2,1,[0x47,0x46]);
@@ -519,7 +620,7 @@ const connectButton=document.getElementById('connect');
 if(connectButton){
   connectButton.addEventListener('click',connectBLE);
   const l=document.getElementById('blelog');
-  if(l) l.textContent='v14.4 NODE ACTIONS listo · botón Conectar enlazado.\n';
+  if(l) l.textContent='v14.5 MEASUREMENT MANAGER listo · botón Conectar enlazado.\n';
 }
 
 document.getElementById('pdf').onchange=async e=>{
@@ -574,5 +675,11 @@ function renderIntel(){const el=document.getElementById('intelPanel');if(!el)ret
 }
 
 </script>
+
+<script>
+window.addEventListener('load',()=>{updateAutoUI();if(S.autoScan.enabled)armAutoScan(true)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.autoScan.enabled&&!autoTimer)armAutoScan(true)});
+</script>
+
 </body>
 </html>
