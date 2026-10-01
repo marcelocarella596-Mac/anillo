@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v14.3.1 BLE HOTFIX</title>
+<title>FITRING / MAR v14.3.2 NODES</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -68,7 +68,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v14.3.1</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.3.2</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -146,7 +146,7 @@ button{cursor:pointer}
 
 
 <section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
-<div class="footer">FITRING / MAR v14.3.1 BLE HOTFIX · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v14.3.2 NODES · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
 
 <div id="contactModal" class="modal"><div class="dialog">
@@ -182,6 +182,8 @@ S.thresholds=Object.assign({},defaults.thresholds,S.thresholds||{});
 S.records=S.records||[];S.contacts=S.contacts||[];
 
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function localStamp(iso){const d=new Date(iso);if(Number.isNaN(d.getTime()))return String(iso||'');return new Intl.DateTimeFormat('es-AR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d)}
+function nowISO(){return new Date().toISOString()}
 function seedSmartHealth(){
   if(S.seeded)return;
   const activity=[['2026-09-28',7591,4.820,298],['2026-09-27',1850,1.273,68],['2026-09-26',2673,1.773,100],['2026-09-25',4741,3.002,184],['2026-09-24',5488,3.583,213],['2026-09-23',3369,2.133,130],['2026-09-22',4249,2.717,163]];
@@ -207,22 +209,12 @@ const takeMap={
 };
 function measureButtons(mode){return takeMap[mode].map(k=>`<button class="btn" onclick="requestTake('${mode}','${k}')">Tomar ${metricMeta[k][0]}</button>`).join('')}
 async function requestTake(mode,k){
- const box=document.getElementById('take-'+mode); if(box) box.innerHTML=`Solicitando <b>${metricMeta[k][0]}</b>…`;
- try{if(await ymeasure(k)){if(box)box.innerHTML=`${metricMeta[k][0]}: medición real iniciada en R10M YCBT…`;S.pendingTake={mode,k,at:new Date().toISOString()};save();return}}catch(e){if(box)box.textContent='YCBT: '+e.message}
- if(k==='hr'){
-   if(box) box.innerHTML='FC: esperando notificación del R10M…';S.pendingTake={mode,k,at:new Date().toISOString()}; save(); return;
- }
- const raw=prompt(`Sin conexión YCBT para ${metricMeta[k][0]}. Ingresá una lectura manual, o Cancelar:`);
- if(raw===null){if(box)box.textContent='Toma cancelada.';return}
- if(k==='bp'){
-   const m=raw.match(/(\d{2,3})\D+(\d{2,3})/); if(!m){alert('Usá formato 120/80');return}
-   S.latest.sys=+m[1];S.latest.dia=+m[2];S.records.push({at:new Date().toISOString(),type:'toma',sys:S.latest.sys,dia:S.latest.dia,metric:'bp',source:'MANUAL'});
- }else{
-   const v=Number(String(raw).replace(',','.'));if(!Number.isFinite(v)){alert('Valor inválido');return}
-   S.latest[k]=v;S.records.push({at:new Date().toISOString(),type:'toma',metric:k,value:v,source:'MANUAL'});
- }
- save();render(); const b=document.getElementById('take-'+mode);if(b)b.innerHTML=`Registrado ${metricMeta[k][0]}: <b>${metricVal(k)} ${metricMeta[k][1]}</b> · MANUAL`;
+ const box=document.getElementById('take-'+mode);if(box)box.innerHTML=`Solicitando <b>${metricMeta[k][0]}</b>…`;
+ try{if(await ymeasure(k)){if(box)box.innerHTML=`${metricMeta[k][0]}: medición real iniciada en R10M YCBT…`;S.pendingTake={mode,k,at:nowISO()};save();return}if(['stress','temp','steps'].includes(k)&&yCmd){await discoverNode(k);S.pendingTake={mode,k,at:nowISO()};save();if(box)box.innerHTML=`${metricMeta[k][0]}: discovery YCBT enviado. Revisá BLE Inspector; no se inventan valores.`;return}}catch(e){if(box)box.textContent='YCBT: '+e.message;return}
+ const raw=prompt(`R10M no disponible para ${metricMeta[k][0]}. Ingresá lectura MANUAL o Cancelar:`);if(raw===null){if(box)box.textContent='Toma cancelada.';return}
+ if(k==='bp'){const m=raw.match(/(\d{2,3})\D+(\d{2,3})/);if(!m){alert('Usá formato 120/80');return}S.latest.sys=+m[1];S.latest.dia=+m[2];S.records.push({at:nowISO(),type:'toma',sys:S.latest.sys,dia:S.latest.dia,metric:'bp',source:'MANUAL'})}else{const v=Number(String(raw).replace(',','.'));if(!Number.isFinite(v)){alert('Valor inválido');return}S.latest[k]=v;S.records.push({at:nowISO(),type:'toma',metric:k,value:v,source:'MANUAL'})}save();render();
 }
+
 
 function spark(){return '<div class="spark">'+Array.from({length:14},(_,i)=>`<i style="height:${25+((i*19+37)%68)}%"></i>`).join('')+'</div>'}
 function cards(mode){return orders[mode].map((k,i)=>`<div class="metric ${i<4?'prio':''}"><span class="src">${S.demo?'DEMO':'DATA CORE'}</span><div class="mlabel">${metricMeta[k][0]}</div><div class="mval">${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span></div>${spark()}</div>`).join('')}
@@ -278,7 +270,7 @@ function renderContacts(){
 function renderHistory(){
   const rows=[...S.records].sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0,8).map(r=>{
     let val=r.type==='actividad'?`${r.steps} pasos · ${r.km} km`:r.type==='sueño'?`${r.sleep} h · profundo ${r.deep??'—'} · ligero ${r.light??'—'} · REM ${r.rem??'—'}`:r.hr?`FC ${r.hr}`:r.spo2?`SpO₂ ${r.spo2}%`:'registro';
-    return `<div>${(r.at||'').replace('T',' ').slice(0,16)} · ${val}<br><small>${r.source||''}</small></div>`
+    return `<div>${localStamp(r.at)} · ${val}<br><small>${r.source||''}</small></div>`
   }).join('');
   document.getElementById('history').innerHTML=rows||'<div>Sin registros</div>';
 }
@@ -364,7 +356,7 @@ function ycrc(a){let crc=0xffff;for(const b of a){crc^=b<<8;for(let i=0;i<8;i++)
 function yframe(type,c,p=[]){let n=p.length+6,a=[type,c,n&255,n>>8,...p],crc=ycrc(a);return new Uint8Array([...a,crc&255,crc>>8])}
 async function ysend(t,c,p=[]){if(!yCmd)throw Error('R10M YCBT no conectado');let f=yframe(t,c,p);document.getElementById('blelog').textContent+='TX '+yhex(f)+'\\n';await yCmd.writeValue(f)}
 function yingest(v,src){let a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));let log=document.getElementById('blelog');log.textContent+='RX '+src+' '+yhex(a)+'\\n';log.scrollTop=log.scrollHeight;let b=src==='CMD'?yCmdBuf:yStreamBuf;b.push(...a);while(b.length>=4){let len=b[2]|b[3]<<8;if(len<6||len>4096){b.shift();continue}if(b.length<len)break;ydecode(b.splice(0,len),src)}}
-function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){
+function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};const lg=document.getElementById('blelog');if(lg){lg.textContent+=`DECODE ${src} type=0x${type.toString(16)} cmd=0x${c.toString(16)} payload=[${yhex(p)}]\n`;lg.scrollTop=lg.scrollHeight;}if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){
   const batteryEl=document.getElementById('battery');
   const connEl=document.getElementById('conn');
   if(batteryEl)batteryEl.textContent=p[5];
@@ -374,6 +366,7 @@ function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};if(type===6&&c
   }
 }}
 async function ymeasure(k){const modes={hr:0,bp:1,spo2:2,hrv:10};if(!(k in modes))return false;if(!yCmd)return false;let m=modes[k];if(yMode!==null)await ysend(3,0x2f,[0,yMode]);yMode=m;await ysend(3,0x2f,[1,m]);return true}
+async function discoverNode(k){if(!yCmd)throw Error('R10M YCBT no conectado');const log=document.getElementById('blelog');log.textContent+='DISCOVERY '+k+': solicitando info/capacidades YCBT; revisar RAW.\n';await ysend(2,1,[0x47,0x46]);await ysend(2,0x1b,[]);await ysend(2,3,[0x47,0x50]);return true}
 
 async function connectBLE(){
   const log=document.getElementById('blelog');
@@ -450,7 +443,7 @@ const connectButton=document.getElementById('connect');
 if(connectButton){
   connectButton.addEventListener('click',connectBLE);
   const l=document.getElementById('blelog');
-  if(l) l.textContent='v14.3.1 BLE HOTFIX listo · botón Conectar enlazado.\n';
+  if(l) l.textContent='v14.3.2 NODES listo · botón Conectar enlazado.\n';
 }
 
 document.getElementById('pdf').onchange=async e=>{
