@@ -146,7 +146,7 @@ button{cursor:pointer}
 
 
 <section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
-<div class="footer">FITRING / MAR v14 Intelligence · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v14.1 OPERATIVO · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
 
 <div id="contactModal" class="modal"><div class="dialog">
@@ -344,13 +344,13 @@ function demoTick(){
 demo.onclick=()=>{S.demo=!S.demo;demo.textContent=S.demo?'Detener demo':'Demo';save();if(S.demo)demoTick()}
 function clearDemo(){S.records=S.records.filter(r=>r.source!=='DEMO');S.demo=false;demo.textContent='Demo';save();render()}
 const YS='be940000-7333-be46-b7ae-689e71722bd5',YC='be940001-7333-be46-b7ae-689e71722bd5',YT='be940003-7333-be46-b7ae-689e71722bd5';
-let yDev,yCmd,yStream,yBuf=[],yMode=null;
+let yDev,yCmd,yStream,yCmdBuf=[],yStreamBuf=[],yMode=null;
 function yhex(a){return [...a].map(x=>x.toString(16).padStart(2,'0')).join(' ')}
 function ycrc(a){let crc=0xffff;for(const b of a){crc^=b<<8;for(let i=0;i<8;i++)crc=(crc&0x8000)?((crc<<1)^0x1021)&0xffff:(crc<<1)&0xffff}return crc}
 function yframe(type,c,p=[]){let n=p.length+6,a=[type,c,n&255,n>>8,...p],crc=ycrc(a);return new Uint8Array([...a,crc&255,crc>>8])}
 async function ysend(t,c,p=[]){if(!yCmd)throw Error('R10M YCBT no conectado');let f=yframe(t,c,p);document.getElementById('blelog').textContent+='TX '+yhex(f)+'\\n';await yCmd.writeValue(f)}
-function yingest(v,src){let a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));document.getElementById('blelog').textContent+='RX '+src+' '+yhex(a)+'\\n';yBuf.push(...a);while(yBuf.length>=4){let len=yBuf[2]|yBuf[3]<<8;if(len<6||len>4096){yBuf.shift();continue}if(yBuf.length<len)break;ydecode(yBuf.splice(0,len))}}
-function ydecode(f){let type=f[0],c=f[1],p=f.slice(4,-2),d={};if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){battery.textContent=p[5];conn.textContent='● R10M YCBT conectado · FW '+p[3]+'.'+String(p[2]).padStart(2,'0');conn.classList.add('ok')}}
+function yingest(v,src){let a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));let log=document.getElementById('blelog');log.textContent+='RX '+src+' '+yhex(a)+'\\n';log.scrollTop=log.scrollHeight;let b=src==='CMD'?yCmdBuf:yStreamBuf;b.push(...a);while(b.length>=4){let len=b[2]|b[3]<<8;if(len<6||len>4096){b.shift();continue}if(b.length<len)break;ydecode(b.splice(0,len),src)}}
+function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){battery.textContent=p[5];conn.textContent='● R10M YCBT conectado · FW '+p[3]+'.'+String(p[2]).padStart(2,'0');conn.classList.add('ok')}}
 async function ymeasure(k){const modes={hr:0,bp:1,spo2:2,hrv:10};if(!(k in modes))return false;if(!yCmd)return false;let m=modes[k];if(yMode!==null)await ysend(3,0x2f,[0,yMode]);yMode=m;await ysend(3,0x2f,[1,m]);return true}
 
 async function connectBLE(){
@@ -358,7 +358,7 @@ async function connectBLE(){
   if(!navigator.bluetooth){alert('Web Bluetooth no está disponible. Usá Chrome/Edge compatible sobre HTTPS.');return}
   try{
     yDev=await navigator.bluetooth.requestDevice({filters:[{services:[YS]}],optionalServices:[YS,'battery_service','heart_rate']});
-    yDev.addEventListener('gattserverdisconnected',()=>{conn.textContent='● R10M desconectado';conn.classList.remove('ok')});
+    yDev.addEventListener('gattserverdisconnected',()=>{conn.textContent='● R10M desconectado';conn.classList.remove('ok');yCmd=null;yStream=null;yMode=null;yCmdBuf=[];yStreamBuf=[]});
     const server=await yDev.gatt.connect(),svc=await server.getPrimaryService(YS);yCmd=await svc.getCharacteristic(YC);yStream=await svc.getCharacteristic(YT);
     await yCmd.startNotifications();await yStream.startNotifications();yCmd.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'CMD'));yStream.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'STREAM'));
     conn.textContent='● '+(yDev.name||'R10M')+' YCBT conectado';conn.classList.add('ok');log.textContent='YCBT '+YS+' listo\\n';await ysend(2,0,[0x47,0x43]);await ysend(2,1,[0x47,0x46]);
