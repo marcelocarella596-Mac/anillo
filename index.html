@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v14.5 MEASUREMENT MANAGER</title>
+<title>FITRING / MAR v14.6 PROTOCOL LAB</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -90,7 +90,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v14.5</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.6</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -165,12 +165,20 @@ button{cursor:pointer}
     <h3>⌁ R10M · BLE Inspector</h3>
     <p>Descubre servicios y características reales del anillo.</p>
     <div id="blelog" class="blelog">Esperando conexión…</div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="protocolProbe('stress')">PROBAR STRESS</button>
+      <button class="btn" onclick="protocolProbe('temp')">PROBAR TEMP</button>
+      <button class="btn" onclick="protocolProbe('steps')">PROBAR PASOS</button>
+      <button class="btn" onclick="protocolProbe('sleep')">SONDEAR SUEÑO</button>
+      <button class="btn" onclick="exportProtocolLog()">EXPORTAR RAW</button>
+    </div>
+    <div id="protocolState" class="alert">Protocol Lab listo. Los nodos no confirmados sólo usan consultas YCBT conocidas; no envía modos inventados.</div>
   </article>
 </section>
 
 
 <section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
-<div class="footer">FITRING / MAR v14.5 MEASUREMENT MANAGER · YCBT probado + Intelligence Layer · Measurement Manager + AutoScan 10/15/30 min · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v14.6 PROTOCOL LAB · YCBT probado + Intelligence Layer · Protocol Lab + AutoScan 10/15/30 min · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
 
 
@@ -274,7 +282,7 @@ const takeMap={
 function measureButtons(mode){return takeMap[mode].map(k=>`<button class="btn" onclick="requestTake('${mode}','${k}')">Tomar ${metricMeta[k][0]}</button>`).join('')}
 async function requestTake(mode,k){
  const box=document.getElementById('take-'+mode);if(box)box.innerHTML=`Solicitando <b>${metricMeta[k][0]}</b>…`;
- try{if(await ymeasure(k)){if(box)box.innerHTML=`${metricMeta[k][0]}: medición real iniciada en R10M YCBT…`;S.pendingTake={mode,k,at:nowISO()};save();return}if(['stress','temp','steps'].includes(k)&&yCmd){await discoverNode(k);S.pendingTake={mode,k,at:nowISO()};save();if(box)box.innerHTML=`${metricMeta[k][0]}: discovery YCBT enviado. Revisá BLE Inspector; no se inventan valores.`;return}}catch(e){if(box)box.textContent='YCBT: '+e.message;return}
+ try{if(await ymeasure(k)){if(box)box.innerHTML=`${metricMeta[k][0]}: medición real iniciada en R10M YCBT…`;S.pendingTake={mode,k,at:nowISO()};save();return}if(['stress','temp','steps','sleep'].includes(k)&&yCmd){await discoverNode(k);S.pendingTake={mode,k,at:nowISO()};save();if(box)box.innerHTML=`${metricMeta[k][0]}: discovery YCBT enviado. Revisá BLE Inspector; no se inventan valores.`;return}}catch(e){if(box)box.textContent='YCBT: '+e.message;return}
  const raw=prompt(`R10M no disponible para ${metricMeta[k][0]}. Ingresá lectura MANUAL o Cancelar:`);if(raw===null){if(box)box.textContent='Toma cancelada.';return}
  if(k==='bp'){const m=raw.match(/(\d{2,3})\D+(\d{2,3})/);if(!m){alert('Usá formato 120/80');return}S.latest.sys=+m[1];S.latest.dia=+m[2];S.records.push({at:nowISO(),type:'toma',sys:S.latest.sys,dia:S.latest.dia,metric:'bp',source:'MANUAL'})}else{const v=Number(String(raw).replace(',','.'));if(!Number.isFinite(v)){alert('Valor inválido');return}S.latest[k]=v;S.records.push({at:nowISO(),type:'toma',metric:k,value:v,source:'MANUAL'})}save();render();
 }
@@ -315,7 +323,7 @@ async function runNodeMeasure(mode,k){
      setTimeout(()=>{if(S.pendingTake&&S.pendingTake.k===k)txt.textContent='Medición en curso · esperando respuesta del R10M…'},3500);
      return;
    }
-   if(['stress','temp','steps'].includes(k)&&yCmd){
+   if(['stress','temp','steps','sleep'].includes(k)&&yCmd){
      await discoverNode(k);S.pendingTake={mode,k,at:nowISO()};save();
      txt.textContent='Consultando nodo '+metricMeta[k][0]+' · esperando trama YCBT…';return;
    }
@@ -525,6 +533,40 @@ async function runAutoScan(){
   }
   autoLog('fin');autoBusy=false;save();updateAutoUI();
 }
+
+// ===== v14.6 PROTOCOL LAB =====
+let protocolCapture={active:false,node:null,started:null,frames:[]};
+function protocolNote(kind,bytes,src=''){
+  if(!protocolCapture.active)return;
+  protocolCapture.frames.push({at:nowISO(),node:protocolCapture.node,kind,src,hex:yhex(bytes)});
+}
+async function protocolProbe(k){
+  const st=document.getElementById('protocolState');
+  if(!yCmd){st.textContent='Conectá primero el R10M YCBT.';return}
+  protocolCapture={active:true,node:k,started:nowISO(),frames:[]};
+  st.textContent='Sondeando '+k.toUpperCase()+'… ejecutando sólo consultas YCBT ya conocidas.';
+  autoLog('PROTOCOL '+k+' START');
+  try{
+    await ysend(2,1,[0x47,0x46]);
+    await new Promise(r=>setTimeout(r,700));
+    await ysend(2,0x1b,[]);
+    await new Promise(r=>setTimeout(r,700));
+    await ysend(2,3,[0x47,0x50]);
+    setTimeout(()=>{
+      protocolCapture.active=false;
+      st.textContent=`${k.toUpperCase()}: captura terminada · ${protocolCapture.frames.length} tramas. Usá EXPORTAR RAW o enviá captura del Inspector.`;
+      autoLog('PROTOCOL '+k+' END frames='+protocolCapture.frames.length);
+    },5000);
+  }catch(e){protocolCapture.active=false;st.textContent='Error '+k+': '+e.message}
+}
+function exportProtocolLog(){
+  const payload={app:'FITRING v14.6',device:yDev?.name||null,capture:protocolCapture,exportedAt:nowISO()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='fitring-r10m-protocol-'+(protocolCapture.node||'raw')+'-'+Date.now()+'.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
 const YS='be940000-7333-be46-b7ae-689e71722bd5',YC='be940001-7333-be46-b7ae-689e71722bd5',YT='be940003-7333-be46-b7ae-689e71722bd5';
 let yDev,yCmd,yStream,yCmdBuf=[],yStreamBuf=[],yMode=null;
 function yhex(a){return [...a].map(x=>x.toString(16).padStart(2,'0')).join(' ')}
@@ -620,7 +662,7 @@ const connectButton=document.getElementById('connect');
 if(connectButton){
   connectButton.addEventListener('click',connectBLE);
   const l=document.getElementById('blelog');
-  if(l) l.textContent='v14.5 MEASUREMENT MANAGER listo · botón Conectar enlazado.\n';
+  if(l) l.textContent='v14.6 PROTOCOL LAB listo · botón Conectar enlazado.\n';
 }
 
 document.getElementById('pdf').onchange=async e=>{
