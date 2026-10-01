@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v14 INTELLIGENCE</title>
+<title>FITRING / MAR v14.2 BLE DISCOVERY</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -68,7 +68,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v13</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.2</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -146,7 +146,7 @@ button{cursor:pointer}
 
 
 <section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
-<div class="footer">FITRING / MAR v14.1 OPERATIVO · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+<div class="footer">FITRING / MAR v14.2 BLE DISCOVERY · YCBT probado + Intelligence Layer · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
 </div>
 
 <div id="contactModal" class="modal"><div class="dialog">
@@ -355,17 +355,55 @@ async function ymeasure(k){const modes={hr:0,bp:1,spo2:2,hrv:10};if(!(k in modes
 
 async function connectBLE(){
   const log=document.getElementById('blelog');
-  if(!navigator.bluetooth){alert('Web Bluetooth no está disponible. Usá Chrome/Edge compatible sobre HTTPS.');return}
+  const step=(msg,cls='')=>{log.innerHTML+=`<div class="${cls}">${msg}</div>`;log.scrollTop=log.scrollHeight};
+  log.innerHTML='';
+  conn.textContent='● BLE: iniciando…';conn.classList.remove('ok');
+  step('1/7 Web Bluetooth: comprobando…');
+  if(!window.isSecureContext){step('ERROR: la página no está en contexto HTTPS seguro.','bad');conn.textContent='● HTTPS requerido';return}
+  if(!navigator.bluetooth){step('ERROR: Web Bluetooth no está disponible en este navegador. Usá Chrome Android.','bad');conn.textContent='● Web Bluetooth no disponible';return}
+  step('1/7 Web Bluetooth: OK','ok');
   try{
-    yDev=await navigator.bluetooth.requestDevice({filters:[{services:[YS]}],optionalServices:[YS,'battery_service','heart_rate']});
-    yDev.addEventListener('gattserverdisconnected',()=>{conn.textContent='● R10M desconectado';conn.classList.remove('ok');yCmd=null;yStream=null;yMode=null;yCmdBuf=[];yStreamBuf=[]});
-    const server=await yDev.gatt.connect(),svc=await server.getPrimaryService(YS);yCmd=await svc.getCharacteristic(YC);yStream=await svc.getCharacteristic(YT);
-    await yCmd.startNotifications();await yStream.startNotifications();yCmd.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'CMD'));yStream.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'STREAM'));
-    conn.textContent='● '+(yDev.name||'R10M')+' YCBT conectado';conn.classList.add('ok');log.textContent='YCBT '+YS+' listo\\n';await ysend(2,0,[0x47,0x43]);await ysend(2,1,[0x47,0x46]);
-  }catch(e){log.textContent='YCBT: '+e.message+'\\n';try{
-    const device=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:['heart_rate','battery_service']});const server=await device.gatt.connect();conn.textContent='● '+(device.name||'BLE')+' conectado (estándar)';conn.classList.add('ok');
-    const services=await server.getPrimaryServices();for(const sv of services){log.textContent+=`SERVICE ${sv.uuid}\\n`;try{for(const c of await sv.getCharacteristics()){log.textContent+=`  CHAR ${c.uuid}\\n`;if(c.uuid.toLowerCase().includes('2a37')&&c.properties.notify){await c.startNotifications();c.addEventListener('characteristicvaluechanged',ev=>{const v=ev.target.value,flags=v.getUint8(0),hr=(flags&1)?v.getUint16(1,true):v.getUint8(1);addLive({hr},'R10M_HR')})}if(c.uuid.toLowerCase().includes('2a19')&&c.properties.read){battery.textContent=(await c.readValue()).getUint8(0)}}}catch(_){}}
-  }catch(e2){log.textContent+='BLE fallback: '+e2.message}}
+    step('2/7 Selector: abriendo…');
+    // v14.2: no exige que el R10M anuncie BE940000 durante el advertising.
+    yDev=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[YS,'battery_service','heart_rate']});
+    step('2/7 Selector: OK','ok');
+    step('3/7 Dispositivo: '+(yDev.name||'sin nombre')+' · '+(yDev.id||''),'ok');
+    conn.textContent='● '+(yDev.name||'BLE')+' seleccionado';
+    yDev.addEventListener('gattserverdisconnected',()=>{conn.textContent='● R10M desconectado';conn.classList.remove('ok');yCmd=null;yStream=null;yMode=null;yCmdBuf=[];yStreamBuf=[];});
+    step('4/7 GATT: conectando…');
+    const server=await yDev.gatt.connect();
+    step('4/7 GATT: OK','ok');
+    let services=[];
+    try{services=await server.getPrimaryServices();step('Servicios accesibles: '+services.map(x=>x.uuid).join(' · '));}catch(e){step('Enumeración general limitada: '+e.message,'warn')}
+    step('5/7 YCBT BE940000: buscando…');
+    try{
+      const svc=await server.getPrimaryService(YS);step('5/7 YCBT BE940000: OK','ok');
+      yCmd=await svc.getCharacteristic(YC);step('6/7 CMD BE940001: OK','ok');
+      yStream=await svc.getCharacteristic(YT);step('7/7 STREAM BE940003: OK','ok');
+      await yCmd.startNotifications();await yStream.startNotifications();
+      yCmd.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'CMD'));
+      yStream.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'STREAM'));
+      conn.textContent='● '+(yDev.name||'R10M')+' YCBT conectado';conn.classList.add('ok');
+      step('R10M / YCBT OPERATIVO','ok');
+      await ysend(2,0,[0x47,0x43]);await ysend(2,1,[0x47,0x46]);
+      return;
+    }catch(yerr){step('YCBT directo: '+yerr.message,'warn')}
+    // Si YCBT no quedó accesible, inspeccionamos servicios estándar disponibles.
+    for(const sv of services){
+      step('SERVICE '+sv.uuid);
+      try{for(const c of await sv.getCharacteristics()){
+        step('  CHAR '+c.uuid+' N:'+!!c.properties.notify+' R:'+!!c.properties.read+' W:'+!!(c.properties.write||c.properties.writeWithoutResponse));
+        if(c.uuid.toLowerCase().includes('2a37')&&c.properties.notify){await c.startNotifications();c.addEventListener('characteristicvaluechanged',ev=>{const v=ev.target.value,flags=v.getUint8(0),hr=(flags&1)?v.getUint16(1,true):v.getUint8(1);addLive({hr},'R10M_HR')})}
+        if(c.uuid.toLowerCase().includes('2a19')&&c.properties.read){battery.textContent=(await c.readValue()).getUint8(0)}
+      }}catch(e){step('  acceso limitado: '+e.message,'warn')}
+    }
+    conn.textContent='● '+(yDev.name||'BLE')+' conectado · inspección';conn.classList.add('ok');
+  }catch(e){
+    const msg=e&&e.message?e.message:String(e);
+    step('ERROR BLE: '+msg,'bad');
+    conn.textContent='● BLE error';conn.classList.remove('ok');
+    console.error('FITRING BLE',e);
+  }
 }
 connect.onclick=connectBLE;
 
