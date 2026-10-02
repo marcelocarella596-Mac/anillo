@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101c">
-<title>FITRING / MAR v14.6 PROTOCOL LAB</title>
+<title>FITRING / MAR v14.7 CONNECTION STATUS</title>
 <style>
 :root{
   --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
@@ -90,7 +90,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v14.6</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.7</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -234,6 +234,16 @@ button{cursor:pointer}
     <small id="autoNextSettings">Próxima medición: —</small>
   </div>
 
+  <hr style="border:0;border-top:1px solid #173b5a;margin:18px 0">
+  <h3 style="margin-bottom:5px">👤 Parámetros personales</h3>
+  <p class="sub">Datos locales para personalizar tendencias. Completalos cuando quieras.</p>
+  <label>Nombre</label><input id="pName" class="field" placeholder="Nombre">
+  <label>Fecha de nacimiento</label><input id="pBirth" class="field" type="date">
+  <label>Género</label><select id="pGender" class="field"><option value="">Sin completar</option><option>Masculino</option><option>Femenino</option><option>Otro</option><option>Prefiero no indicar</option></select>
+  <label>Altura (cm)</label><input id="pHeight" class="field" type="number" placeholder="170">
+  <label>Peso corporal (kg)</label><input id="pWeight" class="field" type="number" step="0.1" placeholder="65">
+  <label>Tono de piel</label><select id="pSkin" class="field"><option value="">Sin completar</option><option>Claro</option><option>Medio</option><option>Oscuro</option></select>
+
   <label>Endpoint privado XEO</label><input id="sXeo" class="field" placeholder="https://.../api/studies">
   <div class="configrow"><button class="btn primary" onclick="saveSettings()">Guardar</button><button class="btn" onclick="closeModal('settingsModal')">Cancelar</button></div>
 </div></div>
@@ -244,7 +254,8 @@ const defaults={
   latest:{hr:72,hrv:48,spo2:97,stress:32,temp:36.4,steps:6324,sleep:7.3,sys:124,dia:82,recovery:78,load:67},
   records:[],contacts:[],demo:false,seeded:false,xeoEndpoint:'',
   thresholds:{spo2:94,hrLow:50,hrHigh:120,stress:70,stressMinutes:20},
-  autoScan:{enabled:false,interval:30,metrics:{hr:true,spo2:true,bp:true,hrv:true,stress:true,temp:true,steps:true},lastRun:null,nextRun:null}
+  autoScan:{enabled:false,interval:30,metrics:{hr:true,spo2:true,bp:true,hrv:true,stress:true,temp:true,steps:true},lastRun:null,nextRun:null},
+  profile:{name:'Mar',birth:'',gender:'',height:'',weight:'',skinTone:''}
 };
 let S=Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'));
 S.latest=Object.assign({},defaults.latest,S.latest||{});
@@ -252,6 +263,7 @@ S.thresholds=Object.assign({},defaults.thresholds,S.thresholds||{});
 S.records=S.records||[];S.contacts=S.contacts||[];
 S.autoScan=Object.assign({},defaults.autoScan,S.autoScan||{});
 S.autoScan.metrics=Object.assign({},defaults.autoScan.metrics,(S.autoScan&&S.autoScan.metrics)||{});
+S.profile=Object.assign({},defaults.profile,S.profile||{});
 
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 function localStamp(iso){const d=new Date(iso);if(Number.isNaN(d.getTime()))return String(iso||'');return new Intl.DateTimeFormat('es-AR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d)}
@@ -347,7 +359,7 @@ function render(){
   document.getElementById('general').innerHTML=`
    <div class="hero"><div class="herohead"><div><h1>Dashboard General</h1><div class="sub">Centro de control · R10M + SmartHealth + MAR Alert Engine + XEO</div></div><span class="tag">HOY</span></div></div>
    <div class="overview">
-    <div class="panel ringbox"><div class="ring"></div><div><div class="title">Estado actual</div><div class="ok">● Sistema operativo</div><div class="sub">Última actualización ${new Date().toLocaleTimeString()}</div><div class="pills" style="margin-top:10px"><span class="pill">R10M</span><span class="pill">SmartHealth</span><span class="pill">MAR</span><span class="pill">XEO ready</span></div></div></div>
+    <div class="panel ringbox"><div class="ring"></div><div><div class="title">Estado actual</div><div id="deviceConnectionState">${connectionHTML()}</div><div class="sub">Última actualización ${new Date().toLocaleTimeString()}</div><div class="pills" style="margin-top:10px"><span class="pill">R10M</span><span class="pill">SmartHealth</span><span class="pill">MAR</span><span class="pill">XEO ready</span></div></div></div>
     <div class="panel"><div class="title">Bienestar general</div><div class="score">84 <small>/100</small></div><div class="ok">● Estable</div><div class="sub">Índice visual de demo; no es un diagnóstico médico.</div></div>
    </div>
    <div class="metrics">${cards('general')}</div><div class="panel" style="margin-top:12px"><div class="title">Toma manual a elección</div><div class="sub">Elegí qué medición querés solicitar/registrar en el estado actual.</div><div class="configrow" style="margin-top:10px">${measureButtons('general')}</div><div id="take-general" class="alert">Esperando selección.</div></div>
@@ -375,7 +387,7 @@ function render(){
    <div class="metrics">${cards('fitness')}</div><div class="panel" style="margin-top:12px"><div class="title">Tomas FITNESS</div><div class="configrow">${measureButtons('fitness')}</div><div id="take-fitness" class="alert">Elegí una toma.</div></div>`;
 
   renderContacts();renderHistory();renderIntel();
-  document.getElementById('sourceLabel').textContent=S.demo?'DEMO':'DATA CORE';
+  document.getElementById('sourceLabel').textContent=S.demo?'DEMO':'DATA CORE';refreshConnectionUI();
 }
 function renderContacts(){
   const html=S.contacts.length?S.contacts.map((c,i)=>`<div class="row"><span class="avatar">${(c.name||'?')[0].toUpperCase()}</span><span><b>${c.name}</b><small>${c.role||'Contacto autorizado'} · ${c.phone||c.email||''}</small></span><span><button class="btn" onclick="sendContact(${i})">Enviar</button> <button class="btn red" onclick="removeContact(${i})">×</button></span></div>`).join(''):'<div class="sub">Sin contactos cargados.</div>';
@@ -406,7 +418,8 @@ function saveContact(){
 function saveSettings(){
   S.thresholds.spo2=+sSpO2.value;S.thresholds.hrLow=+sHrLow.value;S.thresholds.hrHigh=+sHrHigh.value;
   S.thresholds.stress=+sStress.value;S.thresholds.stressMinutes=+sStressMin.value;S.xeoEndpoint=sXeo.value.trim();
-  S.autoScan.enabled=!!sAutoEnabled.checked;S.autoScan.interval=+[10,15,30].includes(+sAutoInterval.value)?+sAutoInterval.value:30;
+  S.profile={name:pName.value.trim(),birth:pBirth.value,gender:pGender.value,height:pHeight.value,weight:pWeight.value,skinTone:pSkin.value};
+   S.autoScan.enabled=!!sAutoEnabled.checked;S.autoScan.interval=+[10,15,30].includes(+sAutoInterval.value)?+sAutoInterval.value:30;
   ['hr','spo2','bp','hrv','stress','temp','steps'].forEach(k=>{const e=document.getElementById('a_'+k);if(e)S.autoScan.metrics[k]=!!e.checked});
   if(S.autoScan.enabled) armAutoScan(true); else stopAutoScan();
   save();closeModal('settingsModal');render();updateAutoUI()
@@ -577,14 +590,29 @@ function yingest(v,src){let a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteO
 function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};const lg=document.getElementById('blelog');if(lg){lg.textContent+=`DECODE ${src} type=0x${type.toString(16)} cmd=0x${c.toString(16)} payload=[${yhex(p)}]\n`;lg.scrollTop=lg.scrollHeight;}if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){
   const batteryEl=document.getElementById('battery');
   const connEl=document.getElementById('conn');
-  if(batteryEl)batteryEl.textContent=p[5];
+  bleBattery=p[5];bleFirmware=p[3]+'.'+String(p[2]).padStart(2,'0');if(batteryEl)batteryEl.textContent=bleBattery;
   if(connEl){
-    connEl.textContent='● R10M YCBT conectado · FW '+p[3]+'.'+String(p[2]).padStart(2,'0');
-    connEl.classList.add('ok');
+    connEl.textContent='● R10M YCBT conectado · FW '+bleFirmware;
+    connEl.classList.add('ok');refreshConnectionUI();
   }
 }}
 async function ymeasure(k){const modes={hr:0,bp:1,spo2:2,hrv:10};if(!(k in modes))return false;if(!yCmd)return false;let m=modes[k];if(yMode!==null)await ysend(3,0x2f,[0,yMode]);yMode=m;await ysend(3,0x2f,[1,m]);return true}
 async function discoverNode(k){if(!yCmd)throw Error('R10M YCBT no conectado');const log=document.getElementById('blelog');log.textContent+='DISCOVERY '+k+': solicitando info/capacidades YCBT; revisar RAW.\n';await ysend(2,1,[0x47,0x46]);await ysend(2,0x1b,[]);await ysend(2,3,[0x47,0x50]);return true}
+
+let bleConnected=false, bleDeviceName='', bleFirmware='—', bleBattery=null, bleConnectedAt=null;
+function connectionHTML(){
+ const connected=!!(bleConnected&&yDev&&yDev.gatt&&yDev.gatt.connected&&yCmd);
+ const bat=bleBattery==null?'—':bleBattery+'%';
+ return connected?`<div class="ok">● R10M conectado</div><div class="sub"><b>${bleDeviceName||'R10M'}</b> · batería <b>${bat}</b> · FW ${bleFirmware}<br>BLE/GATT/YCBT activos${bleConnectedAt?' · desde '+new Date(bleConnectedAt).toLocaleTimeString():''}</div>`:`<div class="warn">● R10M desconectado</div><div class="sub">Tocá “Conectar R10M” para verificar BLE/GATT/YCBT.</div>`;
+}
+function refreshConnectionUI(){
+ const conn=document.getElementById('conn'),bat=document.getElementById('battery'),btn=document.getElementById('connect'),box=document.getElementById('deviceConnectionState');
+ const connected=!!(bleConnected&&yDev&&yDev.gatt&&yDev.gatt.connected&&yCmd);
+ if(conn){conn.textContent=connected?'● '+(bleDeviceName||'R10M')+' conectado':'● R10M desconectado';conn.classList.toggle('ok',connected)}
+ if(bat)bat.textContent=bleBattery==null?'--':bleBattery;
+ if(btn){btn.textContent=connected?'R10M conectado':'Conectar R10M';btn.classList.toggle('green',connected);btn.classList.toggle('primary',!connected)}
+ if(box)box.innerHTML=connectionHTML();
+}
 
 async function connectBLE(){
   const log=document.getElementById('blelog');
@@ -609,14 +637,14 @@ async function connectBLE(){
       optionalServices:[YS,'battery_service','heart_rate']
     });
 
-    const name=yDev.name||'(SIN NOMBRE)';
+    const name=yDev.name||'(SIN NOMBRE)';bleDeviceName=name;
     step('SELECT '+name+' · ID='+yDev.id,'ok');
     conn.textContent='● '+name+' · CONECTANDO…';
 
     yDev.addEventListener('gattserverdisconnected',()=>{
-      conn.textContent='● R10M desconectado';conn.classList.remove('ok');
+      bleConnected=false;bleBattery=null;conn.textContent='● R10M desconectado';conn.classList.remove('ok');
       yCmd=null;yStream=null;yMode=null;yCmdBuf=[];yStreamBuf=[];
-      step('BLE DISCONNECTED','warn');if(autoTimer){clearTimeout(autoTimer);autoTimer=null}updateAutoUI();
+      refreshConnectionUI();step('BLE DISCONNECTED','warn');if(autoTimer){clearTimeout(autoTimer);autoTimer=null}updateAutoUI();
     });
 
     const server=await yDev.gatt.connect();
@@ -643,7 +671,7 @@ async function connectBLE(){
     yCmd.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'CMD'));
     yStream.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'STREAM'));
 
-    conn.textContent='● '+name+' · YCBT LISTO';conn.classList.add('ok');
+    bleConnected=true;bleConnectedAt=Date.now();conn.textContent='● '+name+' · YCBT LISTO';conn.classList.add('ok');refreshConnectionUI();
     step('★★★★★ YCBT READY ★★★★★','ok');
     if(S.autoScan.enabled)armAutoScan(true);
 
