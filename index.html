@@ -1,0 +1,143 @@
+<!-- FITRING / MAR v14.9.3 · MOTOR VISUAL GLOBAL DE MEDICIONES
+PEGAR INMEDIATAMENTE ANTES DE </body>.
+No reemplaza BLE/YCBT: envuelve openNode/runNodeMeasure/addLive y usa el resultado real cuando llega.
+-->
+<style>
+.fv-stage{position:relative;height:205px;margin:12px 0;border:1px solid #245276;border-radius:18px;overflow:hidden;
+ background:radial-gradient(circle at 50% 45%,#123d5d,#04101c 72%);display:grid;place-items:center}
+.fv-title{position:absolute;left:12px;top:10px;font-size:10px;font-weight:900;color:#91a8ba;letter-spacing:.5px}
+.fv-source{position:absolute;right:12px;top:10px;font-size:9px;font-weight:900;border:1px solid #28516f;border-radius:20px;padding:5px 8px;color:#a9c1d3}
+.fv-icon{font-size:70px;line-height:1;filter:drop-shadow(0 0 18px #21d7e766)}
+.fv-result{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:24px;font-weight:950}
+.fv-sub{font-size:10px;color:#91a8ba;font-weight:700}
+.fv-traffic{position:absolute;right:13px;bottom:13px;background:#02080d;border:1px solid #29435a;border-radius:13px;padding:6px;display:grid;gap:4px}
+.fv-light{width:14px;height:14px;border-radius:50%;background:#27343e;opacity:.35}
+.fv-light.on.r{background:var(--red);opacity:1;box-shadow:0 0 12px var(--red)}
+.fv-light.on.y{background:var(--yellow);opacity:1;box-shadow:0 0 12px var(--yellow)}
+.fv-light.on.g{background:var(--green);opacity:1;box-shadow:0 0 12px var(--green)}
+.fv-heart.run{animation:fvbeat .72s infinite}.fv-breathe.run{animation:fvbreath 2.4s infinite ease-in-out}
+.fv-wave.run{animation:fvw 1s infinite alternate}.fv-thermo.run{animation:fvthermo 1.1s infinite alternate}
+.fv-walk.run{animation:fvwalk .5s infinite alternate}.fv-sleep.run{animation:fvsleep 2s infinite ease-in-out}
+.fv-stress.run{animation:fvstress 1s infinite alternate}
+@keyframes fvbeat{0%,100%{transform:scale(.82)}35%{transform:scale(1.18)}50%{transform:scale(.94)}65%{transform:scale(1.08)}}
+@keyframes fvbreath{0%,100%{transform:scale(.78);opacity:.55}50%{transform:scale(1.18);opacity:1}}
+@keyframes fvw{from{transform:translateX(-10px) scaleY(.8)}to{transform:translateX(10px) scaleY(1.15)}}
+@keyframes fvthermo{from{transform:translateY(6px)}to{transform:translateY(-8px)}}
+@keyframes fvwalk{from{transform:translate(-12px,3px) rotate(-5deg)}to{transform:translate(12px,-5px) rotate(5deg)}}
+@keyframes fvsleep{0%,100%{transform:rotate(-4deg) scale(.96)}50%{transform:rotate(4deg) scale(1.05)}}
+@keyframes fvstress{from{filter:drop-shadow(0 0 8px #22e58a)}to{filter:drop-shadow(0 0 25px #ff626f);transform:scale(1.08)}}
+.fv-mini{margin-top:9px;border:1px solid #1d4562;border-radius:12px;padding:9px;background:#061522}
+.fv-minihead{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.fv-minianim{font-size:25px}.fv-minianim.live{animation:fvbeat .9s infinite}
+</style>
+
+<script>
+(function(){
+ const visual={
+   hr:{icon:'❤️',cls:'fv-heart',label:'FRECUENCIA CARDÍACA'},
+   spo2:{icon:'🫁',cls:'fv-breathe',label:'OXIGENACIÓN'},
+   bp:{icon:'🩸',cls:'fv-heart',label:'PRESIÓN ARTERIAL'},
+   hrv:{icon:'〰️',cls:'fv-wave',label:'VARIABILIDAD HRV'},
+   stress:{icon:'🧠',cls:'fv-stress',label:'ESTRÉS'},
+   temp:{icon:'🌡️',cls:'fv-thermo',label:'TEMPERATURA'},
+   steps:{icon:'🚶',cls:'fv-walk',label:'ACTIVIDAD / PASOS'},
+   sleep:{icon:'🌙',cls:'fv-sleep',label:'SUEÑO'}
+ };
+ window.FITRING_VISUAL=window.FITRING_VISUAL||{metric:'hr',running:false,source:'DATA CORE'};
+
+ function value(k){
+   if(!window.S||!S.latest)return '—';
+   if(k==='bp')return `${S.latest.sys??'—'}/${S.latest.dia??'—'}`;
+   return S.latest[k]??'—';
+ }
+ function sourceText(k){
+   if(window.FITRING_VISUAL.running)return (window.yCmd?'R10M · MIDIENDO':'DISCOVERY / SIN R10M');
+   return window.FITRING_VISUAL.source||'DATA CORE';
+ }
+ function lights(k,v){
+   let level='g';
+   if(k==='stress'){level=(+v>=70?'r':+v>=50?'y':'g')}
+   else if(k==='spo2'){level=(+v<94?'r':+v<96?'y':'g')}
+   else if(k==='hr'){level=(+v<50||+v>120?'r':+v<55||+v>105?'y':'g')}
+   else if(k==='temp'){level=(+v>=38?'r':+v>=37.3?'y':'g')}
+   return `<div class="fv-traffic"><i class="fv-light r ${level==='r'?'on':''}"></i><i class="fv-light y ${level==='y'?'on':''}"></i><i class="fv-light g ${level==='g'?'on':''}"></i></div>`;
+ }
+ function stage(k){
+   const m=visual[k]||visual.hr,v=value(k),u=(window.metricMeta&&metricMeta[k])?metricMeta[k][1]:'';
+   return `<div id="fvStage" class="fv-stage">
+     <div class="fv-title">${m.label}</div><div class="fv-source">${sourceText(k)}</div>
+     <div class="fv-icon ${m.cls} ${FITRING_VISUAL.running?'run':''}">${m.icon}</div>
+     <div class="fv-result">${v} <span class="unit">${u}</span><div class="fv-sub">${FITRING_VISUAL.running?'Adquiriendo señal…':'Último valor disponible'}</div></div>
+     ${lights(k,v)}
+   </div>`;
+ }
+ function updateStage(k){
+   FITRING_VISUAL.metric=k||FITRING_VISUAL.metric;
+   const old=document.getElementById('fvStage');
+   if(old)old.outerHTML=stage(FITRING_VISUAL.metric);
+ }
+ window.fitringVisualStart=function(k,source='R10M'){
+   FITRING_VISUAL.metric=k;FITRING_VISUAL.running=true;FITRING_VISUAL.source=source;updateStage(k);refreshMini();
+ };
+ window.fitringVisualDone=function(k,source='R10M_YCBT'){
+   FITRING_VISUAL.metric=k;FITRING_VISUAL.running=false;FITRING_VISUAL.source=source;updateStage(k);refreshMini();
+ };
+ window.fitringVisualStop=function(k){FITRING_VISUAL.running=false;updateStage(k||FITRING_VISUAL.metric);refreshMini()};
+
+ // Injects a compact live visual strip in GENERAL, RESPIRA, CALMA and FITNESS.
+ function mini(mode){
+   const keys=(window.takeMap&&takeMap[mode])?takeMap[mode]:['hr','spo2','bp','hrv','stress','temp','steps'];
+   return `<div class="fv-mini" data-fv-mini="${mode}"><div class="fv-minihead"><b>◉ Toma interactiva</b><span class="fv-sub">${FITRING_VISUAL.running?'MIDIENDO '+(visual[FITRING_VISUAL.metric]?.label||''):'LISTO'}</span></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:7px">${keys.map(k=>`<button class="btn" onclick="openNode('${mode}','${k}')"><span class="fv-minianim ${FITRING_VISUAL.running&&FITRING_VISUAL.metric===k?'live':''}">${visual[k]?.icon||'◉'}</span> ${metricMeta[k]?.[0]||k}</button>`).join('')}</div></div>`;
+ }
+ function refreshMini(){
+   ['general','respira','calma','fitness'].forEach(mode=>{
+     const e=document.querySelector(`[data-fv-mini="${mode}"]`);
+     if(e)e.outerHTML=mini(mode);
+   });
+ }
+ function injectMini(){
+   ['general','respira','calma','fitness'].forEach(mode=>{
+     const root=document.getElementById(mode);if(!root||root.querySelector('[data-fv-mini]'))return;
+     const hero=root.querySelector('.hero');if(hero)hero.insertAdjacentHTML('afterend',mini(mode));
+   });
+ }
+
+ // Wrap node modal: every metric gets its own animation.
+ const oldOpen=window.openNode;
+ if(typeof oldOpen==='function')window.openNode=function(mode,k){
+   oldOpen(mode,k);
+   const run=document.getElementById('measureRun');
+   if(run&&!document.getElementById('fvStage'))run.insertAdjacentHTML('beforebegin',stage(k));
+   else updateStage(k);
+ };
+
+ const oldRun=window.runNodeMeasure;
+ if(typeof oldRun==='function')window.runNodeMeasure=async function(mode,k){
+   fitringVisualStart(k,window.yCmd?'R10M':'DISCOVERY');
+   try{return await oldRun(mode,k)}
+   catch(e){fitringVisualStop(k);throw e}
+ };
+
+ // When a real decoded value arrives, finish the animation automatically.
+ const oldAdd=window.addLive;
+ if(typeof oldAdd==='function')window.addLive=function(data,source){
+   const pending=window.S&&S.pendingTake?S.pendingTake.k:null;
+   const r=oldAdd(data,source);
+   if(pending){
+     const got=pending==='bp'?(data.sys!=null&&data.dia!=null):data[pending]!=null;
+     if(got)fitringVisualDone(pending,source||'R10M_YCBT');
+   }
+   // Steps can update globally whenever decoded later.
+   if(data&&data.steps!=null)fitringVisualDone('steps',source||'R10M_YCBT');
+   return r;
+ };
+
+ // render() rebuilds node HTML, so reinject strips after every render.
+ const oldRender=window.render;
+ if(typeof oldRender==='function')window.render=function(){const r=oldRender();setTimeout(injectMini,0);return r};
+ injectMini();
+
+ if(typeof rawPush==='function')rawPush('VISUAL_ENGINE_READY',{version:'14.9.3',metrics:Object.keys(visual)});
+})();
+</script>
