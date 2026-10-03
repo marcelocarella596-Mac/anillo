@@ -90,7 +90,7 @@ button{cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <div class="brand">◉ FITRING / <b>MAR</b> v14.8</div><div class="grow"></div>
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.9 ACN26</div><div class="grow"></div>
   <span id="conn" class="status">● R10M desconectado</span>
   <span class="status">▣ <span id="battery">--</span>%</span>
   <button id="connect" class="btn primary">Conectar R10M</button>
@@ -862,6 +862,109 @@ protocolProbe=async function(k){
 </script>
 
 
-\n<!-- FITRING–ACN26 v1 · experimental event layer; BLE/RAW v14.8 untouched -->\n<script>\n(function(){\n const ACN26_VERSION='1.0';\n const STATES=['BASELINE','LOAD','META','CP0','ECALOT','FLOW','ACTION','RECOVERY'];\n window.ACN26={version:ACN26_VERSION,state:null,events:[],voiceNotes:[],cp0Reported:[],cp0Candidates:[]};\n function snapshot(){\n   const x=(window.S&&S.latest)?S.latest:{};\n   return {hr:x.hr??null,hrv:x.hrv??null,spo2:x.spo2??null,sys:x.sys??null,dia:x.dia??null,steps:x.steps??null,battery:window.bleBattery??null};\n }\n function emit(kind,data={}){\n   const e={at:new Date().toISOString(),ms:performance.now(),kind,state:ACN26.state,physio:snapshot(),...data};\n   ACN26.events.push(e);\n   if(typeof rawPush==='function')rawPush('ACN26_'+kind,e);\n   return e;\n }\n function setState(state,source='UI',note=''){\n   if(!STATES.includes(state))return;\n   ACN26.state=state;\n   const e=emit('STATE',{acn26State:state,source,note});\n   if(typeof rawMark==='function')rawMark('ACN26_'+state,note);\n   if(state==='CP0'){ACN26.cp0Reported.push(e);emit('CP0_REPORTED',{source,note});}\n   render();\n }\n function cp0Candidate(score=null,method='offline-analysis',details=''){\n   const e=emit('CP0_CANDIDATE',{score,method,details});ACN26.cp0Candidates.push(e);render();return e;\n }\n window.acn26SetState=setState; window.acn26Cp0Candidate=cp0Candidate;\n\n let recognition=null,voiceActive=false;\n function speechCtor(){return window.SpeechRecognition||window.webkitSpeechRecognition||null}\n function startVoice(source='UI'){\n   const C=speechCtor();\n   emit('VOICE_TRIGGER',{source});\n   if(!C){emit('VOICE_UNAVAILABLE',{reason:'SpeechRecognition API unavailable'});render('Voz no disponible en este navegador');return;}\n   if(voiceActive)return; recognition=new C(); recognition.lang='es-AR';recognition.interimResults=false;recognition.continuous=false;\n   recognition.onstart=()=>{voiceActive=true;emit('VOICE_START',{source});render('Escuchando…')};\n   recognition.onresult=e=>{const text=[...e.results].map(r=>r[0].transcript).join(' ').trim();const n=emit('VOICE_NOTE',{source,text});ACN26.voiceNotes.push(n);if(typeof rawMark==='function')rawMark('ACN26_VOICE',text);render(text||'Nota vacía')};\n   recognition.onerror=e=>{emit('VOICE_ERROR',{source,error:e.error});render('Voz: '+e.error)};\n   recognition.onend=()=>{voiceActive=false;emit('VOICE_END',{source});render()};\n   try{recognition.start()}catch(e){emit('VOICE_ERROR',{source,error:e.message});}\n }\n window.acn26VoiceStart=startVoice;\n // Hook público para el Gesture Engine/Protocol Mapper cuando el doble toque R10M quede identificado.\n window.acn26GestureDoubleTap=function(meta={}){emit('GESTURE_DOUBLE_TAP',{source:'R10M',meta});startVoice('R10M_DOUBLE_TAP')};\n\n function render(status=''){\n   const root=document.getElementById('acn26Panel');if(!root)return;\n   const st=root.querySelector('[data-acn-state]');if(st)st.textContent=ACN26.state||'SIN ESTADO';\n   const info=root.querySelector('[data-acn-info]');if(info)info.textContent=status||`Eventos ${ACN26.events.length} · Voz ${ACN26.voiceNotes.length} · CP0 reportados ${ACN26.cp0Reported.length} · candidatos ${ACN26.cp0Candidates.length}`;\n   root.querySelectorAll('[data-state]').forEach(b=>b.style.outline=b.dataset.state===ACN26.state?'2px solid currentColor':'');\n }\n function mount(){\n   if(document.getElementById('acn26Panel'))return;\n   const panel=document.createElement('section');panel.id='acn26Panel';panel.className='card';\n   panel.innerHTML=`<h2>ACN26-01 · PUNTO CERO</h2><p class="sub">Capa experimental sincronizada con RAW v14.8. Estado: <b data-acn-state>SIN ESTADO</b></p><div class="actions" data-acn-buttons></div><div class="actions"><button class="btn purple" id="acnVoiceBtn">🎙 DOBLE TOQUE / VOZ</button><button class="btn" id="acnCandidateBtn">CP0 CANDIDATO (ANÁLISIS)</button></div><p class="sub" data-acn-info></p>`;\n   const target=document.querySelector('main')||document.body;target.appendChild(panel);\n   const box=panel.querySelector('[data-acn-buttons]');\n   STATES.forEach(x=>{const b=document.createElement('button');b.className='btn';b.dataset.state=x;b.textContent=x;b.onclick=()=>setState(x,'UI');box.appendChild(b)});\n   panel.querySelector('#acnVoiceBtn').onclick=()=>startVoice('UI_DOUBLE_TAP_TEST');\n   panel.querySelector('#acnVoiceBtn').ondblclick=()=>window.acn26GestureDoubleTap({simulated:true});\n   panel.querySelector('#acnCandidateBtn').onclick=()=>{const d=prompt('Detalle del candidato CP0 (análisis posterior):','');cp0Candidate(null,'manual-review',d||'')};\n   emit('READY',{version:ACN26_VERSION});render();\n }\n if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();\n})();\n</script>\n\n<style>\n#v149bar{position:sticky;top:0;z-index:9999;background:#061523ee;backdrop-filter:blur(8px);border:1px solid #1d4562;border-radius:14px;padding:9px;margin:8px 0;box-shadow:0 8px 25px #0007}#v149bar .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#v149bar button{padding:8px 10px;border-radius:10px;border:1px solid #28506c;background:#0b2033;color:#edf7ff;font-weight:700}#v149bar .live{margin-left:auto;font-size:12px;color:#8fb1c7}.acnActive{outline:2px solid #22e58a!important}#acn26Panel{order:-1;border:1px solid #a45cff!important}\n</style>\n<script>\n(function(){\n function connected(){try{return !!(window.yDev&&yDev.gatt&&yDev.gatt.connected)}catch(e){return false}}\n function showNode(name){\n   // SPA: never change URL/history; preserve BLE/RAW in same document.\n   document.querySelectorAll('[data-v149-node]').forEach(x=>x.style.display=x.dataset.v149Node===name?'':'none');\n   window.__fitringNode=name;\n   if(typeof rawPush==='function')rawPush('NODE_VIEW',{node:name});\n   document.getElementById('v149node').textContent=name;\n   window.scrollTo({top:0,behavior:'smooth'});\n }\n window.fitringShowNode=showNode;\n function mountBar(){\n   if(document.getElementById('v149bar'))return;\n   const host=document.querySelector('.wrap')||document.body; const bar=document.createElement('div');bar.id='v149bar';\n   bar.innerHTML='<div class="row"><button data-n="GENERAL">GENERAL</button><button data-n="RESPIRA">RESPIRA</button><button data-n="CALMA">CALMA</button><button data-n="FITNESS">FITNESS</button><button data-n="XEO">XEO</button><button data-n="ACN26">ACN26</button><span class="live">● R10M <b id="v149ble">—</b> · RAW ● · <span id="v149node">GENERAL</span> · ACN26 <b id="v149acn">SIN ESTADO</b></span></div>';\n   host.insertBefore(bar,host.firstChild); bar.querySelectorAll('button').forEach(b=>b.onclick=()=>showNode(b.dataset.n));\n   setInterval(()=>{const e=document.getElementById('v149ble');if(e)e.textContent=connected()?'CONECTADO':'DESCONECTADO';const a=document.getElementById('v149acn');if(a)a.textContent=window.ACN26?.state||'SIN ESTADO'},800);\n }\n function enhanceACN(){\n   const p=document.getElementById('acn26Panel');if(!p)return false;\n   // Move ACN26 near top instead of end of page.\n   const anchor=document.querySelector('.hero')||document.querySelector('.top')||document.querySelector('main')?.firstElementChild; if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(p,anchor.nextSibling);\n   if(!document.getElementById('acnStart')){const b=document.createElement('button');b.id='acnStart';b.className='btn green';b.textContent='▶ INICIAR SESIÓN ACN26 / BASELINE';b.onclick=()=>{window.acn26SetState?.('BASELINE','SESSION_START');b.textContent='✓ BASELINE ACTIVO';};p.insertBefore(b,p.querySelector('.actions'));}\n   p.dataset.v149Node='ACN26'; return true;\n }\n function mount(){mountBar();let n=0;const t=setInterval(()=>{if(enhanceACN()||++n>20)clearInterval(t)},150)}\n if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();\n})();\n</script>\n
+
+<!-- FITRING–ACN26 v1 · experimental event layer; BLE/RAW v14.8 untouched -->
+<script>
+(function(){
+ const ACN26_VERSION='1.0';
+ const STATES=['BASELINE','LOAD','META','CP0','ECALOT','FLOW','ACTION','RECOVERY'];
+ window.ACN26={version:ACN26_VERSION,state:null,events:[],voiceNotes:[],cp0Reported:[],cp0Candidates:[]};
+ function snapshot(){
+   const x=(window.S&&S.latest)?S.latest:{};
+   return {hr:x.hr??null,hrv:x.hrv??null,spo2:x.spo2??null,sys:x.sys??null,dia:x.dia??null,steps:x.steps??null,battery:window.bleBattery??null};
+ }
+ function emit(kind,data={}){
+   const e={at:new Date().toISOString(),ms:performance.now(),kind,state:ACN26.state,physio:snapshot(),...data};
+   ACN26.events.push(e);
+   if(typeof rawPush==='function')rawPush('ACN26_'+kind,e);
+   return e;
+ }
+ function setState(state,source='UI',note=''){
+   if(!STATES.includes(state))return;
+   ACN26.state=state;
+   const e=emit('STATE',{acn26State:state,source,note});
+   if(typeof rawMark==='function')rawMark('ACN26_'+state,note);
+   if(state==='CP0'){ACN26.cp0Reported.push(e);emit('CP0_REPORTED',{source,note});}
+   render();
+ }
+ function cp0Candidate(score=null,method='offline-analysis',details=''){
+   const e=emit('CP0_CANDIDATE',{score,method,details});ACN26.cp0Candidates.push(e);render();return e;
+ }
+ window.acn26SetState=setState; window.acn26Cp0Candidate=cp0Candidate;
+
+ let recognition=null,voiceActive=false;
+ function speechCtor(){return window.SpeechRecognition||window.webkitSpeechRecognition||null}
+ function startVoice(source='UI'){
+   const C=speechCtor();
+   emit('VOICE_TRIGGER',{source});
+   if(!C){emit('VOICE_UNAVAILABLE',{reason:'SpeechRecognition API unavailable'});render('Voz no disponible en este navegador');return;}
+   if(voiceActive)return; recognition=new C(); recognition.lang='es-AR';recognition.interimResults=false;recognition.continuous=false;
+   recognition.onstart=()=>{voiceActive=true;emit('VOICE_START',{source});render('Escuchando…')};
+   recognition.onresult=e=>{const text=[...e.results].map(r=>r[0].transcript).join(' ').trim();const n=emit('VOICE_NOTE',{source,text});ACN26.voiceNotes.push(n);if(typeof rawMark==='function')rawMark('ACN26_VOICE',text);render(text||'Nota vacía')};
+   recognition.onerror=e=>{emit('VOICE_ERROR',{source,error:e.error});render('Voz: '+e.error)};
+   recognition.onend=()=>{voiceActive=false;emit('VOICE_END',{source});render()};
+   try{recognition.start()}catch(e){emit('VOICE_ERROR',{source,error:e.message});}
+ }
+ window.acn26VoiceStart=startVoice;
+ // Hook público para el Gesture Engine/Protocol Mapper cuando el doble toque R10M quede identificado.
+ window.acn26GestureDoubleTap=function(meta={}){emit('GESTURE_DOUBLE_TAP',{source:'R10M',meta});startVoice('R10M_DOUBLE_TAP')};
+
+ function render(status=''){
+   const root=document.getElementById('acn26Panel');if(!root)return;
+   const st=root.querySelector('[data-acn-state]');if(st)st.textContent=ACN26.state||'SIN ESTADO';
+   const info=root.querySelector('[data-acn-info]');if(info)info.textContent=status||`Eventos ${ACN26.events.length} · Voz ${ACN26.voiceNotes.length} · CP0 reportados ${ACN26.cp0Reported.length} · candidatos ${ACN26.cp0Candidates.length}`;
+   root.querySelectorAll('[data-state]').forEach(b=>b.style.outline=b.dataset.state===ACN26.state?'2px solid currentColor':'');
+ }
+ function mount(){
+   if(document.getElementById('acn26Panel'))return;
+   const panel=document.createElement('section');panel.id='acn26Panel';panel.className='card';
+   panel.innerHTML=`<h2>ACN26-01 · PUNTO CERO</h2><p class="sub">Capa experimental sincronizada con RAW v14.8. Estado: <b data-acn-state>SIN ESTADO</b></p><div class="actions" data-acn-buttons></div><div class="actions"><button class="btn purple" id="acnVoiceBtn">🎙 DOBLE TOQUE / VOZ</button><button class="btn" id="acnCandidateBtn">CP0 CANDIDATO (ANÁLISIS)</button></div><p class="sub" data-acn-info></p>`;
+   const target=document.querySelector('main')||document.body;target.appendChild(panel);
+   const box=panel.querySelector('[data-acn-buttons]');
+   STATES.forEach(x=>{const b=document.createElement('button');b.className='btn';b.dataset.state=x;b.textContent=x;b.onclick=()=>setState(x,'UI');box.appendChild(b)});
+   panel.querySelector('#acnVoiceBtn').onclick=()=>startVoice('UI_DOUBLE_TAP_TEST');
+   panel.querySelector('#acnVoiceBtn').ondblclick=()=>window.acn26GestureDoubleTap({simulated:true});
+   panel.querySelector('#acnCandidateBtn').onclick=()=>{const d=prompt('Detalle del candidato CP0 (análisis posterior):','');cp0Candidate(null,'manual-review',d||'')};
+   emit('READY',{version:ACN26_VERSION});render();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
+</script>
+
+<style>
+#v149bar{position:sticky;top:0;z-index:9999;background:#061523ee;backdrop-filter:blur(8px);border:1px solid #1d4562;border-radius:14px;padding:9px;margin:8px 0;box-shadow:0 8px 25px #0007}#v149bar .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#v149bar button{padding:8px 10px;border-radius:10px;border:1px solid #28506c;background:#0b2033;color:#edf7ff;font-weight:700}#v149bar .live{margin-left:auto;font-size:12px;color:#8fb1c7}.acnActive{outline:2px solid #22e58a!important}#acn26Panel{order:-1;border:1px solid #a45cff!important}
+</style>
+<script>
+(function(){
+ function connected(){try{return !!(window.yDev&&yDev.gatt&&yDev.gatt.connected)}catch(e){return false}}
+ function showNode(name){
+   // SPA: never change URL/history; preserve BLE/RAW in same document.
+   document.querySelectorAll('[data-v149-node]').forEach(x=>x.style.display=x.dataset.v149Node===name?'':'none');
+   window.__fitringNode=name;
+   if(typeof rawPush==='function')rawPush('NODE_VIEW',{node:name});
+   document.getElementById('v149node').textContent=name;
+   window.scrollTo({top:0,behavior:'smooth'});
+ }
+ window.fitringShowNode=showNode;
+ function mountBar(){
+   if(document.getElementById('v149bar'))return;
+   const host=document.querySelector('.wrap')||document.body; const bar=document.createElement('div');bar.id='v149bar';
+   bar.innerHTML='<div class="row"><button data-n="GENERAL">GENERAL</button><button data-n="RESPIRA">RESPIRA</button><button data-n="CALMA">CALMA</button><button data-n="FITNESS">FITNESS</button><button data-n="XEO">XEO</button><button data-n="ACN26">ACN26</button><span class="live">● R10M <b id="v149ble">—</b> · RAW ● · <span id="v149node">GENERAL</span> · ACN26 <b id="v149acn">SIN ESTADO</b></span></div>';
+   host.insertBefore(bar,host.firstChild); bar.querySelectorAll('button').forEach(b=>b.onclick=()=>showNode(b.dataset.n));
+   setInterval(()=>{const e=document.getElementById('v149ble');if(e)e.textContent=connected()?'CONECTADO':'DESCONECTADO';const a=document.getElementById('v149acn');if(a)a.textContent=window.ACN26?.state||'SIN ESTADO'},800);
+ }
+ function enhanceACN(){
+   const p=document.getElementById('acn26Panel');if(!p)return false;
+   // Move ACN26 near top instead of end of page.
+   const anchor=document.querySelector('.hero')||document.querySelector('.top')||document.querySelector('main')?.firstElementChild; if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(p,anchor.nextSibling);
+   if(!document.getElementById('acnStart')){const b=document.createElement('button');b.id='acnStart';b.className='btn green';b.textContent='▶ INICIAR SESIÓN ACN26 / BASELINE';b.onclick=()=>{window.acn26SetState?.('BASELINE','SESSION_START');b.textContent='✓ BASELINE ACTIVO';};p.insertBefore(b,p.querySelector('.actions'));}
+   p.dataset.v149Node='ACN26'; return true;
+ }
+ function mount(){mountBar();let n=0;const t=setInterval(()=>{if(enhanceACN()||++n>20)clearInterval(t)},150)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
+</script>
+
 </body>
+
 </html>
