@@ -1,0 +1,1753 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#04101c">
+<title>FITRING / MAR v14.15 BLE DIAGNÓSTICO</title>
+<style>
+:root{
+  --bg:#030a12;--panel:#071726;--card:#0b2033;--card2:#091827;--line:#173b5a;
+  --txt:#edf7ff;--muted:#7893a9;--blue:#168cff;--cyan:#21d7e7;--green:#22e58a;
+  --purple:#a45cff;--red:#ff626f;--orange:#ff9e43;--yellow:#ffd166;--shadow:0 20px 60px #0006
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:
+ radial-gradient(circle at 45% -8%,#15365d 0,#071522 28%,#030a12 68%);
+ color:var(--txt);font:14px system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.top{position:sticky;top:0;z-index:100;background:#04101cf2;backdrop-filter:blur(16px);border-bottom:1px solid #12314d}
+.topin{max-width:1480px;margin:auto;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:950;font-size:18px;letter-spacing:.3px}.brand b{color:var(--cyan)}
+.grow{flex:1}.status{font-size:11px;color:#8aa5bb}.status.ok{color:var(--green)}
+.btn{border:1px solid var(--line);background:#0a2035;color:#fff;padding:9px 11px;border-radius:11px;font-weight:850;font-size:11px}
+.btn.primary{background:#087ff5;border-color:#2997ff}.btn.green{background:#103b29;border-color:#23734e;color:#7dffba}
+.btn.purple{background:#271b40;border-color:#6841a0}.btn.red{background:#3b171d;border-color:#7f303c;color:#ffadb4}
+.wrap{max-width:1480px;margin:auto;padding:12px 14px 32px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.tab{border:1px solid var(--line);background:#071523;color:#91a8ba;border-radius:12px;padding:11px 5px;font-weight:900}
+.tab.on{color:white;background:#0c2b4b;border-color:var(--blue);box-shadow:0 0 24px #168cff22}
+.view{display:none}.view.on{display:block}
+.hero,.panel,.metric,.module{background:linear-gradient(145deg,#0b2034,#071624);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.hero{padding:17px;margin-bottom:12px}.herohead{display:flex;justify-content:space-between;gap:12px}.hero h1{margin:0;font-size:24px}
+.sub{color:var(--muted);font-size:11px;margin-top:4px}.tag{border:1px solid #285d84;border-radius:20px;padding:6px 9px;font-size:9px;font-weight:900}
+.overview{display:grid;grid-template-columns:1.18fr .82fr;gap:12px}.panel{padding:15px}.ringbox{display:flex;align-items:center;gap:18px;min-height:165px}
+.ring{width:112px;height:112px;border:13px solid #557185;border-radius:50%;box-shadow:inset 0 0 20px #000,0 0 38px #168cff2b;transform:rotate(-18deg);position:relative}
+.ring:after{content:"";position:absolute;inset:-8px;border:2px solid #cbe9fa;border-radius:50%;opacity:.34}
+.score{font-size:54px;font-weight:950;line-height:1}.score small{font-size:14px;color:var(--muted)}.ok{color:var(--green)}.warn{color:var(--yellow)}.bad{color:var(--red)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.metric{padding:14px;min-height:124px;position:relative;overflow:hidden}.metric.prio{border-color:#247fca;box-shadow:0 0 22px #168cff15}
+.mlabel{font-size:10px;font-weight:850;color:#91a8ba}.mval{font-size:28px;font-weight:950;margin-top:10px}.unit{font-size:10px;color:#91a8ba}
+.src{position:absolute;right:9px;top:9px;font-size:8px;color:var(--green)}
+.spark{height:32px;margin-top:8px;display:flex;align-items:flex-end;gap:2px}.spark i{display:block;flex:1;background:linear-gradient(var(--cyan),var(--blue));border-radius:2px 2px 0 0}
+.two{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px}.title{font-weight:900;margin-bottom:10px}
+.chart{height:160px;background:#04101c;border-radius:12px;padding:10px;display:flex;gap:4px;align-items:flex-end;overflow:hidden}
+.chart i{flex:1;min-width:2px;border-radius:3px 3px 0 0;background:linear-gradient(var(--cyan),#187ad7)}
+.alert{padding:10px;border:1px solid #27455c;border-radius:10px;background:#081928;margin:7px 0;font-size:11px}.alert.hot{border-color:#74353e;color:#ffadb4}
+.modegrid{display:grid;grid-template-columns:1.45fr .55fr;gap:12px}.scene{min-height:300px;border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 50% 35%,#174d70,#071521 68%)}
+.circle{width:185px;height:185px;border:10px solid var(--cyan);border-radius:50%;display:grid;place-items:center;font-size:48px;font-weight:950;box-shadow:0 0 55px #20d9e852;transition:transform 4s ease}
+.circle.in{transform:scale(1.13)}.circle.out{transform:scale(.84)}
+.contacts .row,.row{display:grid;grid-template-columns:38px 1fr auto;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid #17334a}
+.avatar{width:38px;height:38px;border-radius:50%;background:#183b58;display:grid;place-items:center;font-weight:950}.row small{display:block;color:var(--muted)}
+.field{background:#051521;border:1px solid var(--line);color:white;border-radius:9px;padding:8px}.configrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.modules{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.module{padding:13px;min-height:235px}.module h3{margin:0 0 5px;font-size:13px}.module p{font-size:10px;color:var(--muted)}
+.list{font-size:10px}.list>div{padding:7px 0;border-bottom:1px solid #153047}.drop{display:block;border:1px dashed #496a83;border-radius:12px;padding:18px 8px;text-align:center;color:#9fb6c8;margin:10px 0}
+.blelog{font:9px ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;background:#03101b;border-radius:9px;padding:8px;max-height:150px;overflow:auto;color:#91b8d4}
+.pills{display:flex;gap:6px;flex-wrap:wrap}.pill{font-size:9px;border:1px solid #28516f;padding:5px 8px;border-radius:20px;color:#a9c1d3}
+.footer{text-align:center;color:#607d94;font-size:9px;padding:18px}
+.modal{position:fixed;inset:0;background:#000a;display:none;place-items:center;z-index:200;padding:16px}.modal.on{display:grid}.dialog{width:min(520px,96vw);background:#081a2a;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 30px 90px #000}
+.dialog h3{margin-top:0}.dialog .field{width:100%;margin:5px 0 10px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kpi .panel{text-align:center}.kpi .mval{font-size:24px}
+@media(max-width:1050px){.overview,.two,.modegrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.modules{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.wrap{padding:8px}.topin{gap:6px}.brand{font-size:14px}.top .btn{font-size:9px;padding:7px}.status{display:none}.tabs{position:sticky;top:55px;z-index:80;background:#04101c;padding:5px 0}.tab{font-size:10px;padding:9px 3px}.metrics{grid-template-columns:repeat(2,1fr)}.modules{grid-template-columns:1fr}.ringbox{flex-direction:column;text-align:center}.hero h1{font-size:20px}.score{font-size:46px}.mval{font-size:24px}}
+
+.intelgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.intelcard{background:#071622;border:1px solid #173b5a;border-radius:16px;padding:14px}.intelbig{font-size:34px;font-weight:850}.ctx{display:flex;flex-wrap:wrap;gap:7px}.ctx button{padding:9px 11px}.corr{border-left:3px solid #20d6b5;padding:9px 12px;margin:8px 0;background:#071622;border-radius:8px}@media(max-width:760px){.intelgrid{grid-template-columns:repeat(2,1fr)}}
+
+.nodeActions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.nodeAction{border:1px solid #245276;background:#071b2c;color:#fff;border-radius:14px;padding:13px;text-align:left;font-weight:850}
+.measureRun{display:none;margin-top:12px;padding:16px;border:1px solid #247fca;border-radius:16px;background:#061a2b;overflow:hidden;position:relative}
+.measureRun.on{display:block}
+.measurePulse{width:72px;height:72px;margin:8px auto;border:7px solid var(--cyan);border-radius:50%;animation:mpulse 1.05s infinite;box-shadow:0 0 30px #21d7e755}
+@keyframes mpulse{0%{transform:scale(.82);opacity:.45}50%{transform:scale(1.08);opacity:1}100%{transform:scale(.82);opacity:.45}}
+.measureBar{height:8px;background:#102c43;border-radius:20px;overflow:hidden;margin-top:10px}.measureBar i{display:block;height:100%;width:32%;background:linear-gradient(90deg,var(--blue),var(--cyan));animation:scan 1.2s infinite}
+@keyframes scan{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+.histModalList{max-height:55vh;overflow:auto}
+.histItem{padding:11px;border-bottom:1px solid #173b5a}
+@media(max-width:650px){.nodeActions{grid-template-columns:1fr 1fr}}
+
+.autoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.autoChip{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #214a69;border-radius:12px;background:#071b2c}
+.autoState{padding:12px;border:1px solid #1e5277;border-radius:14px;background:#061a2b;margin:10px 0}
+.autoDot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#687b89;margin-right:7px}
+.autoDot.on{background:#20d6a5;box-shadow:0 0 12px #20d6a588}
+.autoProgress{height:8px;background:#102c43;border-radius:20px;overflow:hidden;margin-top:9px}
+.autoProgress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .35s}
+@media(max-width:650px){.autoGrid{grid-template-columns:1fr 1fr}}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <div class="brand">◉ FITRING / <b>MAR</b> v14.9.6 ACN26 AUTO</div><div class="grow"></div>
+  <span id="conn" class="status">● R10M desconectado</span>
+  <span class="status">▣ <span id="battery">--</span>%</span>
+  <button id="connect" class="btn primary">Conectar R10M</button>
+  <button id="demo" class="btn purple">Demo</button>
+</div></header>
+
+<div class="wrap">
+<nav class="tabs">
+  <button class="tab on" data-view="general">GENERAL</button>
+  <button class="tab" data-view="respira">RESPIRA</button>
+  <button class="tab" data-view="calma">CALMA</button>
+  <button class="tab" data-view="fitness">FITNESS</button>
+</nav>
+
+<section id="general" class="view on"></section>
+<section id="respira" class="view"></section>
+<section id="calma" class="view"></section>
+<section id="fitness" class="view"></section>
+
+<section class="modules">
+  <article class="module">
+    <h3>👥 Contactos y alertas compartidas</h3>
+    <p>Familiares, cuidadores o profesionales autorizados.</p>
+    <div id="contactList"></div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="pickPhoneContact()">Agenda del celular</button>
+      <button class="btn" onclick="openContactModal()">+ Manual</button>
+    </div>
+    <div class="list" style="margin-top:8px">
+      <div><label><input id="shareResp" type="checkbox" checked> Compartir alertas RESPIRA</label></div>
+      <div><label><input id="shareCalma" type="checkbox" checked> Compartir alertas CALMA</label></div>
+      <div><label><input id="shareDaily" type="checkbox"> Resumen diario</label></div>
+    </div>
+  </article>
+
+  <article class="module">
+    <h3>📈 Historial y registros</h3>
+    <p>SmartHealth importado + R10M Live + Demo separado.</p>
+    <div id="history" class="list"></div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="exportData()">Exportar JSON</button>
+      <label class="btn" for="importJson">Importar</label><input id="importJson" type="file" accept=".json" hidden>
+    </div>
+  </article>
+
+  <article class="module">
+    <h3>📄 Estudios de salud · XEO</h3>
+    <p>Los PDF deben ir a un servicio privado, no al repositorio público.</p>
+    <label class="drop" for="pdf">＋ Seleccionar estudio PDF<br><small>Laboratorio · informe · cardiología · otros</small></label>
+    <input id="pdf" type="file" accept="application/pdf" hidden>
+    <div id="pdfState" class="list"><div>XEO: endpoint no configurado</div></div>
+    <button class="btn" onclick="openSettings()">Configurar XEO</button>
+  </article>
+
+  <article class="module">
+    <h3>⚙️ Configuración</h3>
+    <p>Fuentes, reglas y almacenamiento local.</p>
+    <div class="list">
+      <div>Fuente activa: <b id="sourceLabel">DATA CORE</b></div>
+      <div>Persistencia: localStorage</div>
+      <div>SmartHealth: histórico inicial cargado</div>
+      <div id="autoConfigLine">AutoScan R10M: detenido</div>
+      <div id="autoNextLine">Próxima medición: —</div>
+    </div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="openSettings()">Parámetros</button>
+      <button class="btn red" onclick="clearDemo()">Limpiar Demo</button>
+    </div>
+  </article>
+
+  <article class="module">
+    <h3>⌁ R10M · BLE Inspector</h3>
+    <p>Descubre servicios y características reales del anillo.</p>
+    <div id="blelog" class="blelog">Esperando conexión…</div>
+    <div class="configrow" style="margin-top:10px">
+      <button class="btn" onclick="protocolProbe('stress')">PROBAR STRESS</button>
+      <button class="btn" onclick="protocolProbe('temp')">PROBAR TEMP</button>
+      <button class="btn" onclick="protocolProbe('steps')">PROBAR PASOS</button>
+      <button class="btn" onclick="protocolProbe('sleep')">SONDEAR SUEÑO</button>
+      <button class="btn" onclick="exportProtocolLog()">EXPORTAR RAW</button>
+    </div>
+    <div id="protocolState" class="alert">Protocol Lab listo. Los nodos no confirmados sólo usan consultas YCBT conocidas; no envía modos inventados.</div>
+  </article>
+</section>
+
+
+<section class="modules" id="intelligenceLayer"><article class="module"><h3>🧠 FITRING Intelligence Layer</h3><p>Baseline personal · FIT Score · Recovery · correlaciones · anomalías. Indicadores de tendencia, no diagnóstico.</p><div id="intelPanel"></div></article><article class="module"><h3>🏷️ Contexto rápido</h3><p>Marcá eventos para descubrir cómo se relacionan con sueño, FC, HRV, actividad y recuperación.</p><div class="ctx" id="contextButtons"></div><div id="contextLast" class="list" style="margin-top:10px"></div></article></section>
+<div class="footer">FITRING / MAR v14.6 PROTOCOL LAB · YCBT probado + Intelligence Layer · Protocol Lab + AutoScan 10/15/30 min · monitoreo, baseline personal y correlaciones. Las alertas configuradas no constituyen diagnóstico ni reemplazan atención médica.</div>
+</div>
+
+
+<div id="nodeModal" class="modal"><div class="dialog">
+ <h3 id="nodeTitle">Nodo</h3>
+ <div id="nodeNow" class="mval"></div>
+ <div class="nodeActions">
+  <button id="nodeMeasureBtn" class="nodeAction">▶ Ejecutar medición ahora</button>
+  <button id="nodeHistoryBtn" class="nodeAction">▤ Registro histórico</button>
+ </div>
+ <div id="measureRun" class="measureRun"><div class="measurePulse"></div><div id="measureText" style="text-align:center;font-weight:900">Midiendo…</div><div class="measureBar"><i></i></div><div class="sub" style="text-align:center;margin-top:8px">Mantené el anillo colocado y permanecé quieto.</div></div>
+ <div id="nodeHistory" class="histModalList" style="display:none;margin-top:12px"></div>
+ <div class="configrow" style="margin-top:12px"><button class="btn" onclick="closeNodeModal()">Cerrar</button></div>
+</div></div>
+
+<div id="contactModal" class="modal"><div class="dialog">
+  <h3>Agregar contacto autorizado</h3>
+  <label>Nombre</label><input id="cName" class="field">
+  <label>Rol / vínculo</label><input id="cRole" class="field" placeholder="Ej. hija, cuidador, médico">
+  <label>Teléfono</label><input id="cPhone" class="field" placeholder="+54...">
+  <label>Email</label><input id="cEmail" class="field" type="email">
+  <div class="configrow"><button class="btn primary" onclick="saveContact()">Guardar</button><button class="btn" onclick="closeModal('contactModal')">Cancelar</button></div>
+</div></div>
+
+<div id="settingsModal" class="modal"><div class="dialog">
+  <h3>Parámetros de monitoreo</h3>
+  <label>SpO₂ mínima para alerta configurada</label><input id="sSpO2" class="field" type="number">
+  <label>FC mínima</label><input id="sHrLow" class="field" type="number">
+  <label>FC máxima</label><input id="sHrHigh" class="field" type="number">
+  <label>Estrés - umbral</label><input id="sStress" class="field" type="number">
+  <label>Estrés - duración sostenida (min)</label><input id="sStressMin" class="field" type="number">
+
+  <hr style="border:0;border-top:1px solid #173b5a;margin:18px 0">
+  <h3 style="margin-bottom:5px">⌁ R10M · Vigilancia automática</h3>
+  <label class="autoChip"><input id="sAutoEnabled" type="checkbox"> Activar AutoScan mientras FITRING esté abierto y el R10M conectado</label>
+  <label>Intervalo</label>
+  <select id="sAutoInterval" class="field">
+    <option value="10">Cada 10 minutos</option>
+    <option value="15">Cada 15 minutos</option>
+    <option value="30">Cada 30 minutos</option>
+  </select>
+  <div class="autoGrid">
+    <label class="autoChip"><input id="a_hr" type="checkbox"> FC</label>
+    <label class="autoChip"><input id="a_spo2" type="checkbox"> SpO₂</label>
+    <label class="autoChip"><input id="a_bp" type="checkbox"> Presión</label>
+    <label class="autoChip"><input id="a_hrv" type="checkbox"> HRV</label>
+    <label class="autoChip"><input id="a_stress" type="checkbox"> Estrés</label>
+    <label class="autoChip"><input id="a_temp" type="checkbox"> Temperatura</label>
+    <label class="autoChip"><input id="a_steps" type="checkbox"> Pasos</label>
+  </div>
+  <div class="autoState">
+    <div><span id="autoDotSettings" class="autoDot"></span><b id="autoStateSettings">AutoScan detenido</b></div>
+    <small id="autoNextSettings">Próxima medición: —</small>
+  </div>
+
+  <hr style="border:0;border-top:1px solid #173b5a;margin:18px 0">
+  <h3 style="margin-bottom:5px">👤 Parámetros personales</h3>
+  <p class="sub">Datos locales para personalizar tendencias. Completalos cuando quieras.</p>
+  <label>Nombre</label><input id="pName" class="field" placeholder="Nombre">
+  <label>Fecha de nacimiento</label><input id="pBirth" class="field" type="date">
+  <label>Género</label><select id="pGender" class="field"><option value="">Sin completar</option><option>Masculino</option><option>Femenino</option><option>Otro</option><option>Prefiero no indicar</option></select>
+  <label>Altura (cm)</label><input id="pHeight" class="field" type="number" placeholder="170">
+  <label>Peso corporal (kg)</label><input id="pWeight" class="field" type="number" step="0.1" placeholder="65">
+  <label>Tono de piel</label><select id="pSkin" class="field"><option value="">Sin completar</option><option>Claro</option><option>Medio</option><option>Oscuro</option></select>
+
+  <label>Endpoint privado XEO</label><input id="sXeo" class="field" placeholder="https://.../api/studies">
+  <div class="configrow"><button class="btn primary" onclick="saveSettings()">Guardar</button><button class="btn" onclick="closeModal('settingsModal')">Cancelar</button></div>
+</div></div>
+
+<script>
+const KEY='fitring_mar_v12_state'; // conserva datos v13/v12
+const defaults={
+  latest:{hr:72,hrv:48,spo2:97,stress:32,temp:36.4,steps:6324,sleep:7.3,sys:124,dia:82,recovery:78,load:67},
+  records:[],contacts:[],demo:false,seeded:false,xeoEndpoint:'',
+  thresholds:{spo2:94,hrLow:50,hrHigh:120,stress:70,stressMinutes:20},
+  autoScan:{enabled:false,interval:30,metrics:{hr:true,spo2:true,bp:true,hrv:true,stress:true,temp:true,steps:true},lastRun:null,nextRun:null},
+  profile:{name:'Mar',birth:'',gender:'',height:'',weight:'',skinTone:''}
+};
+let S=Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'));
+S.latest=Object.assign({},defaults.latest,S.latest||{});
+S.thresholds=Object.assign({},defaults.thresholds,S.thresholds||{});
+S.records=S.records||[];S.contacts=S.contacts||[];S.contextEvents=Array.isArray(S.contextEvents)?S.contextEvents:[];
+S.autoScan=Object.assign({},defaults.autoScan,S.autoScan||{});
+S.autoScan.metrics=Object.assign({},defaults.autoScan.metrics,(S.autoScan&&S.autoScan.metrics)||{});
+S.profile=Object.assign({},defaults.profile,S.profile||{});
+
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function localStamp(iso){const d=new Date(iso);if(Number.isNaN(d.getTime()))return String(iso||'');return new Intl.DateTimeFormat('es-AR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d)}
+function nowISO(){return new Date().toISOString()}
+function seedSmartHealth(){
+  if(S.seeded)return;
+  const activity=[['2026-09-28',7591,4.820,298],['2026-09-27',1850,1.273,68],['2026-09-26',2673,1.773,100],['2026-09-25',4741,3.002,184],['2026-09-24',5488,3.583,213],['2026-09-23',3369,2.133,130],['2026-09-22',4249,2.717,163]];
+  activity.forEach(x=>S.records.push({at:x[0]+'T12:00:00',type:'actividad',steps:x[1],km:x[2],kcal:x[3],source:'SMARTHEALTH_IMPORT'}));
+  [['2026-09-26',2.5,.4,1.8,.3,'Mala'],['2026-09-24',8.3,2,4.9,1.3,'Excelente'],['2026-09-24',6.2,1.4,4,.7,'Buena'],['2026-09-23',8.7,2,5.1,1.5,'Excelente'],['2026-09-21',7.5,1.5,4.1,1.9,'Excelente'],['2026-09-25',8.25,2.02,4.92,1.32,'Excelente']].forEach(x=>S.records.push({at:x[0]+'T08:00:00',type:'sueño',sleep:x[1],deep:x[2],light:x[3],rem:x[4],sourceRating:x[5],source:'SMARTHEALTH_IMPORT'}));
+  S.seeded=true;save();
+}
+seedSmartHealth();
+
+const metricMeta={hr:['FC','lpm'],hrv:['HRV','ms'],spo2:['SpO₂','%'],stress:['Estrés',''],sleep:['Sueño','h'],steps:['Pasos',''],temp:['Temperatura','°C'],bp:['Presión','mmHg']};
+const orders={
+ general:['hr','hrv','spo2','stress','sleep','steps','temp','bp'],
+ respira:['hr','spo2','bp','hrv','stress','sleep','steps','temp'],
+ calma:['stress','hrv','hr','sleep','spo2','temp','steps','bp'],
+ fitness:['steps','hr','hrv','sleep','stress','spo2','temp','bp']
+};
+function metricVal(k){return k==='bp'?S.latest.sys+'/'+S.latest.dia:(S.latest[k]??'—')}
+const takeMap={
+ general:['hr','spo2','bp','hrv','stress','temp','steps'],
+ respira:['hr','spo2','bp','hrv'],
+ calma:['stress','hrv','hr','spo2'],
+ fitness:['hr','hrv','steps','temp']
+};
+function measureButtons(mode){return takeMap[mode].map(k=>`<button class="btn" onclick="requestTake('${mode}','${k}')">Tomar ${metricMeta[k][0]}</button>`).join('')}
+async function requestTake(mode,k){
+ const box=document.getElementById('take-'+mode);if(box)box.innerHTML=`Solicitando <b>${metricMeta[k][0]}</b>…`;
+ try{if(await ymeasure(k)){if(box)box.innerHTML=`${metricMeta[k][0]}: medición real iniciada en R10M YCBT…`;S.pendingTake={mode,k,at:nowISO()};save();return}if(['stress','temp','steps','sleep'].includes(k)&&yCmd){await discoverNode(k);S.pendingTake={mode,k,at:nowISO()};save();if(box)box.innerHTML=`${metricMeta[k][0]}: discovery YCBT enviado. Revisá BLE Inspector; no se inventan valores.`;return}}catch(e){if(box)box.textContent='YCBT: '+e.message;return}
+ const raw=prompt(`R10M no disponible para ${metricMeta[k][0]}. Ingresá lectura MANUAL o Cancelar:`);if(raw===null){if(box)box.textContent='Toma cancelada.';return}
+ if(k==='bp'){const m=raw.match(/(\d{2,3})\D+(\d{2,3})/);if(!m){alert('Usá formato 120/80');return}S.latest.sys=+m[1];S.latest.dia=+m[2];S.records.push({at:nowISO(),type:'toma',sys:S.latest.sys,dia:S.latest.dia,metric:'bp',source:'MANUAL'})}else{const v=Number(String(raw).replace(',','.'));if(!Number.isFinite(v)){alert('Valor inválido');return}S.latest[k]=v;S.records.push({at:nowISO(),type:'toma',metric:k,value:v,source:'MANUAL'})}save();render();
+}
+
+
+
+let activeNode={mode:'general',k:'hr'};
+function openNode(mode,k){
+ activeNode={mode,k};
+ document.getElementById('nodeTitle').textContent='Nodo · '+metricMeta[k][0];
+ document.getElementById('nodeNow').innerHTML=`${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span>`;
+ document.getElementById('measureRun').classList.remove('on');
+ document.getElementById('nodeHistory').style.display='none';
+ document.getElementById('nodeModal').classList.add('on');
+ document.getElementById('nodeMeasureBtn').onclick=()=>runNodeMeasure(mode,k);
+ document.getElementById('nodeHistoryBtn').onclick=()=>showNodeHistory(k);
+}
+function closeNodeModal(){document.getElementById('nodeModal').classList.remove('on')}
+function showNodeHistory(k){
+ const el=document.getElementById('nodeHistory'); el.style.display='block';
+ const rows=[...S.records].filter(r=>{
+   if(k==='bp')return r.metric==='bp'||(r.sys!=null&&r.dia!=null);
+   return r.metric===k||r[k]!=null;
+ }).sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0,40);
+ el.innerHTML=rows.length?rows.map(r=>{
+   let v=k==='bp'?`${r.sys??'—'}/${r.dia??'—'} mmHg`:`${r[k]??r.value??'—'} ${metricMeta[k][1]}`;
+   return `<div class="histItem"><b>${v}</b><br><small>${localStamp(r.at)} · ${r.source||''}</small></div>`;
+ }).join(''):'<div class="alert">Todavía no hay registros para este nodo.</div>';
+}
+async function runNodeMeasure(mode,k){
+ const run=document.getElementById('measureRun'),txt=document.getElementById('measureText');
+ run.classList.add('on');document.getElementById('nodeHistory').style.display='none';
+ txt.textContent='Iniciando '+metricMeta[k][0]+'…';
+ try{
+   if(await ymeasure(k)){
+     S.pendingTake={mode,k,at:nowISO()};save();
+     txt.textContent='Midiendo '+metricMeta[k][0]+' con R10M…';
+     setTimeout(()=>{if(S.pendingTake&&S.pendingTake.k===k)txt.textContent='Medición en curso · esperando respuesta del R10M…'},3500);
+     return;
+   }
+   if(['stress','temp','steps','sleep'].includes(k)&&yCmd){
+     await discoverNode(k);S.pendingTake={mode,k,at:nowISO()};save();
+     txt.textContent='Consultando nodo '+metricMeta[k][0]+' · esperando trama YCBT…';return;
+   }
+   txt.textContent='R10M no conectado. Conectalo para ejecutar una medición real.';
+ }catch(e){txt.textContent='Error: '+e.message}
+}
+
+function spark(){return '<div class="spark">'+Array.from({length:14},(_,i)=>`<i style="height:${25+((i*19+37)%68)}%"></i>`).join('')+'</div>'}
+function cards(mode){return orders[mode].map((k,i)=>`<div class="metric ${i<4?'prio':''}" onclick="openNode('${mode}','${k}')" role="button" tabindex="0"><span class="src">${S.demo?'DEMO':'DATA CORE'}</span><div class="mlabel">${metricMeta[k][0]}</div><div class="mval">${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span></div>${spark()}<div class="sub" style="margin-top:5px">Tocar para medir / historial</div></div>`).join('')}
+function chartBars(seed=0,n=42){return Array.from({length:n},(_,i)=>`<i style="height:${18+((i*23+seed*17)%76)}%"></i>`).join('')}
+
+function activeAlerts(){
+  const a=[];
+  if(S.latest.spo2<S.thresholds.spo2)a.push({node:'RESPIRA',text:`SpO₂ ${S.latest.spo2}% por debajo del umbral configurado (${S.thresholds.spo2}%)`});
+  if(S.latest.hr<S.thresholds.hrLow||S.latest.hr>S.thresholds.hrHigh)a.push({node:'RESPIRA',text:`FC ${S.latest.hr} lpm fuera del rango configurado ${S.thresholds.hrLow}-${S.thresholds.hrHigh}`});
+  if(S.latest.stress>S.thresholds.stress)a.push({node:'CALMA',text:`Estrés ${S.latest.stress} supera el umbral configurado ${S.thresholds.stress}`});
+  return a;
+}
+function render(){
+  const alerts=activeAlerts();
+  document.getElementById('general').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Dashboard General</h1><div class="sub">Centro de control · R10M + SmartHealth + MAR Alert Engine + XEO</div></div><span class="tag">HOY</span></div></div>
+   <div class="overview">
+    <div class="panel ringbox"><div class="ring"></div><div><div class="title">Estado actual</div><div id="deviceConnectionState">${connectionHTML()}</div><div class="sub">Última actualización ${new Date().toLocaleTimeString()}</div><div class="pills" style="margin-top:10px"><span class="pill">R10M</span><span class="pill">SmartHealth</span><span class="pill">MAR</span><span class="pill">XEO ready</span></div></div></div>
+    <div class="panel"><div class="title">Bienestar general</div><div class="score">84 <small>/100</small></div><div class="ok">● Estable</div><div class="sub">Índice visual de demo; no es un diagnóstico médico.</div></div>
+   </div>
+   <div class="metrics">${cards('general')}</div><div class="panel" style="margin-top:12px"><div class="title">Toma manual a elección</div><div class="sub">Elegí qué medición querés solicitar/registrar en el estado actual.</div><div class="configrow" style="margin-top:10px">${measureButtons('general')}</div><div id="take-general" class="alert">Esperando selección.</div></div>
+   <div class="two"><div class="panel"><div class="title">Tendencia últimas 24 h</div><div class="chart">${chartBars(1)}</div></div>
+   <div class="panel"><div class="title">Alertas recientes</div>${alerts.length?alerts.map((a,i)=>`<div class="alert hot"><b>${a.node}</b><br>${a.text}<br><button class="btn" style="margin-top:7px" onclick="shareAlert(${i})">Compartir</button></div>`).join(''):'<div class="alert">Sin alertas según los umbrales configurados.</div>'}</div></div>`;
+
+  document.getElementById('respira').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Nodo RESPIRA</h1><div class="sub">Adultos mayores · respiración · cardiovascular · monitoreo compartido</div></div><span class="tag">RESPIRA</span></div></div>
+   <div class="modegrid">
+    <div class="scene"><div><div class="title">Guía de respiración</div><div id="breathCircle" class="circle">4</div><p id="breathText">Lista para iniciar</p><button class="btn green" onclick="toggleBreath()">Iniciar / detener 4×4</button></div></div>
+    <div class="panel contacts"><div class="title">Monitoreo compartido</div><div class="sub">Contactos autorizados y alertas configuradas.</div><div id="respContactList"></div><div class="configrow" style="margin-top:10px"><button class="btn" onclick="pickPhoneContact()">Agenda</button><button class="btn" onclick="openContactModal()">+ Contacto</button></div><hr style="border-color:#173b5a"><div class="title">Reglas activas</div><div class="list"><div>SpO₂ &lt; ${S.thresholds.spo2}%</div><div>FC fuera de ${S.thresholds.hrLow}-${S.thresholds.hrHigh}</div></div></div>
+   </div>
+   <div class="metrics">${cards('respira')}</div><div class="panel" style="margin-top:12px"><div class="title">Tomas RESPIRA</div><div class="configrow">${measureButtons('respira')}</div><div id="take-respira" class="alert">Elegí una toma.</div></div>`;
+
+  document.getElementById('calma').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Nodo CALMA</h1><div class="sub">Estrés · HRV · sueño · tendencia sostenida</div></div><span class="tag">CALMA</span></div></div>
+   <div class="overview"><div class="panel"><div class="title">Calma actual</div><div class="score">${Math.max(0,100-S.latest.stress)} <small>/100</small></div><div class="chart">${chartBars(2)}</div></div>
+   <div class="panel"><div class="title">Alerta programada</div><div class="alert">Si estrés &gt; <b>${S.thresholds.stress}</b> durante <b>${S.thresholds.stressMinutes} min</b>, generar evento de monitoreo.</div><button class="btn purple" onclick="openSettings()">Editar regla</button><p class="sub">La regla describe una tendencia de monitoreo; no diagnostica estrés clínico.</p></div></div>
+   <div class="metrics">${cards('calma')}</div><div class="panel" style="margin-top:12px"><div class="title">Tomas CALMA</div><div class="configrow">${measureButtons('calma')}</div><div id="take-calma" class="alert">Elegí una toma.</div></div>`;
+
+  document.getElementById('fitness').innerHTML=`
+   <div class="hero"><div class="herohead"><div><h1>Nodo FITNESS</h1><div class="sub">Actividad · recuperación · carga · sueño</div></div><span class="tag">FITNESS</span></div></div>
+   <div class="overview"><div class="panel"><div class="title">Recuperación</div><div class="score">${S.latest.recovery} <small>/100</small></div><div class="chart">${chartBars(3)}</div></div>
+   <div class="panel"><div class="title">Estado de entrenamiento</div><div class="mval">${S.latest.load} <span class="unit">carga</span></div><div class="ok">Preparación ${S.latest.recovery}</div><div class="kpi" style="margin-top:12px"><div class="panel"><div class="mlabel">Pasos</div><div class="mval">${S.latest.steps}</div></div><div class="panel"><div class="mlabel">FC</div><div class="mval">${S.latest.hr}</div></div><div class="panel"><div class="mlabel">Sueño</div><div class="mval">${S.latest.sleep}h</div></div></div></div></div>
+   <div class="metrics">${cards('fitness')}</div><div class="panel" style="margin-top:12px"><div class="title">Tomas FITNESS</div><div class="configrow">${measureButtons('fitness')}</div><div id="take-fitness" class="alert">Elegí una toma.</div></div>`;
+
+  renderContacts();renderHistory();renderIntel();
+  document.getElementById('sourceLabel').textContent=S.demo?'DEMO':'DATA CORE';refreshConnectionUI();
+}
+function renderContacts(){
+  const html=S.contacts.length?S.contacts.map((c,i)=>`<div class="row"><span class="avatar">${(c.name||'?')[0].toUpperCase()}</span><span><b>${c.name}</b><small>${c.role||'Contacto autorizado'} · ${c.phone||c.email||''}</small></span><span><button class="btn" onclick="sendContact(${i})">Enviar</button> <button class="btn red" onclick="removeContact(${i})">×</button></span></div>`).join(''):'<div class="sub">Sin contactos cargados.</div>';
+  document.getElementById('contactList').innerHTML=html;
+  const r=document.getElementById('respContactList');if(r)r.innerHTML=html;
+}
+function renderHistory(){
+  const rows=[...S.records].sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0,8).map(r=>{
+    let val=r.type==='actividad'?`${r.steps} pasos · ${r.km} km`:r.type==='sueño'?`${r.sleep} h · profundo ${r.deep??'—'} · ligero ${r.light??'—'} · REM ${r.rem??'—'}`:r.hr?`FC ${r.hr}`:r.spo2?`SpO₂ ${r.spo2}%`:'registro';
+    return `<div>${localStamp(r.at)} · ${val}<br><small>${r.source||''}</small></div>`
+  }).join('');
+  document.getElementById('history').innerHTML=rows||'<div>Sin registros</div>';
+}
+function openContactModal(){document.getElementById('contactModal').classList.add('on')}
+function openSettings(){
+  sSpO2.value=S.thresholds.spo2;sHrLow.value=S.thresholds.hrLow;sHrHigh.value=S.thresholds.hrHigh;sStress.value=S.thresholds.stress;sStressMin.value=S.thresholds.stressMinutes;sXeo.value=S.xeoEndpoint||'';
+  sAutoEnabled.checked=!!S.autoScan.enabled;sAutoInterval.value=String(S.autoScan.interval||30);
+  ['hr','spo2','bp','hrv','stress','temp','steps'].forEach(k=>{const e=document.getElementById('a_'+k);if(e)e.checked=S.autoScan.metrics[k]!==false});
+  updateAutoUI();
+  document.getElementById('settingsModal').classList.add('on')
+}
+function closeModal(id){document.getElementById(id).classList.remove('on')}
+function saveContact(){
+  const name=cName.value.trim();if(!name)return alert('Ingresá un nombre.');
+  S.contacts.push({name,role:cRole.value.trim(),phone:cPhone.value.trim(),email:cEmail.value.trim(),created:new Date().toISOString()});
+  save();closeModal('contactModal');cName.value=cRole.value=cPhone.value=cEmail.value='';render()
+}
+function saveSettings(){
+  S.thresholds.spo2=+sSpO2.value;S.thresholds.hrLow=+sHrLow.value;S.thresholds.hrHigh=+sHrHigh.value;
+  S.thresholds.stress=+sStress.value;S.thresholds.stressMinutes=+sStressMin.value;S.xeoEndpoint=sXeo.value.trim();
+  S.profile={name:pName.value.trim(),birth:pBirth.value,gender:pGender.value,height:pHeight.value,weight:pWeight.value,skinTone:pSkin.value};
+   S.autoScan.enabled=!!sAutoEnabled.checked;S.autoScan.interval=+[10,15,30].includes(+sAutoInterval.value)?+sAutoInterval.value:30;
+  ['hr','spo2','bp','hrv','stress','temp','steps'].forEach(k=>{const e=document.getElementById('a_'+k);if(e)S.autoScan.metrics[k]=!!e.checked});
+  if(S.autoScan.enabled) armAutoScan(true); else stopAutoScan();
+  save();closeModal('settingsModal');render();updateAutoUI()
+}
+function removeContact(i){S.contacts.splice(i,1);save();render()}
+async function pickPhoneContact(){
+  try{
+    if(!('contacts' in navigator)||!('ContactsManager' in window))throw new Error('Contact Picker no disponible en este navegador.');
+    const res=await navigator.contacts.select(['name','tel','email'],{multiple:false});
+    if(!res.length)return;const c=res[0];
+    S.contacts.push({name:(c.name&&c.name[0])||'Contacto',role:'Contacto del celular',phone:(c.tel&&c.tel[0])||'',email:(c.email&&c.email[0])||'',created:new Date().toISOString()});
+    save();render()
+  }catch(e){alert(e.message+' Podés cargarlo manualmente.')}
+}
+function alertText(a){return `FITRING / MAR - ${a.node}\n${a.text}\nHora: ${new Date().toLocaleString()}\nEvento de monitoreo, no diagnóstico.`}
+async function shareAlert(i){
+  const a=activeAlerts()[i];if(!a)return;
+  const text=alertText(a);
+  try{if(navigator.share){await navigator.share({title:'FITRING / MAR',text});return}}catch(e){}
+  await navigator.clipboard?.writeText(text);alert('Alerta copiada para compartir.')
+}
+function sendContact(i){
+  const c=S.contacts[i],a=activeAlerts()[0]||{node:'FITRING',text:'Resumen de monitoreo sin alertas activas.'},text=encodeURIComponent(alertText(a));
+  if(c.phone){window.open(`https://wa.me/${c.phone.replace(/\D/g,'')}?text=${text}`,'_blank')}
+  else if(c.email){location.href=`mailto:${encodeURIComponent(c.email)}?subject=FITRING%20MAR&body=${text}`}
+  else alert('El contacto no tiene teléfono ni email.')
+}
+let breathTimer=null,phase=true;
+function toggleBreath(){
+  const c=document.getElementById('breathCircle'),t=document.getElementById('breathText');if(!c)return;
+  if(breathTimer){clearInterval(breathTimer);breathTimer=null;c.className='circle';t.textContent='Pausada';return}
+  const run=()=>{c.className='circle '+(phase?'in':'out');t.textContent=phase?'Inhalá · 4 segundos':'Exhalá · 4 segundos';phase=!phase};
+  run();breathTimer=setInterval(run,4000)
+}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');document.getElementById(b.dataset.view).classList.add('on')
+});
+function addLive(data,source='R10M_LIVE'){
+  Object.assign(S.latest,data);
+  S.records.push({at:new Date().toISOString(),type:'vitales',source,...data});
+  if(S.pendingTake){
+    const k=S.pendingTake.k;
+    const got=(k==='bp')?(data.sys!=null&&data.dia!=null):data[k]!=null;
+    if(got){
+      const rec={at:new Date().toISOString(),type:'toma',metric:k,source};
+      if(k==='bp'){rec.sys=data.sys;rec.dia=data.dia}else rec.value=data[k],rec[k]=data[k];
+      S.records.push(rec);S.pendingTake=null;
+      if(document.getElementById('nodeModal')?.classList.contains('on')&&activeNode.k===k){
+        const txt=document.getElementById('measureText');
+        if(txt)txt.innerHTML='✓ Medición recibida: <b>'+metricVal(k)+' '+metricMeta[k][1]+'</b>';
+        const now=document.getElementById('nodeNow');if(now)now.innerHTML=`${metricVal(k)} <span class="unit">${metricMeta[k][1]}</span>`;
+        setTimeout(()=>document.getElementById('measureRun')?.classList.remove('on'),2200);
+      }
+    }
+  }
+  save();render();updateAutoUI()
+}
+function demoTick(){
+  if(!S.demo)return;
+  addLive({hr:62+Math.floor(Math.random()*28),hrv:35+Math.floor(Math.random()*35),spo2:95+Math.floor(Math.random()*5),stress:20+Math.floor(Math.random()*65),temp:+(36.0+Math.random()).toFixed(1),steps:S.latest.steps+Math.floor(Math.random()*12)},'DEMO');
+  setTimeout(demoTick,4500)
+}
+const demoButton=document.getElementById('demo');
+if(demoButton){
+  demoButton.addEventListener('click',()=>{
+    S.demo=!S.demo;demoButton.textContent=S.demo?'Detener demo':'Demo';save();if(S.demo)demoTick();
+  });
+}
+function clearDemo(){
+  S.records=S.records.filter(r=>r.source!=='DEMO');S.demo=false;
+  const b=document.getElementById('demo');if(b)b.textContent='Demo';
+  save();render();updateAutoUI();
+}
+
+// ===== v14.5 R10M MEASUREMENT MANAGER / AUTOSCAN =====
+let autoTimer=null,autoBusy=false;
+const autoOrder=['hr','spo2','bp','hrv','stress','temp','steps'];
+function autoLog(msg){
+  const l=document.getElementById('blelog');if(l){l.textContent+=new Date().toLocaleTimeString()+' AUTOSCAN '+msg+'\\n';l.scrollTop=l.scrollHeight}
+}
+function fmtNext(){
+  if(!S.autoScan.nextRun)return '—';
+  const d=new Date(S.autoScan.nextRun);return Number.isNaN(d.getTime())?'—':d.toLocaleString('es-AR',{hour12:false});
+}
+function updateAutoUI(){
+  const running=!!(S.autoScan.enabled&&autoTimer);
+  const txt=S.autoScan.enabled?`activo · cada ${S.autoScan.interval} min`:'detenido';
+  const c=document.getElementById('autoConfigLine');if(c)c.textContent='AutoScan R10M: '+txt;
+  const n=document.getElementById('autoNextLine');if(n)n.textContent='Próxima medición: '+fmtNext();
+  const ss=document.getElementById('autoStateSettings');if(ss)ss.textContent=S.autoScan.enabled?'AutoScan activo · '+S.autoScan.interval+' min':'AutoScan detenido';
+  const sn=document.getElementById('autoNextSettings');if(sn)sn.textContent='Próxima medición: '+fmtNext();
+  const dot=document.getElementById('autoDotSettings');if(dot)dot.classList.toggle('on',running);
+}
+function stopAutoScan(){
+  if(autoTimer){clearTimeout(autoTimer);autoTimer=null}
+  S.autoScan.nextRun=null;autoBusy=false;save();updateAutoUI();
+}
+function armAutoScan(reset=false){
+  if(autoTimer){clearTimeout(autoTimer);autoTimer=null}
+  if(!S.autoScan.enabled){stopAutoScan();return}
+  const delay=Math.max(1,+S.autoScan.interval||30)*60000;
+  S.autoScan.nextRun=new Date(Date.now()+delay).toISOString();save();updateAutoUI();
+  autoTimer=setTimeout(async()=>{await runAutoScan();armAutoScan(true)},delay);
+}
+async function runAutoScan(){
+  if(autoBusy||!S.autoScan.enabled)return;
+  if(!yCmd){autoLog('omitido: R10M no conectado');return}
+  autoBusy=true;S.autoScan.lastRun=nowISO();save();updateAutoUI();
+  const selected=autoOrder.filter(k=>S.autoScan.metrics[k]);
+  autoLog('inicio ['+selected.join(', ')+']');
+  for(const k of selected){
+    try{
+      autoLog('→ '+k);
+      if(['hr','spo2','bp','hrv'].includes(k)){
+        const ok=await ymeasure(k);
+        if(ok){S.pendingTake={mode:'autoscan',k,at:nowISO()};save();await new Promise(r=>setTimeout(r,6500))}
+      }else{
+        // Stress/temp/steps siguen en discovery hasta confirmar su comando YCBT real.
+        await discoverNode(k);await new Promise(r=>setTimeout(r,1800));
+      }
+    }catch(e){autoLog(k+' ERROR '+e.message)}
+  }
+  autoLog('fin');autoBusy=false;save();updateAutoUI();
+}
+
+// ===== v14.6 PROTOCOL LAB =====
+let protocolCapture={active:false,node:null,started:null,frames:[]};
+function protocolNote(kind,bytes,src=''){
+  if(!protocolCapture.active)return;
+  protocolCapture.frames.push({at:nowISO(),node:protocolCapture.node,kind,src,hex:yhex(bytes)});
+}
+async function protocolProbe(k){
+  const st=document.getElementById('protocolState');
+  if(!yCmd){st.textContent='Conectá primero el R10M YCBT.';return}
+  protocolCapture={active:true,node:k,started:nowISO(),frames:[]};
+  st.textContent='Sondeando '+k.toUpperCase()+'… ejecutando sólo consultas YCBT ya conocidas.';
+  autoLog('PROTOCOL '+k+' START');
+  try{
+    await ysend(2,1,[0x47,0x46]);
+    await new Promise(r=>setTimeout(r,700));
+    await ysend(2,0x1b,[]);
+    await new Promise(r=>setTimeout(r,700));
+    await ysend(2,3,[0x47,0x50]);
+    setTimeout(()=>{
+      protocolCapture.active=false;
+      st.textContent=`${k.toUpperCase()}: captura terminada · ${protocolCapture.frames.length} tramas. Usá EXPORTAR RAW o enviá captura del Inspector.`;
+      autoLog('PROTOCOL '+k+' END frames='+protocolCapture.frames.length);
+    },5000);
+  }catch(e){protocolCapture.active=false;st.textContent='Error '+k+': '+e.message}
+}
+function exportProtocolLog(){
+  const payload={app:'FITRING v14.6',device:yDev?.name||null,capture:protocolCapture,exportedAt:nowISO()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='fitring-r10m-protocol-'+(protocolCapture.node||'raw')+'-'+Date.now()+'.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+const YS='be940000-7333-be46-b7ae-689e71722bd5',YC='be940001-7333-be46-b7ae-689e71722bd5',YT='be940003-7333-be46-b7ae-689e71722bd5';
+let yDev,yCmd,yStream,yCmdBuf=[],yStreamBuf=[],yMode=null;
+function yhex(a){return [...a].map(x=>x.toString(16).padStart(2,'0')).join(' ')}
+function ycrc(a){let crc=0xffff;for(const b of a){crc^=b<<8;for(let i=0;i<8;i++)crc=(crc&0x8000)?((crc<<1)^0x1021)&0xffff:(crc<<1)&0xffff}return crc}
+function yframe(type,c,p=[]){let n=p.length+6,a=[type,c,n&255,n>>8,...p],crc=ycrc(a);return new Uint8Array([...a,crc&255,crc>>8])}
+async function ysend(t,c,p=[]){if(!yCmd)throw Error('R10M YCBT no conectado');let f=yframe(t,c,p);document.getElementById('blelog').textContent+='TX '+yhex(f)+'\\n';await yCmd.writeValue(f)}
+function yingest(v,src){let a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));let log=document.getElementById('blelog');log.textContent+='RX '+src+' '+yhex(a)+'\\n';log.scrollTop=log.scrollHeight;let b=src==='CMD'?yCmdBuf:yStreamBuf;b.push(...a);while(b.length>=4){let len=b[2]|b[3]<<8;if(len<6||len>4096){b.shift();continue}if(b.length<len)break;ydecode(b.splice(0,len),src)}}
+// v14.9.4 AUTO-DECODER R10M: conserva decoders confirmados y estudia STREAM 0x06/0x00.
+let r10mAuto={stream0:[],lastHr:null,lastAt:0};
+function r10mStream0(p,src){
+  if(!p||p.length<6)return {};
+  const now=Date.now(), u16a=p[0]|(p[1]<<8), u16b=p[2]|(p[3]<<8), tail=p[4]|(p[5]<<8);
+  const cand={at:now,b0:p[0],u16a,u16b,tail,hex:yhex(p)};
+  r10mAuto.stream0.push(cand); if(r10mAuto.stream0.length>80)r10mAuto.stream0.shift();
+  // En el RAW real el último word fue 71/72 mientras los dos words previos variaban ~1600/~1250.
+  // Lo tratamos como HR candidato sólo en rango fisiológico; queda marcado como AUTO, no como protocolo confirmado.
+  const d={};
+  if(tail>=35&&tail<=220){d.hr=tail;r10mAuto.lastHr=tail;r10mAuto.lastAt=now;}
+  if(typeof rawPush==='function')rawPush('AUTO_DECODE',{source:src,type:6,cmd:0,hex:yhex(p),candidates:{u16a,u16b,tail,hrCandidate:d.hr??null}});
+  const lg=document.getElementById('blelog');
+  if(lg){lg.textContent+=`AUTO STREAM0 a=${u16a} b=${u16b} tail=${tail}${d.hr?' => HR? '+d.hr:''}\n`;lg.scrollTop=lg.scrollHeight;}
+  return d;
+}
+window.R10M_AUTO=r10mAuto;
+function ydecode(f,src){let type=f[0],c=f[1],p=f.slice(4,-2),d={};const lg=document.getElementById('blelog');if(lg){lg.textContent+=`DECODE ${src} type=0x${type.toString(16)} cmd=0x${c.toString(16)} payload=[${yhex(p)}]\n`;lg.scrollTop=lg.scrollHeight;}if(type===6&&c===0){Object.assign(d,r10mStream0(p,src));}if(type===6&&c===1&&p[0])d.hr=p[0];if(type===6&&c===2&&p[0])d.spo2=p[0];if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}if(type===4&&c===0x13&&p.length>=3){let m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}if(Object.keys(d).length)addLive(d,'R10M_YCBT');if(type===2&&c===0&&p.length>=6){
+  const batteryEl=document.getElementById('battery');
+  const connEl=document.getElementById('conn');
+  bleBattery=p[5];bleFirmware=p[3]+'.'+String(p[2]).padStart(2,'0');if(batteryEl)batteryEl.textContent=bleBattery;
+  if(connEl){
+    connEl.textContent='● R10M YCBT conectado · FW '+bleFirmware;
+    connEl.classList.add('ok');refreshConnectionUI();
+  }
+}}
+async function ymeasure(k){const modes={hr:0,bp:1,spo2:2,hrv:10};if(!(k in modes))return false;if(!yCmd)return false;let m=modes[k];if(yMode!==null)await ysend(3,0x2f,[0,yMode]);yMode=m;await ysend(3,0x2f,[1,m]);return true}
+async function discoverNode(k){if(!yCmd)throw Error('R10M YCBT no conectado');const log=document.getElementById('blelog');log.textContent+='DISCOVERY '+k+': solicitando info/capacidades YCBT; revisar RAW.\n';await ysend(2,1,[0x47,0x46]);await ysend(2,0x1b,[]);await ysend(2,3,[0x47,0x50]);return true}
+
+let bleConnected=false, bleDeviceName='', bleFirmware='—', bleBattery=null, bleConnectedAt=null;
+function connectionHTML(){
+ const connected=!!(bleConnected&&yDev&&yDev.gatt&&yDev.gatt.connected&&yCmd);
+ const bat=bleBattery==null?'—':bleBattery+'%';
+ return connected?`<div class="ok">● R10M conectado</div><div class="sub"><b>${bleDeviceName||'R10M'}</b> · batería <b>${bat}</b> · FW ${bleFirmware}<br>BLE/GATT/YCBT activos${bleConnectedAt?' · desde '+new Date(bleConnectedAt).toLocaleTimeString():''}</div>`:`<div class="warn">● R10M desconectado</div><div class="sub">Tocá “Conectar R10M” para verificar BLE/GATT/YCBT.</div>`;
+}
+function refreshConnectionUI(){
+ const conn=document.getElementById('conn'),bat=document.getElementById('battery'),btn=document.getElementById('connect'),box=document.getElementById('deviceConnectionState');
+ const connected=!!(bleConnected&&yDev&&yDev.gatt&&yDev.gatt.connected&&yCmd);
+ if(conn){conn.textContent=connected?'● '+(bleDeviceName||'R10M')+' conectado':'● R10M desconectado';conn.classList.toggle('ok',connected)}
+ if(bat)bat.textContent=bleBattery==null?'--':bleBattery;
+ if(btn){btn.textContent=connected?'R10M conectado':'Conectar R10M';btn.classList.toggle('green',connected);btn.classList.toggle('primary',!connected)}
+ if(box)box.innerHTML=connectionHTML();
+}
+
+async function connectBLE(){
+  const log=document.getElementById('blelog');
+  const conn=document.getElementById('conn');
+  if(!log || !conn){ alert('Error UI: faltan nodos BLE.'); return; }
+  const step=(msg,cls='')=>{log.innerHTML+=`<div class="${cls}">${new Date().toLocaleTimeString()} ${msg}</div>`;log.scrollTop=log.scrollHeight};
+  log.innerHTML='';
+  step('FITRING v14.3.1 · BLE HOTFIX');
+  step('Botón Conectar recibido correctamente.','ok');
+  conn.textContent='● BLE: iniciando…';conn.classList.remove('ok');
+
+  if(!window.isSecureContext){step('ERROR: HTTPS/contexto seguro requerido.','bad');conn.textContent='● HTTPS requerido';return}
+  if(!navigator.bluetooth){step('ERROR: Web Bluetooth no disponible. Abrí esta página directamente en Chrome Android.','bad');conn.textContent='● Web Bluetooth no disponible';return}
+  step('Web Bluetooth: OK','ok');
+
+  try{
+    step('Abriendo selector BLE…','warn');
+
+    // Núcleo de discovery recuperado del FITRING LAB v13 que conectó con el R10M.
+    yDev=await navigator.bluetooth.requestDevice({
+      acceptAllDevices:true,
+      optionalServices:[YS,'battery_service','heart_rate']
+    });
+
+    const name=yDev.name||'(SIN NOMBRE)';bleDeviceName=name;
+    step('SELECT '+name+' · ID='+yDev.id,'ok');
+    conn.textContent='● '+name+' · CONECTANDO…';
+
+    window.FITRING_BLE_MONITOR?.observeDevice?.(yDev, 'DEVICE_ASSIGNED');
+    yDev.addEventListener('gattserverdisconnected',()=>{
+      bleConnected=false;bleBattery=null;conn.textContent='● R10M desconectado';conn.classList.remove('ok');
+      yCmd=null;yStream=null;yMode=null;yCmdBuf=[];yStreamBuf=[];
+      refreshConnectionUI();step('BLE DISCONNECTED','warn');if(autoTimer){clearTimeout(autoTimer);autoTimer=null}updateAutoUI();
+    });
+
+    const server=await yDev.gatt.connect();
+    step('GATT OK','ok');
+    conn.textContent='● GATT conectado';
+
+    let service;
+    try{
+      service=await server.getPrimaryService(YS);
+    }catch(e){
+      step('BE940000 NO ENCONTRADO: '+e.message,'bad');
+      conn.textContent='● GATT conectado · YCBT no encontrado';
+      return;
+    }
+
+    step('★★★★★ BE940000 FOUND ★★★★★','ok');
+    yCmd=await service.getCharacteristic(YC);
+    step('BE940001 CMD OK','ok');
+    yStream=await service.getCharacteristic(YT);
+    step('BE940003 STREAM OK','ok');
+
+    await yCmd.startNotifications();
+    await yStream.startNotifications();
+    yCmd.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'CMD'));
+    yStream.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'STREAM'));
+
+    bleConnected=true;bleConnectedAt=Date.now();conn.textContent='● '+name+' · YCBT LISTO';conn.classList.add('ok');refreshConnectionUI();
+    step('★★★★★ YCBT READY ★★★★★','ok');
+    if(S.autoScan.enabled)armAutoScan(true);
+
+    await ysend(2,0,[0x47,0x43]);
+    await ysend(2,1,[0x47,0x46]);
+  }catch(e){
+    const msg=(e&&e.name?e.name+': ':'')+(e&&e.message?e.message:String(e));
+    step('ERROR '+msg,'bad');
+    conn.textContent='● BLE error';conn.classList.remove('ok');
+    console.error('FITRING BLE',e);
+  }
+}
+
+// v14.9.5 AUTO-RECONNECT: al recargar FITRING intenta recuperar un R10M ya autorizado.
+let autoReconnectBusy=false;
+async function attachAuthorizedDevice(dev, reason='AUTO'){
+  if(!dev || autoReconnectBusy) return false;
+  autoReconnectBusy=true;
+  const log=document.getElementById('blelog'), conn=document.getElementById('conn');
+  const step=(msg,cls='')=>{if(log){log.innerHTML+=`<div class="${cls}">${new Date().toLocaleTimeString()} ${msg}</div>`;log.scrollTop=log.scrollHeight}};
+  try{
+    yDev=dev; bleDeviceName=yDev.name||'R10M';
+    if(conn){conn.textContent='● '+bleDeviceName+' · reconectando…';conn.classList.remove('ok')}
+    step('AUTO-RECONNECT '+reason+' → '+bleDeviceName,'warn');
+    window.FITRING_BLE_MONITOR?.observeDevice?.(yDev, 'DEVICE_ASSIGNED');
+    yDev.addEventListener('gattserverdisconnected',()=>{
+      bleConnected=false;bleBattery=null;yCmd=null;yStream=null;yMode=null;yCmdBuf=[];yStreamBuf=[];
+      refreshConnectionUI();step('BLE DISCONNECTED · reintento automático…','warn');
+      if(autoTimer){clearTimeout(autoTimer);autoTimer=null} updateAutoUI();
+      setTimeout(()=>attachAuthorizedDevice(yDev,'DISCONNECT'),1200);
+    },{once:true});
+    const server=yDev.gatt.connected?yDev.gatt:await yDev.gatt.connect();
+    const service=await server.getPrimaryService(YS);
+    yCmd=await service.getCharacteristic(YC); yStream=await service.getCharacteristic(YT);
+    await yCmd.startNotifications(); await yStream.startNotifications();
+    yCmd.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'CMD'));
+    yStream.addEventListener('characteristicvaluechanged',e=>yingest(e.target.value,'STREAM'));
+    bleConnected=true;bleConnectedAt=Date.now();refreshConnectionUI();
+    if(conn){conn.textContent='● '+bleDeviceName+' · YCBT LISTO';conn.classList.add('ok')}
+    step('★★★★★ AUTO-RECONNECT YCBT READY ★★★★★','ok');
+    if(S.autoScan.enabled)armAutoScan(true);
+    await ysend(2,0,[0x47,0x43]); await ysend(2,1,[0x47,0x46]);
+    return true;
+  }catch(e){
+    bleConnected=false;refreshConnectionUI();step('AUTO-RECONNECT no disponible: '+(e.message||e),'warn');
+    return false;
+  }finally{autoReconnectBusy=false}
+}
+async function autoReconnectOnLoad(){
+  if(!navigator.bluetooth || typeof navigator.bluetooth.getDevices!=='function') return;
+  try{
+    const devices=await navigator.bluetooth.getDevices();
+    const dev=devices.find(d=>/^R10M/i.test(d.name||'')) || devices.find(d=>/R1[01]M/i.test(d.name||''));
+    if(dev) await attachAuthorizedDevice(dev,'PAGE_RELOAD');
+  }catch(e){console.warn('FITRING AUTO-RECONNECT',e)}
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(autoReconnectOnLoad,350));
+else setTimeout(autoReconnectOnLoad,350);
+
+// Listener explícito: evita depender de que el navegador cree una variable global por id="connect".
+const connectButton=document.getElementById('connect');
+if(connectButton){
+  connectButton.addEventListener('click',connectBLE);
+  const l=document.getElementById('blelog');
+  if(l) l.textContent='v14.6 PROTOCOL LAB listo · botón Conectar enlazado.\n';
+}
+
+document.getElementById('pdf').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  document.getElementById('pdfState').innerHTML=`<div>📄 ${f.name}</div><div>${(f.size/1024/1024).toFixed(2)} MB</div><div>Preparado para XEO privado.</div>`;
+  if(!S.xeoEndpoint)return;
+  if(!confirm('¿Enviar este PDF al endpoint privado XEO configurado?'))return;
+  try{
+    const fd=new FormData();fd.append('file',f);fd.append('source','FITRING_MAR');
+    const r=await fetch(S.xeoEndpoint,{method:'POST',body:fd});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json().catch(()=>({}));
+    document.getElementById('pdfState').innerHTML+=`<div class="ok">XEO: archivo enviado correctamente.</div><div>${data.status||''}</div>`;
+  }catch(err){document.getElementById('pdfState').innerHTML+=`<div class="bad">XEO: ${err.message}</div>`}
+}
+function exportData(){
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='FITRING_MAR_v12_1_backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)
+}
+document.getElementById('importJson').onchange=async e=>{
+  try{const x=JSON.parse(await e.target.files[0].text());if(x.latest&&x.records){S=x}else if(Array.isArray(x)){S.records.push(...x.map(r=>({...r,source:r.source||'SMARTHEALTH_IMPORT'})))}else if(x.records){S.records.push(...x.records.map(r=>({...r,source:r.source||'SMARTHEALTH_IMPORT'})))}else throw new Error('Formato no reconocido');save();render();alert('Historial importado.')}catch(err){alert(err.message)}
+}
+render();
+// ===== FITRING v14 INTELLIGENCE LAYER =====
+S.contextEvents=S.contextEvents||[];
+function clamp(v,a=0,b=100){return Math.max(a,Math.min(b,v))}
+function numericRecords(key,days=30){const cut=Date.now()-days*864e5;return S.records.filter(r=>new Date(r.at).getTime()>=cut).map(r=>key==='bp'?null:(r[key]??(r.metric===key?r.value:null))).filter(Number.isFinite)}
+function stats(a){if(!a.length)return null;const mean=a.reduce((x,y)=>x+y,0)/a.length;const sd=Math.sqrt(a.reduce((x,y)=>x+(y-mean)**2,0)/a.length)||0;return {n:a.length,mean,sd,min:Math.min(...a),max:Math.max(...a)}}
+function baseline(key){let a=numericRecords(key,30);if(a.length<3)a=numericRecords(key,3650);return stats(a)}
+function deltaText(key,val,unit=''){const b=baseline(key);if(!b||!Number.isFinite(val))return 'baseline en aprendizaje';const d=val-b.mean;return `${d>=0?'+':''}${d.toFixed(key==='sleep'?1:0)}${unit} vs. media personal (${b.n} registros)`}
+function intelligence(){
+ const L=S.latest, bh=baseline('hr'), bv=baseline('hrv'), bs=baseline('sleep'), bp=baseline('steps');
+ let score=70, rec=70, confidence=0; const factors=[];
+ if(bh){score-=Math.min(15,Math.abs(L.hr-bh.mean)/(bh.sd||8)*5);confidence++}
+ if(bv){const z=(L.hrv-bv.mean)/(bv.sd||10);score+=clamp(z*6,-15,15);rec+=clamp(z*10,-20,20);confidence++}
+ if(bs){const z=(L.sleep-bs.mean)/(bs.sd||1);score+=clamp(z*8,-18,12);rec+=clamp(z*12,-25,15);confidence++}
+ if(Number.isFinite(L.stress)){score-=Math.max(0,L.stress-50)*.25;rec-=Math.max(0,L.stress-50)*.2;confidence++}
+ if(Number.isFinite(L.spo2)){score+=clamp((L.spo2-95)*1.5,-10,5);confidence++}
+ if(bp&&Number.isFinite(L.steps)){score+=clamp((L.steps-bp.mean)/(bp.sd||2000)*4,-6,6);confidence++}
+ if(bs&&L.sleep<bs.mean-0.75)factors.push(`Sueño ${L.sleep} h, por debajo de tu media ${bs.mean.toFixed(1)} h.`);
+ if(bv&&L.hrv<bv.mean-(bv.sd||0)*.7)factors.push(`HRV por debajo de tu patrón reciente (${Math.round(L.hrv)} vs ${Math.round(bv.mean)} ms).`);
+ if(bh&&L.hr>bh.mean+(bh.sd||0)*.7)factors.push(`FC por encima de tu patrón reciente (${Math.round(L.hr)} vs ${Math.round(bh.mean)} lpm).`);
+ if(!factors.length)factors.push('Sin una combinación destacada frente al baseline disponible.');
+ return {score:Math.round(clamp(score)),recovery:Math.round(clamp(rec)),confidence, factors,bh,bv,bs,bp};
+}
+function anomaly(key,val){const b=baseline(key);if(!b||b.n<5||!b.sd)return null;const z=(val-b.mean)/b.sd;return Math.abs(z)>=1.5?`${metricMeta[key]?.[0]||key}: ${z>0?'alto':'bajo'} respecto de tu patrón (${Math.abs(z).toFixed(1)}σ)`:null}
+function addContext(name){S.contextEvents.push({at:new Date().toISOString(),type:'contexto',name,source:'USER'});S.records.push({at:new Date().toISOString(),type:'contexto',name,source:'USER'});save();renderIntel()}
+function renderIntel(){const el=document.getElementById('intelPanel');if(!el)return;const I=intelligence();S.latest.recovery=I.recovery;
+ const anomalies=['hr','hrv','sleep','steps'].map(k=>anomaly(k,S.latest[k])).filter(Boolean);
+ el.innerHTML=`<div class="intelgrid"><div class="intelcard"><div class="mlabel">FIT SCORE</div><div class="intelbig">${I.score}<small>/100</small></div><small>${I.confidence}/5 señales con baseline</small></div><div class="intelcard"><div class="mlabel">RECOVERY</div><div class="intelbig">${I.recovery}<small>/100</small></div><small>tendencia personal</small></div><div class="intelcard"><div class="mlabel">FC vs baseline</div><b>${deltaText('hr',S.latest.hr,' lpm')}</b></div><div class="intelcard"><div class="mlabel">HRV vs baseline</div><b>${deltaText('hrv',S.latest.hrv,' ms')}</b></div></div><h4>Correlaciones / explicación</h4>${I.factors.map(x=>`<div class="corr">${x}</div>`).join('')}<h4>Anomalías personales</h4><div class="list">${anomalies.length?anomalies.map(x=>`<div>${x}</div>`).join(''):'<div>Sin anomalías detectables o todavía faltan datos para formar baseline.</div>'}</div><p class="sub">El score compara tendencias del wearable con tu propio historial. No diagnostica enfermedades ni sustituye instrumental médico.</p>`;
+ const labels=['Café','Entrenamiento','Alcohol','Medicación','Estrés percibido','Siesta','Enfermo','Comida'];document.getElementById('contextButtons').innerHTML=labels.map(x=>`<button class="btn" onclick="addContext('${x}')">${x}</button>`).join('');const last=[...S.contextEvents].slice(-5).reverse();document.getElementById('contextLast').innerHTML=last.length?last.map(x=>`<div>${new Date(x.at).toLocaleString()} · ${x.name}</div>`).join(''):'<div>Sin contexto registrado todavía.</div>';
+}
+
+</script>
+
+<script>
+window.addEventListener('load',()=>{updateAutoUI();if(S.autoScan.enabled)armAutoScan(true)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.autoScan.enabled&&!autoTimer)armAutoScan(true)});
+</script>
+
+
+
+<!-- FITRING / MAR v14.9 ACN26 PATCH
+PEGAR INMEDIATAMENTE ANTES DE \n<style>\n#v149bar{position:sticky;top:0;z-index:9999;background:#061523ee;backdrop-filter:blur(8px);border:1px solid #1d4562;border-radius:14px;padding:9px;margin:8px 0;box-shadow:0 8px 25px #0007}#v149bar .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#v149bar button{padding:8px 10px;border-radius:10px;border:1px solid #28506c;background:#0b2033;color:#edf7ff;font-weight:700}#v149bar .live{margin-left:auto;font-size:12px;color:#8fb1c7}.acnActive{outline:2px solid #22e58a!important}#acn26Panel{order:-1;border:1px solid #a45cff!important}\n</style>\n<script>\n(function(){\n function connected(){try{return !!(window.yDev&&yDev.gatt&&yDev.gatt.connected)}catch(e){return false}}\n function showNode(name){\n   // SPA: never change URL/history; preserve BLE/RAW in same document.\n   document.querySelectorAll('[data-v149-node]').forEach(x=>x.style.display=x.dataset.v149Node===name?'':'none');\n   window.__fitringNode=name;\n   if(typeof rawPush==='function')rawPush('NODE_VIEW',{node:name});\n   document.getElementById('v149node').textContent=name;\n   window.scrollTo({top:0,behavior:'smooth'});\n }\n window.fitringShowNode=showNode;\n function mountBar(){\n   if(document.getElementById('v149bar'))return;\n   const host=document.querySelector('.wrap')||document.body; const bar=document.createElement('div');bar.id='v149bar';\n   bar.innerHTML='<div class="row"><button data-n="GENERAL">GENERAL</button><button data-n="RESPIRA">RESPIRA</button><button data-n="CALMA">CALMA</button><button data-n="FITNESS">FITNESS</button><button data-n="XEO">XEO</button><button data-n="ACN26">ACN26</button><span class="live">● R10M <b id="v149ble">—</b> · RAW ● · <span id="v149node">GENERAL</span> · ACN26 <b id="v149acn">SIN ESTADO</b></span></div>';\n   host.insertBefore(bar,host.firstChild); bar.querySelectorAll('button').forEach(b=>b.onclick=()=>showNode(b.dataset.n));\n   setInterval(()=>{const e=document.getElementById('v149ble');if(e)e.textContent=connected()?'CONECTADO':'DESCONECTADO';const a=document.getElementById('v149acn');if(a)a.textContent=window.ACN26?.state||'SIN ESTADO'},800);\n }\n function enhanceACN(){\n   const p=document.getElementById('acn26Panel');if(!p)return false;\n   // Move ACN26 near top instead of end of page.\n   const anchor=document.querySelector('.hero')||document.querySelector('.top')||document.querySelector('main')?.firstElementChild; if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(p,anchor.nextSibling);\n   if(!document.getElementById('acnStart')){const b=document.createElement('button');b.id='acnStart';b.className='btn green';b.textContent='▶ INICIAR SESIÓN ACN26 / BASELINE';b.onclick=()=>{window.acn26SetState?.('BASELINE','SESSION_START');b.textContent='✓ BASELINE ACTIVO';};p.insertBefore(b,p.querySelector('.actions'));}\n   p.dataset.v149Node='ACN26'; return true;\n }\n function mount(){mountBar();let n=0;const t=setInterval(()=>{if(enhanceACN()||++n>20)clearInterval(t)},150)}\n if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();\n})();\n</script>\n
+<script>if(typeof rawPush==='function')rawPush('AUTO_DECODER_READY',{version:'14.9.4',stream:'type6/cmd0',mode:'candidate-safe'});</script>
+
+<!-- FITRING v14.9.6 · ACN26 AUTO CLASSIFIER + SIGNAL WATCHDOG -->
+<style>
+#acnAutoBox{margin:12px 0;padding:14px;border:1px solid #245b7d;border-radius:16px;background:#061a2b}.acnAutoBig{font-size:24px;font-weight:900}.acnAutoMeta{font-size:12px;color:#8fb1c7;margin-top:5px}.acnAutoRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.acnAutoPill{padding:7px 9px;border:1px solid #214a69;border-radius:999px;background:#071b2c;font-size:12px}.acnAutoWarn{color:#ffd166}
+</style>
+<script>
+(function(){
+ const A=window.ACN26_AUTO={enabled:true,state:'CALIBRATING',confidence:0,quality:0,baseline:null,samples:[],lastStream:0,lastRx:0,started:Date.now(),candidateSince:0};
+ const num=v=>Number.isFinite(+v)?+v:null;
+ function snap(){const x=window.S?.latest||{};return {t:Date.now(),hr:num(x.hr),hrv:num(x.hrv),spo2:num(x.spo2),stress:num(x.stress),steps:num(x.steps),battery:num(window.bleBattery)} }
+ function usable(x){return ['hr','hrv','spo2','stress'].filter(k=>x[k]!=null).length}
+ function mean(a,k){const v=a.map(x=>x[k]).filter(Number.isFinite);return v.length?v.reduce((p,c)=>p+c,0)/v.length:null}
+ function spread(a,k,m){const v=a.map(x=>x[k]).filter(Number.isFinite);return v.length>1?Math.sqrt(v.reduce((p,c)=>p+(c-m)**2,0)/v.length):0}
+ function buildBaseline(){const a=A.samples.filter(x=>usable(x)>=1).slice(-30);if(a.length<8)return false;A.baseline={};['hr','hrv','spo2','stress'].forEach(k=>{const m=mean(a,k);if(m!=null)A.baseline[k]={m,sd:Math.max(spread(a,k,m),1)}});return Object.keys(A.baseline).length>0}
+ function score(x){if(!A.baseline)return {d:0,n:0};let z=0,n=0;for(const k of Object.keys(A.baseline)){if(x[k]==null)continue;const b=A.baseline[k];z+=Math.min(4,Math.abs(x[k]-b.m)/b.sd);n++}return {d:n?z/n:0,n}}
+ function signalQuality(x){let q=0;if(window.yDev?.gatt?.connected)q+=25;if(A.lastRx&&Date.now()-A.lastRx<12000)q+=25;if(A.lastStream&&Date.now()-A.lastStream<12000)q+=35;q+=Math.min(15,usable(x)*5);return q}
+ function setAuto(st,conf,reason,x){if(A.state!==st){A.state=st;A.candidateSince=Date.now();if(typeof rawPush==='function')rawPush('ACN26_AUTO_STATE',{state:st,confidence:conf,reason,quality:A.quality,physio:x});if(window.ACN26){window.ACN26.state=st==='NO DATA'||st==='INDETERMINATE'?window.ACN26.state:st}}A.confidence=conf;render(reason)}
+ function classify(){if(!A.enabled)return;const x=snap();A.samples.push(x);if(A.samples.length>120)A.samples.shift();A.quality=signalQuality(x);if(A.quality<50){setAuto('NO DATA',100-A.quality,'Señal insuficiente / STREAM inactivo',x);return}
+   if(!A.baseline){if(buildBaseline()){setAuto('BASELINE',65,'Referencia automática creada',x)}else setAuto('CALIBRATING',Math.min(60,A.samples.length*5),'Construyendo referencia personal',x);return}
+   const r=score(x);if(!r.n){setAuto('INDETERMINATE',30,'Sin variables fisiológicas decodificadas suficientes',x);return}
+   const recent=A.samples.slice(-8), move=recent.length>1&&recent[recent.length-1].steps!=null&&recent[0].steps!=null?(recent[recent.length-1].steps-recent[0].steps):0;
+   if(r.d<0.85){setAuto('BASELINE',Math.round(Math.max(55,95-r.d*35)),'Patrón próximo a referencia',x)}
+   else if(r.d>=1.8){setAuto('LOAD',Math.round(Math.min(95,55+r.d*15)),'Desviación sostenida respecto del baseline',x)}
+   else if(r.d>=1.15 && move===0){setAuto('ECALOT',Math.round(Math.min(80,45+r.d*15)),'Candidato experimental: transición conjunta sin movimiento',x)}
+   else setAuto('INDETERMINATE',45,'Transición sin evidencia suficiente',x);
+ }
+ function render(reason=''){const p=document.getElementById('acn26Panel');if(!p)return;let b=document.getElementById('acnAutoBox');if(!b){b=document.createElement('div');b.id='acnAutoBox';p.insertBefore(b,p.firstChild.nextSibling)}const stream=A.lastStream&&Date.now()-A.lastStream<12000;const rx=A.lastRx&&Date.now()-A.lastRx<12000;b.innerHTML=`<div class="acnAutoBig">ACN26 AUTO · ${A.state}</div><div class="acnAutoMeta">Confianza ${A.confidence}% · Calidad señal ${A.quality}% · ${reason}</div><div class="acnAutoRow"><span class="acnAutoPill">BLE ${window.yDev?.gatt?.connected?'✓':'—'}</span><span class="acnAutoPill">RX ${rx?'✓':'—'}</span><span class="acnAutoPill">STREAM ${stream?'✓':'—'}</span><span class="acnAutoPill">BASE ${A.baseline?'✓':'calibrando'}</span></div><div class="acnAutoMeta">AUTO clasifica BASELINE / LOAD / ECALOT candidato. Los botones manuales quedan como validación/corrección experimental.</div>`}
+ const oldIngest=window.yingest;if(typeof oldIngest==='function')window.yingest=function(d,source){A.lastRx=Date.now();if(source==='STREAM')A.lastStream=Date.now();return oldIngest.apply(this,arguments)};
+ window.acn26AutoReset=function(){A.baseline=null;A.samples=[];A.state='CALIBRATING';A.started=Date.now();if(typeof rawPush==='function')rawPush('ACN26_AUTO_RESET',{});render('Referencia reiniciada')};
+ function mount(){const p=document.getElementById('acn26Panel');if(!p)return setTimeout(mount,200);if(!document.getElementById('acnAutoReset')){const b=document.createElement('button');b.id='acnAutoReset';b.className='btn';b.textContent='↻ RECALIBRAR AUTO';b.onclick=window.acn26AutoReset;(p.querySelector('.actions')||p).appendChild(b)}render('Motor automático listo');setInterval(classify,3000)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+ if(typeof rawPush==='function')rawPush('ACN26_AUTO_READY',{version:'14.9.6',states:['BASELINE','LOAD','ECALOT','INDETERMINATE','NO DATA']});
+})();
+</script>
+
+<!-- FITRING v14.9.7 · RAW-AWARE ACN26 AUTO DEVELOPMENT -->
+<script>
+(function(){
+ const V='14.9.7';
+ const R=window.ACN26_RAW_AUTO={streamSamples:[],last:null,activity:0,stable:0};
+ function u16(a,i){return (a[i]||0)+((a[i+1]||0)<<8)}
+ function ingestRaw(bytes,source){
+   if(source!=='STREAM'||!bytes||bytes.length<10)return;
+   // Observed R10M type6/cmd0 frames: three little-endian counters. Keep them as RAW features, not physiological labels.
+   if(bytes[0]===6&&bytes[1]===0){
+     const f={t:Date.now(),a:u16(bytes,4),b:u16(bytes,6),c:u16(bytes,8)};
+     const prev=R.last; R.last=f; R.streamSamples.push(f); if(R.streamSamples.length>60)R.streamSamples.shift();
+     if(prev){const da=f.a-prev.a,db=f.b-prev.b,dc=f.c-prev.c;R.activity=Math.abs(da)+Math.abs(db)+Math.abs(dc)*4;R.stable=R.activity<=8?R.stable+1:0;}
+     if(typeof rawPush==='function' && (!prev || R.streamSamples.length%10===0)) rawPush('ACN26_RAW_FEATURE',{version:V,rawFeature:f,activity:R.activity,stable:R.stable});
+   }
+ }
+ const old=window.yingest;
+ if(typeof old==='function')window.yingest=function(d,source){try{ingestRaw(Array.from(d||[]),source)}catch(e){}return old.apply(this,arguments)};
+ // Add raw evidence to the automatic classifier without pretending the counters are HR/SpO2/etc.
+ const A=window.ACN26_AUTO;
+ if(A){
+   A.raw=R;
+   const oldReset=window.acn26AutoReset; window.acn26AutoReset=function(){R.streamSamples=[];R.last=null;R.activity=0;R.stable=0;return oldReset&&oldReset()};
+ }
+ function badge(){const p=document.getElementById('acnAutoBox');if(!p)return;let e=document.getElementById('acnRawEvidence');if(!e){e=document.createElement('div');e.id='acnRawEvidence';e.className='acnAutoMeta';p.appendChild(e)}e.textContent=R.last?`RAW R10M activo · F1 ${R.last.a} · F2 ${R.last.b} · F3 ${R.last.c} · Δ ${R.activity} · estabilidad ${R.stable}`:'RAW R10M: esperando STREAM';}
+ setInterval(badge,1000);
+ if(typeof rawPush==='function')rawPush('ACN26_RAW_AUTO_READY',{version:V,note:'type6/cmd0 retained as unlabeled raw features'});
+})();
+</script>
+\n<!-- FITRING v14.9.8 · DUAL SYNC 5/30 -->
+<style>
+#dualSyncBox{margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025)}
+#dualSyncBox .dualrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+#dualSyncBox .dualstat{font-size:12px;opacity:.8;line-height:1.45}
+</style>
+<script>
+(function(){
+ const V='14.9.8';
+ const D=window.FITRING_DUAL_SYNC={enabled:true,quickMs:5*60*1000,fullMs:30*60*1000,lastQuick:null,lastFull:null,nextQuick:null,nextFull:null,quickTimer:null,fullTimer:null,busy:false};
+ const wait=ms=>new Promise(r=>setTimeout(r,ms));
+ function connected(){return !!(window.yDev?.gatt?.connected && window.yCmd)}
+ function mark(kind,data={}){try{if(typeof rawPush==='function')rawPush(kind,{version:V,...data})}catch(e){}}
+ function stamp(t){return t?new Date(t).toLocaleTimeString():'—'}
+ function schedule(){
+   clearTimeout(D.quickTimer); clearTimeout(D.fullTimer);
+   if(!D.enabled){D.nextQuick=D.nextFull=null;render();return}
+   D.nextQuick=Date.now()+D.quickMs;D.nextFull=Date.now()+D.fullMs;
+   D.quickTimer=setTimeout(async()=>{await quick();D.nextQuick=Date.now()+D.quickMs;D.quickTimer=setTimeout(arguments.callee,D.quickMs)},D.quickMs);
+   D.fullTimer=setTimeout(async()=>{await full();D.nextFull=Date.now()+D.fullMs;D.fullTimer=setTimeout(arguments.callee,D.fullMs)},D.fullMs);
+   render();
+ }
+ async function quick(){
+   if(D.busy)return; if(!connected()){mark('SYNC_5M_SKIPPED',{reason:'BLE_DISCONNECTED'});render('5 min omitido: BLE desconectado');return}
+   D.busy=true;mark('SYNC_5M_START');
+   try{
+     // Consultas YCBT ya observadas en RAW: info/capacidades. No inventa comandos históricos.
+     await ysend(2,0,[0x47,0x43]);await wait(180);await ysend(2,1,[0x47,0x46]);
+     D.lastQuick=Date.now();mark('SYNC_5M_OK');render('Actualización rápida OK');
+   }catch(e){mark('SYNC_5M_ERROR',{error:e.message});render('5 min: '+e.message)}finally{D.busy=false}
+ }
+ async function full(){
+   if(D.busy)return; if(!connected()){mark('SYNC_30M_SKIPPED',{reason:'BLE_DISCONNECTED'});render('30 min omitido: BLE desconectado');return}
+   D.busy=true;mark('SYNC_30M_START',{note:'sondeo completo con comandos confirmados; descarga histórica aún en investigación'});
+   try{
+     await ysend(2,0,[0x47,0x43]);await wait(250);
+     await ysend(2,1,[0x47,0x46]);await wait(350);
+     await ysend(2,0x1b,[]);await wait(350);
+     await ysend(2,3,[0x47,0x50]);
+     D.lastFull=Date.now();mark('SYNC_30M_OK');render('Sincronización 30 min OK · RAW consolidado');
+   }catch(e){mark('SYNC_30M_ERROR',{error:e.message});render('30 min: '+e.message)}finally{D.busy=false}
+ }
+ window.fitringQuickSync=quick;window.fitringFullSync=full;
+ function render(msg=''){
+   let host=document.getElementById('dualSyncBox');if(!host)return;
+   host.innerHTML=`<b>SYNC R10M · 5 / 30</b><div class="dualstat">${msg||'Activo'} · 5 min: actualización rápida · 30 min: sondeo completo + RAW.<br>Último 5m ${stamp(D.lastQuick)} · último 30m ${stamp(D.lastFull)} · BLE ${connected()?'✓':'—'}<br><small>La recuperación histórica del R10M queda marcada como experimental hasta identificar su comando exacto en RAW.</small></div><div class="dualrow"><button class="btn green" id="sync5now">↻ AHORA 5 MIN</button><button class="btn purple" id="sync30now">⟳ AHORA 30 MIN</button><button class="btn" id="syncToggle">${D.enabled?'PAUSAR':'ACTIVAR'}</button></div>`;
+   host.querySelector('#sync5now').onclick=quick;host.querySelector('#sync30now').onclick=full;host.querySelector('#syncToggle').onclick=()=>{D.enabled=!D.enabled;schedule()};
+ }
+ function mount(){
+   let target=document.getElementById('acn26Panel')||document.querySelector('main');if(!target)return setTimeout(mount,250);
+   if(!document.getElementById('dualSyncBox')){const b=document.createElement('div');b.id='dualSyncBox';target.appendChild(b)}
+   document.title='FITRING / MAR v14.9.8 ACN26 DUAL SYNC';
+   mark('DUAL_SYNC_READY',{quickMinutes:5,fullMinutes:30});schedule();setInterval(()=>render(),15000);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
+</script>
+
+
+<!-- FITRING v14.9.9 · REAL / RAW-FIRST STRICT TEST -->
+<style>
+.realbox{margin:12px 0;padding:14px;border:1px solid #28506e;border-radius:16px;background:#071522}.realgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.realitem{padding:10px;border:1px solid #173b5a;border-radius:12px;background:#091827}.realok{color:#7ee7c4}.realcand{color:#ffd166}.realno{color:#8aa0b2}.realbig{font-size:22px;font-weight:900}.realmini{font-size:12px;opacity:.8}@media(max-width:560px){.realgrid{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+ const V='14.9.9-REAL-RAW-FIRST';
+ const KEY_REAL='fitring_real_raw_first_v1499';
+ const REAL=window.FITRING_REAL={strict:true,rawA:null,rawB:null,rawC:null,lastRawAt:null,validated:{hr:false,spo2:false,bp:false,hrv:false,stress:false,temp:false,steps:false,sleep:false},device:{firmware:null,battery:null}};
+ // One-time strict reset: remove inherited/demo dashboard numbers. Historical imports remain records, not live R10M values.
+ if(!localStorage.getItem(KEY_REAL)){
+   ['hr','hrv','spo2','stress','temp','steps','sleep','sys','dia','recovery','load'].forEach(k=>{if(window.S&&S.latest)S.latest[k]=null});
+   if(window.S){S.demo=false;S.pendingTake=null;S.records=(S.records||[]).filter(r=>r.source!=='DEMO');if(typeof save==='function')save();}
+   localStorage.setItem(KEY_REAL,new Date().toISOString());
+ }
+ function le16(a,i){return (a[i]||0)+((a[i+1]||0)<<8)}
+ function status(label,val,state,note){const cls=state==='OK'?'realok':state==='CAND'?'realcand':'realno';return `<div class="realitem"><div><b>${label}</b> <span class="${cls}">● ${state==='OK'?'VALIDADO':state==='CAND'?'CANDIDATO':'SIN DECODIFICAR'}</span></div><div class="realbig">${val==null?'—':val}</div><div class="realmini">${note||''}</div></div>`}
+ function panel(){
+   let host=document.getElementById('realRawFirst');
+   if(!host){const g=document.getElementById('general');if(!g)return;host=document.createElement('article');host.id='realRawFirst';host.className='realbox';const hero=g.querySelector('.hero');(hero||g).insertAdjacentElement(hero?'afterend':'afterbegin',host)}
+   const r=REAL;
+   host.innerHTML=`<h3>🔬 R10M REAL · RAW-FIRST</h3><p class="realmini">Sólo mostramos como medición aquello que tenga byte/protocolo R10M validado. Lo demás queda explícitamente en investigación.</p><div class="realgrid">${status('Firmware',r.device.firmware,'OK','R10M')}${status('Batería',r.device.battery,'OK','R10M')}${status('RAW actividad A',r.rawA,'CAND','STREAM 06/00 · no etiquetado aún como pasos')}${status('RAW actividad B',r.rawB,'CAND','STREAM 06/00')}${status('RAW actividad C',r.rawC,'CAND','STREAM 06/00')}${status('FC',r.validated.hr&&S.latest.hr!=null?S.latest.hr:null,r.validated.hr?'OK':'CAND','STREAM candidato; requiere prueba controlada')}${status('SpO₂',null,'NO','Esperando asociación RAW inequívoca')}${status('HRV',null,'NO','Esperando asociación RAW inequívoca')}${status('Presión',null,'NO','Esperando asociación RAW inequívoca')}${status('Estrés',null,'NO','Esperando asociación RAW inequívoca')}${status('Temperatura',null,'NO','Esperando asociación RAW inequívoca')}${status('Pasos',null,'CAND','A/B/C en prueba controlada')}${status('Sueño',null,'NO','Histórico aún sin decoder validado')}</div><div class="alert" style="margin-top:10px"><b>PRUEBA PASOS:</b> anotá A/B/C → caminá 100 pasos → sincronizá → compará ΔA/ΔB/ΔC.</div>`;
+ }
+ function ingest(frame,source){
+   const a=Array.from(frame||[]); if(source==='STREAM'&&a.length>=10&&a[0]===6&&a[1]===0){REAL.rawA=le16(a,4);REAL.rawB=le16(a,6);REAL.rawC=le16(a,8);REAL.lastRawAt=new Date().toISOString(); if(typeof rawPush==='function')rawPush('REAL_RAW_ACTIVITY',{version:V,A:REAL.rawA,B:REAL.rawB,C:REAL.rawC,status:'CANDIDATE_UNLABELED'});panel();}
+ }
+ const oldY=window.yingest;if(typeof oldY==='function')window.yingest=function(v,src){try{const a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));ingest(a,src)}catch(e){}return oldY.apply(this,arguments)};
+ // Device info already has a confirmed parser in this build; mirror it into the strict panel.
+ const oldD=window.ydecode;if(typeof oldD==='function')window.ydecode=function(f,src){const ret=oldD.apply(this,arguments);try{if(f&&f[0]===2&&f[1]===0&&f.length>=10){const p=f.slice(4,-2);if(p.length>=6){REAL.device.battery=p[5];REAL.device.firmware=p[3]+'.'+String(p[2]).padStart(2,'0');panel();}}}catch(e){}return ret};
+ const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(panel,0);return r};
+ // Demo disabled in strict test.
+ const db=document.getElementById('demo');if(db){db.disabled=true;db.textContent='Demo OFF · REAL';db.title='Desactivado en RAW-FIRST';}
+ setTimeout(()=>{panel();if(typeof render==='function')render();},50);
+ if(typeof rawPush==='function')rawPush('REAL_RAW_FIRST_READY',{version:V,strict:true});
+})();
+</script>
+
+<!-- RAW RECORDER V14.8 integrado: BLE/YCBT se conserva. -->
+<script>
+const FITRING_VERSION='14.8';
+let rawSession={app:'FITRING / MAR v14.8',sessionStarted:new Date().toISOString(),events:[],markers:[],tests:[]};
+let rawRecording=true,activeRawTest=null;
+
+function rawPush(kind,data={}){
+ if(!rawRecording&&kind!=='MARKER')return;
+ rawSession.events.push({seq:rawSession.events.length+1,at:new Date().toISOString(),ms:performance.now(),kind,test:activeRawTest?.name||null,...data});
+ if(rawSession.events.length>50000)rawSession.events.splice(0,5000);
+}
+function rawMark(label,value=''){
+ const m={at:new Date().toISOString(),label:String(label||''),value:String(value??'')};
+ rawSession.markers.push(m);rawPush('MARKER',m);
+ const l=document.getElementById('blelog');if(l){l.textContent+=`MARK ${m.label}${m.value?' = '+m.value:''}\n`;l.scrollTop=l.scrollHeight}
+}
+function promptRawMarker(){
+ const label=prompt('Marcador (ej. PASOS_INICIO, PASOS_FIN, SPO2_RESULTADO, PRESION_RESULTADO):');if(!label)return;
+ const value=prompt('Valor opcional (ej. 7301, 98, 124/82):')??'';rawMark(label,value);
+}
+function startRawTest(name){
+ activeRawTest={name:String(name||'test'),started:new Date().toISOString(),startSeq:rawSession.events.length+1};
+ rawSession.tests.push(activeRawTest);rawPush('TEST_START',{name:activeRawTest.name});
+}
+function stopRawTest(){
+ if(!activeRawTest)return;rawPush('TEST_END',{name:activeRawTest.name});
+ activeRawTest.ended=new Date().toISOString();activeRawTest.endSeq=rawSession.events.length;activeRawTest=null;
+}
+function clearRawSession(){
+ if(!confirm('¿Limpiar la captura RAW de esta sesión?'))return;
+ rawSession.events=[];rawSession.markers=[];rawSession.tests=[];rawSession.sessionStarted=new Date().toISOString();activeRawTest=null;
+ document.getElementById('protocolState').textContent='RAW Recorder limpio · registrando nueva sesión.';
+}
+
+function exportProtocolLog(){
+ const payload={
+  app:'FITRING / MAR v14.8',exportedAt:new Date().toISOString(),sessionStarted:rawSession.sessionStarted,
+  device:{name:yDev?.name||bleDeviceName||null,id:yDev?.id||null,connected:!!(yDev?.gatt?.connected&&yCmd),firmware:bleFirmware||null,battery:bleBattery},
+  recorder:{recording:rawRecording,totalEvents:rawSession.events.length,markers:rawSession.markers,tests:rawSession.tests,events:rawSession.events},
+  protocolCapture,latest:{...S.latest},autoScan:{...S.autoScan},bleMonitor:window.FITRING_BLE_MONITOR?.snapshot?.()||null
+ };
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download=`fitring-v14.8-raw-${Date.now()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ document.getElementById('protocolState').textContent=`RAW exportado · ${rawSession.events.length} eventos · ${rawSession.markers.length} marcadores.`;
+}
+
+ysend=async function(t,c,p=[]){
+ if(!yCmd)throw Error('R10M YCBT no conectado');
+ const f=yframe(t,c,p);protocolNote('TX',f,'CMD');
+ rawPush('TX',{source:'CMD',type:t,cmd:c,payload:yhex(p),hex:yhex(f),bytes:[...f]});
+ const log=document.getElementById('blelog');if(log){log.textContent+='TX '+yhex(f)+'\n';log.scrollTop=log.scrollHeight}
+ await yCmd.writeValue(f);
+};
+
+yingest=function(v,src){
+ const a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));
+ protocolNote('RX',a,src);rawPush('RX',{source:src,hex:yhex(a),bytes:[...a]});
+ const log=document.getElementById('blelog');if(log){log.textContent+='RX '+src+' '+yhex(a)+'\n';log.scrollTop=log.scrollHeight}
+ const b=src==='CMD'?yCmdBuf:yStreamBuf;b.push(...a);
+ while(b.length>=4){const len=b[2]|(b[3]<<8);if(len<6||len>4096){b.shift();continue}if(b.length<len)break;ydecode(b.splice(0,len),src)}
+};
+
+ydecode=function(f,src){
+ const type=f[0],c=f[1],p=f.slice(4,-2),d={};
+ rawPush('DECODE',{source:src,type,cmd:c,payload:yhex(p),frame:yhex(f),payloadBytes:[...p]});
+ const lg=document.getElementById('blelog');if(lg){lg.textContent+=`DECODE ${src} type=0x${type.toString(16)} cmd=0x${c.toString(16)} payload=[${yhex(p)}]\n`;lg.scrollTop=lg.scrollHeight}
+ if(type===6&&c===1&&p[0])d.hr=p[0];
+ if(type===6&&c===2&&p[0])d.spo2=p[0];
+ if(type===6&&c===3){if(p[0]&&p[1]){d.sys=p[0];d.dia=p[1]}if(p[2])d.hr=p[2];if(p[3])d.hrv=p[3]}
+ if(type===4&&c===0x13&&p.length>=3){const m=p[0],v=p[2],fr=p[3]||0;if(m===0&&v)d.hr=v;if(m===1&&v&&fr){d.sys=v;d.dia=fr}if(m===2&&v)d.spo2=v}
+ if(Object.keys(d).length){rawPush('MEASUREMENT',{decoded:{...d}});addLive(d,'R10M_YCBT')}
+ if(type===2&&c===0&&p.length>=6){
+  bleBattery=p[5];bleFirmware=p[3]+'.'+String(p[2]).padStart(2,'0');rawPush('DEVICE_INFO',{battery:bleBattery,firmware:bleFirmware});
+  const batteryEl=document.getElementById('battery'),connEl=document.getElementById('conn');if(batteryEl)batteryEl.textContent=bleBattery;
+  if(connEl){connEl.textContent='● R10M YCBT conectado · FW '+bleFirmware;connEl.classList.add('ok');refreshConnectionUI()}
+ }
+};
+
+protocolProbe=async function(k){
+ const st=document.getElementById('protocolState');if(!yCmd){st.textContent='Conectá primero el R10M YCBT.';return}
+ protocolCapture={active:true,node:k,started:new Date().toISOString(),frames:[]};startRawTest('PROTOCOL_'+k.toUpperCase());
+ st.textContent='Sondeando '+k.toUpperCase()+' · RAW global activo…';autoLog('PROTOCOL '+k+' START');
+ try{
+  await ysend(2,1,[0x47,0x46]);await new Promise(r=>setTimeout(r,700));await ysend(2,0x1b,[]);await new Promise(r=>setTimeout(r,700));await ysend(2,3,[0x47,0x50]);
+  setTimeout(()=>{protocolCapture.active=false;stopRawTest();st.textContent=`${k.toUpperCase()}: ${protocolCapture.frames.length} tramas locales · ${rawSession.events.length} eventos RAW totales.`;autoLog('PROTOCOL '+k+' END frames='+protocolCapture.frames.length)},5000);
+ }catch(e){protocolCapture.active=false;stopRawTest();st.textContent='Error '+k+': '+e.message}
+};
+
+(function(){
+ const st=document.getElementById('protocolState'),host=st?.previousElementSibling;if(!st||!host)return;
+ const add=(id,text,cls,fn)=>{if(document.getElementById(id))return;const b=document.createElement('button');b.id=id;b.className='btn '+cls;b.textContent=text;b.onclick=fn;host.appendChild(b)};
+ add('rawMarkerBtn','＋ MARCADOR','green',promptRawMarker);
+ add('rawTestBtn','▶ CAPTURA MANUAL','purple',function(){
+  if(activeRawTest){stopRawTest();this.textContent='▶ CAPTURA MANUAL';st.textContent='Captura manual detenida.'}
+  else{const n=prompt('Nombre de captura (ej. PASOS_7301, SPO2_98):','PASOS');if(!n)return;startRawTest(n);this.textContent='■ DETENER CAPTURA';st.textContent='Captura manual '+n+' activa.'}
+ });
+ add('rawClearBtn','LIMPIAR RAW','red',clearRawSession);
+ st.textContent='v14.8 RAW Recorder activo · registra TX, RX CMD, RX STREAM y DECODE de toda la sesión.';
+ document.title='FITRING / MAR v14.9.7 ACN26 AUTO';
+ const brand=document.querySelector('.brand');if(brand)brand.innerHTML='◉ FITRING / <b>MAR</b> v14.8';
+ const footer=document.querySelector('.footer');if(footer)footer.textContent='FITRING / MAR v14.9 ACN26 · captura BLE global TX/RX/DECODE + Protocol Lab + AutoScan.';
+ rawPush('RECORDER_READY',{version:FITRING_VERSION});
+})();
+</script>
+
+
+
+<!-- FITRING–ACN26 v1 · experimental event layer; BLE/RAW v14.8 untouched -->
+<script>
+(function(){
+ const ACN26_VERSION='1.0';
+ const STATES=['BASELINE','LOAD','META','CP0','ECALOT','FLOW','ACTION','RECOVERY'];
+ window.ACN26={version:ACN26_VERSION,state:null,events:[],voiceNotes:[],cp0Reported:[],cp0Candidates:[]};
+ function snapshot(){
+   const x=(window.S&&S.latest)?S.latest:{};
+   return {hr:x.hr??null,hrv:x.hrv??null,spo2:x.spo2??null,sys:x.sys??null,dia:x.dia??null,steps:x.steps??null,battery:window.bleBattery??null};
+ }
+ function emit(kind,data={}){
+   const e={at:new Date().toISOString(),ms:performance.now(),kind,state:ACN26.state,physio:snapshot(),...data};
+   ACN26.events.push(e);
+   if(typeof rawPush==='function')rawPush('ACN26_'+kind,e);
+   return e;
+ }
+ function setState(state,source='UI',note=''){
+   if(!STATES.includes(state))return;
+   ACN26.state=state;
+   const e=emit('STATE',{acn26State:state,source,note});
+   if(typeof rawMark==='function')rawMark('ACN26_'+state,note);
+   if(state==='CP0'){ACN26.cp0Reported.push(e);emit('CP0_REPORTED',{source,note});}
+   render();
+ }
+ function cp0Candidate(score=null,method='offline-analysis',details=''){
+   const e=emit('CP0_CANDIDATE',{score,method,details});ACN26.cp0Candidates.push(e);render();return e;
+ }
+ window.acn26SetState=setState; window.acn26Cp0Candidate=cp0Candidate;
+
+ let recognition=null,voiceActive=false;
+ function speechCtor(){return window.SpeechRecognition||window.webkitSpeechRecognition||null}
+ function startVoice(source='UI'){
+   const C=speechCtor();
+   emit('VOICE_TRIGGER',{source});
+   if(!C){emit('VOICE_UNAVAILABLE',{reason:'SpeechRecognition API unavailable'});render('Voz no disponible en este navegador');return;}
+   if(voiceActive)return; recognition=new C(); recognition.lang='es-AR';recognition.interimResults=false;recognition.continuous=false;
+   recognition.onstart=()=>{voiceActive=true;emit('VOICE_START',{source});render('Escuchando…')};
+   recognition.onresult=e=>{const text=[...e.results].map(r=>r[0].transcript).join(' ').trim();const n=emit('VOICE_NOTE',{source,text});ACN26.voiceNotes.push(n);if(typeof rawMark==='function')rawMark('ACN26_VOICE',text);render(text||'Nota vacía')};
+   recognition.onerror=e=>{emit('VOICE_ERROR',{source,error:e.error});render('Voz: '+e.error)};
+   recognition.onend=()=>{voiceActive=false;emit('VOICE_END',{source});render()};
+   try{recognition.start()}catch(e){emit('VOICE_ERROR',{source,error:e.message});}
+ }
+ window.acn26VoiceStart=startVoice;
+ // Hook público para el Gesture Engine/Protocol Mapper cuando el doble toque R10M quede identificado.
+ window.acn26GestureDoubleTap=function(meta={}){emit('GESTURE_DOUBLE_TAP',{source:'R10M',meta});startVoice('R10M_DOUBLE_TAP')};
+
+ function render(status=''){
+   const root=document.getElementById('acn26Panel');if(!root)return;
+   const st=root.querySelector('[data-acn-state]');if(st)st.textContent=ACN26.state||'SIN ESTADO';
+   const info=root.querySelector('[data-acn-info]');if(info)info.textContent=status||`Eventos ${ACN26.events.length} · Voz ${ACN26.voiceNotes.length} · CP0 reportados ${ACN26.cp0Reported.length} · candidatos ${ACN26.cp0Candidates.length}`;
+   root.querySelectorAll('[data-state]').forEach(b=>b.style.outline=b.dataset.state===ACN26.state?'2px solid currentColor':'');
+ }
+ function mount(){
+   if(document.getElementById('acn26Panel'))return;
+   const panel=document.createElement('section');panel.id='acn26Panel';panel.className='card';
+   panel.innerHTML=`<h2>ACN26-01 · PUNTO CERO</h2><p class="sub">Capa experimental sincronizada con RAW v14.8. Estado: <b data-acn-state>SIN ESTADO</b></p><div class="actions" data-acn-buttons></div><div class="actions"><button class="btn purple" id="acnVoiceBtn">🎙 DOBLE TOQUE / VOZ</button><button class="btn" id="acnCandidateBtn">CP0 CANDIDATO (ANÁLISIS)</button></div><p class="sub" data-acn-info></p>`;
+   const target=document.querySelector('main')||document.body;target.appendChild(panel);
+   const box=panel.querySelector('[data-acn-buttons]');
+   STATES.forEach(x=>{const b=document.createElement('button');b.className='btn';b.dataset.state=x;b.textContent=x;b.onclick=()=>setState(x,'UI');box.appendChild(b)});
+   panel.querySelector('#acnVoiceBtn').onclick=()=>startVoice('UI_DOUBLE_TAP_TEST');
+   panel.querySelector('#acnVoiceBtn').ondblclick=()=>window.acn26GestureDoubleTap({simulated:true});
+   panel.querySelector('#acnCandidateBtn').onclick=()=>{const d=prompt('Detalle del candidato CP0 (análisis posterior):','');cp0Candidate(null,'manual-review',d||'')};
+   emit('READY',{version:ACN26_VERSION});render();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
+</script>
+
+<style>
+#v149bar{position:sticky;top:0;z-index:9999;background:#061523ee;backdrop-filter:blur(8px);border:1px solid #1d4562;border-radius:14px;padding:9px;margin:8px 0;box-shadow:0 8px 25px #0007}#v149bar .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#v149bar button{padding:8px 10px;border-radius:10px;border:1px solid #28506c;background:#0b2033;color:#edf7ff;font-weight:700}#v149bar .live{margin-left:auto;font-size:12px;color:#8fb1c7}.acnActive{outline:2px solid #22e58a!important}#acn26Panel{order:-1;border:1px solid #a45cff!important}
+</style>
+<script>
+(function(){
+ function connected(){try{return !!(window.yDev&&yDev.gatt&&yDev.gatt.connected)}catch(e){return false}}
+ function showNode(name){
+   // SPA: never change URL/history; preserve BLE/RAW in same document.
+   document.querySelectorAll('[data-v149-node]').forEach(x=>x.style.display=x.dataset.v149Node===name?'':'none');
+   window.__fitringNode=name;
+   if(typeof rawPush==='function')rawPush('NODE_VIEW',{node:name});
+   document.getElementById('v149node').textContent=name;
+   window.scrollTo({top:0,behavior:'smooth'});
+ }
+ window.fitringShowNode=showNode;
+ function mountBar(){
+   if(document.getElementById('v149bar'))return;
+   const host=document.querySelector('.wrap')||document.body; const bar=document.createElement('div');bar.id='v149bar';
+   bar.innerHTML='<div class="row"><button data-n="GENERAL">GENERAL</button><button data-n="RESPIRA">RESPIRA</button><button data-n="CALMA">CALMA</button><button data-n="FITNESS">FITNESS</button><button data-n="XEO">XEO</button><button data-n="ACN26">ACN26</button><span class="live">● R10M <b id="v149ble">—</b> · RAW ● · <span id="v149node">GENERAL</span> · ACN26 <b id="v149acn">SIN ESTADO</b></span></div>';
+   host.insertBefore(bar,host.firstChild); bar.querySelectorAll('button').forEach(b=>b.onclick=()=>showNode(b.dataset.n));
+   setInterval(()=>{const e=document.getElementById('v149ble');if(e)e.textContent=connected()?'CONECTADO':'DESCONECTADO';const a=document.getElementById('v149acn');if(a)a.textContent=window.ACN26?.state||'SIN ESTADO'},800);
+ }
+ function enhanceACN(){
+   const p=document.getElementById('acn26Panel');if(!p)return false;
+   // Move ACN26 near top instead of end of page.
+   const anchor=document.querySelector('.hero')||document.querySelector('.top')||document.querySelector('main')?.firstElementChild; if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(p,anchor.nextSibling);
+   if(!document.getElementById('acnStart')){const b=document.createElement('button');b.id='acnStart';b.className='btn green';b.textContent='▶ INICIAR SESIÓN ACN26 / BASELINE';b.onclick=()=>{window.acn26SetState?.('BASELINE','SESSION_START');b.textContent='✓ BASELINE ACTIVO';};p.insertBefore(b,p.querySelector('.actions'));}
+   p.dataset.v149Node='ACN26'; return true;
+ }
+ function mount(){mountBar();let n=0;const t=setInterval(()=>{if(enhanceACN()||++n>20)clearInterval(t)},150)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
+</script>
+
+
+
+<!-- FITRING / MAR v14.9.3 · MOTOR VISUAL GLOBAL DE MEDICIONES
+PEGAR INMEDIATAMENTE ANTES DE 
+<!-- FITRING v14.9.9 · REAL / RAW-FIRST STRICT TEST -->
+<style>
+.realbox{margin:12px 0;padding:14px;border:1px solid #28506e;border-radius:16px;background:#071522}.realgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.realitem{padding:10px;border:1px solid #173b5a;border-radius:12px;background:#091827}.realok{color:#7ee7c4}.realcand{color:#ffd166}.realno{color:#8aa0b2}.realbig{font-size:22px;font-weight:900}.realmini{font-size:12px;opacity:.8}@media(max-width:560px){.realgrid{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+ const V='14.9.9-REAL-RAW-FIRST';
+ const KEY_REAL='fitring_real_raw_first_v1499';
+ const REAL=window.FITRING_REAL={strict:true,rawA:null,rawB:null,rawC:null,lastRawAt:null,validated:{hr:false,spo2:false,bp:false,hrv:false,stress:false,temp:false,steps:false,sleep:false},device:{firmware:null,battery:null}};
+ // One-time strict reset: remove inherited/demo dashboard numbers. Historical imports remain records, not live R10M values.
+ if(!localStorage.getItem(KEY_REAL)){
+   ['hr','hrv','spo2','stress','temp','steps','sleep','sys','dia','recovery','load'].forEach(k=>{if(window.S&&S.latest)S.latest[k]=null});
+   if(window.S){S.demo=false;S.pendingTake=null;S.records=(S.records||[]).filter(r=>r.source!=='DEMO');if(typeof save==='function')save();}
+   localStorage.setItem(KEY_REAL,new Date().toISOString());
+ }
+ function le16(a,i){return (a[i]||0)+((a[i+1]||0)<<8)}
+ function status(label,val,state,note){const cls=state==='OK'?'realok':state==='CAND'?'realcand':'realno';return `<div class="realitem"><div><b>${label}</b> <span class="${cls}">● ${state==='OK'?'VALIDADO':state==='CAND'?'CANDIDATO':'SIN DECODIFICAR'}</span></div><div class="realbig">${val==null?'—':val}</div><div class="realmini">${note||''}</div></div>`}
+ function panel(){
+   let host=document.getElementById('realRawFirst');
+   if(!host){const g=document.getElementById('general');if(!g)return;host=document.createElement('article');host.id='realRawFirst';host.className='realbox';const hero=g.querySelector('.hero');(hero||g).insertAdjacentElement(hero?'afterend':'afterbegin',host)}
+   const r=REAL;
+   host.innerHTML=`<h3>🔬 R10M REAL · RAW-FIRST</h3><p class="realmini">Sólo mostramos como medición aquello que tenga byte/protocolo R10M validado. Lo demás queda explícitamente en investigación.</p><div class="realgrid">${status('Firmware',r.device.firmware,'OK','R10M')}${status('Batería',r.device.battery,'OK','R10M')}${status('RAW actividad A',r.rawA,'CAND','STREAM 06/00 · no etiquetado aún como pasos')}${status('RAW actividad B',r.rawB,'CAND','STREAM 06/00')}${status('RAW actividad C',r.rawC,'CAND','STREAM 06/00')}${status('FC',r.validated.hr&&S.latest.hr!=null?S.latest.hr:null,r.validated.hr?'OK':'CAND','STREAM candidato; requiere prueba controlada')}${status('SpO₂',null,'NO','Esperando asociación RAW inequívoca')}${status('HRV',null,'NO','Esperando asociación RAW inequívoca')}${status('Presión',null,'NO','Esperando asociación RAW inequívoca')}${status('Estrés',null,'NO','Esperando asociación RAW inequívoca')}${status('Temperatura',null,'NO','Esperando asociación RAW inequívoca')}${status('Pasos',null,'CAND','A/B/C en prueba controlada')}${status('Sueño',null,'NO','Histórico aún sin decoder validado')}</div><div class="alert" style="margin-top:10px"><b>PRUEBA PASOS:</b> anotá A/B/C → caminá 100 pasos → sincronizá → compará ΔA/ΔB/ΔC.</div>`;
+ }
+ function ingest(frame,source){
+   const a=Array.from(frame||[]); if(source==='STREAM'&&a.length>=10&&a[0]===6&&a[1]===0){REAL.rawA=le16(a,4);REAL.rawB=le16(a,6);REAL.rawC=le16(a,8);REAL.lastRawAt=new Date().toISOString(); if(typeof rawPush==='function')rawPush('REAL_RAW_ACTIVITY',{version:V,A:REAL.rawA,B:REAL.rawB,C:REAL.rawC,status:'CANDIDATE_UNLABELED'});panel();}
+ }
+ const oldY=window.yingest;if(typeof oldY==='function')window.yingest=function(v,src){try{const a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));ingest(a,src)}catch(e){}return oldY.apply(this,arguments)};
+ // Device info already has a confirmed parser in this build; mirror it into the strict panel.
+ const oldD=window.ydecode;if(typeof oldD==='function')window.ydecode=function(f,src){const ret=oldD.apply(this,arguments);try{if(f&&f[0]===2&&f[1]===0&&f.length>=10){const p=f.slice(4,-2);if(p.length>=6){REAL.device.battery=p[5];REAL.device.firmware=p[3]+'.'+String(p[2]).padStart(2,'0');panel();}}}catch(e){}return ret};
+ const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(panel,0);return r};
+ // Demo disabled in strict test.
+ const db=document.getElementById('demo');if(db){db.disabled=true;db.textContent='Demo OFF · REAL';db.title='Desactivado en RAW-FIRST';}
+ setTimeout(()=>{panel();if(typeof render==='function')render();},50);
+ if(typeof rawPush==='function')rawPush('REAL_RAW_FIRST_READY',{version:V,strict:true});
+})();
+</script>
+
+<!-- Motor visual integrado: se conserva BLE/YCBT y el resultado real cuando llega. -->
+<style>
+.fv-stage{position:relative;height:205px;margin:12px 0;border:1px solid #245276;border-radius:18px;overflow:hidden;
+ background:radial-gradient(circle at 50% 45%,#123d5d,#04101c 72%);display:grid;place-items:center}
+.fv-title{position:absolute;left:12px;top:10px;font-size:10px;font-weight:900;color:#91a8ba;letter-spacing:.5px}
+.fv-source{position:absolute;right:12px;top:10px;font-size:9px;font-weight:900;border:1px solid #28516f;border-radius:20px;padding:5px 8px;color:#a9c1d3}
+.fv-icon{font-size:70px;line-height:1;filter:drop-shadow(0 0 18px #21d7e766)}
+.fv-result{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:24px;font-weight:950}
+.fv-sub{font-size:10px;color:#91a8ba;font-weight:700}
+.fv-traffic{position:absolute;right:13px;bottom:13px;background:#02080d;border:1px solid #29435a;border-radius:13px;padding:6px;display:grid;gap:4px}
+.fv-light{width:14px;height:14px;border-radius:50%;background:#27343e;opacity:.35}
+.fv-light.on.r{background:var(--red);opacity:1;box-shadow:0 0 12px var(--red)}
+.fv-light.on.y{background:var(--yellow);opacity:1;box-shadow:0 0 12px var(--yellow)}
+.fv-light.on.g{background:var(--green);opacity:1;box-shadow:0 0 12px var(--green)}
+.fv-heart.run{animation:fvbeat .72s infinite}.fv-breathe.run{animation:fvbreath 2.4s infinite ease-in-out}
+.fv-wave.run{animation:fvw 1s infinite alternate}.fv-thermo.run{animation:fvthermo 1.1s infinite alternate}
+.fv-walk.run{animation:fvwalk .5s infinite alternate}.fv-sleep.run{animation:fvsleep 2s infinite ease-in-out}
+.fv-stress.run{animation:fvstress 1s infinite alternate}
+@keyframes fvbeat{0%,100%{transform:scale(.82)}35%{transform:scale(1.18)}50%{transform:scale(.94)}65%{transform:scale(1.08)}}
+@keyframes fvbreath{0%,100%{transform:scale(.78);opacity:.55}50%{transform:scale(1.18);opacity:1}}
+@keyframes fvw{from{transform:translateX(-10px) scaleY(.8)}to{transform:translateX(10px) scaleY(1.15)}}
+@keyframes fvthermo{from{transform:translateY(6px)}to{transform:translateY(-8px)}}
+@keyframes fvwalk{from{transform:translate(-12px,3px) rotate(-5deg)}to{transform:translate(12px,-5px) rotate(5deg)}}
+@keyframes fvsleep{0%,100%{transform:rotate(-4deg) scale(.96)}50%{transform:rotate(4deg) scale(1.05)}}
+@keyframes fvstress{from{filter:drop-shadow(0 0 8px #22e58a)}to{filter:drop-shadow(0 0 25px #ff626f);transform:scale(1.08)}}
+.fv-mini{margin-top:9px;border:1px solid #1d4562;border-radius:12px;padding:9px;background:#061522}
+.fv-minihead{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.fv-minianim{font-size:25px}.fv-minianim.live{animation:fvbeat .9s infinite}
+</style>
+
+<script>
+(function(){
+ const visual={
+   hr:{icon:'❤️',cls:'fv-heart',label:'FRECUENCIA CARDÍACA'},
+   spo2:{icon:'🫁',cls:'fv-breathe',label:'OXIGENACIÓN'},
+   bp:{icon:'🩸',cls:'fv-heart',label:'PRESIÓN ARTERIAL'},
+   hrv:{icon:'〰️',cls:'fv-wave',label:'VARIABILIDAD HRV'},
+   stress:{icon:'🧠',cls:'fv-stress',label:'ESTRÉS'},
+   temp:{icon:'🌡️',cls:'fv-thermo',label:'TEMPERATURA'},
+   steps:{icon:'🚶',cls:'fv-walk',label:'ACTIVIDAD / PASOS'},
+   sleep:{icon:'🌙',cls:'fv-sleep',label:'SUEÑO'}
+ };
+ window.FITRING_VISUAL=window.FITRING_VISUAL||{metric:'hr',running:false,source:'DATA CORE'};
+
+ function value(k){
+   if(!window.S||!S.latest)return '—';
+   if(k==='bp')return `${S.latest.sys??'—'}/${S.latest.dia??'—'}`;
+   return S.latest[k]??'—';
+ }
+ function sourceText(k){
+   if(window.FITRING_VISUAL.running)return (window.yCmd?'R10M · MIDIENDO':'DISCOVERY / SIN R10M');
+   return window.FITRING_VISUAL.source||'DATA CORE';
+ }
+ function lights(k,v){
+   let level='g';
+   if(k==='stress'){level=(+v>=70?'r':+v>=50?'y':'g')}
+   else if(k==='spo2'){level=(+v<94?'r':+v<96?'y':'g')}
+   else if(k==='hr'){level=(+v<50||+v>120?'r':+v<55||+v>105?'y':'g')}
+   else if(k==='temp'){level=(+v>=38?'r':+v>=37.3?'y':'g')}
+   return `<div class="fv-traffic"><i class="fv-light r ${level==='r'?'on':''}"></i><i class="fv-light y ${level==='y'?'on':''}"></i><i class="fv-light g ${level==='g'?'on':''}"></i></div>`;
+ }
+ function stage(k){
+   const m=visual[k]||visual.hr,v=value(k),u=(window.metricMeta&&metricMeta[k])?metricMeta[k][1]:'';
+   return `<div id="fvStage" class="fv-stage">
+     <div class="fv-title">${m.label}</div><div class="fv-source">${sourceText(k)}</div>
+     <div class="fv-icon ${m.cls} ${FITRING_VISUAL.running?'run':''}">${m.icon}</div>
+     <div class="fv-result">${v} <span class="unit">${u}</span><div class="fv-sub">${FITRING_VISUAL.running?'Adquiriendo señal…':'Último valor disponible'}</div></div>
+     ${lights(k,v)}
+   </div>`;
+ }
+ function updateStage(k){
+   FITRING_VISUAL.metric=k||FITRING_VISUAL.metric;
+   const old=document.getElementById('fvStage');
+   if(old)old.outerHTML=stage(FITRING_VISUAL.metric);
+ }
+ window.fitringVisualStart=function(k,source='R10M'){
+   FITRING_VISUAL.metric=k;FITRING_VISUAL.running=true;FITRING_VISUAL.source=source;updateStage(k);refreshMini();
+ };
+ window.fitringVisualDone=function(k,source='R10M_YCBT'){
+   FITRING_VISUAL.metric=k;FITRING_VISUAL.running=false;FITRING_VISUAL.source=source;updateStage(k);refreshMini();
+ };
+ window.fitringVisualStop=function(k){FITRING_VISUAL.running=false;updateStage(k||FITRING_VISUAL.metric);refreshMini()};
+
+ // Injects a compact live visual strip in GENERAL, RESPIRA, CALMA and FITNESS.
+ function mini(mode){
+   const keys=(window.takeMap&&takeMap[mode])?takeMap[mode]:['hr','spo2','bp','hrv','stress','temp','steps'];
+   return `<div class="fv-mini" data-fv-mini="${mode}"><div class="fv-minihead"><b>◉ Toma interactiva</b><span class="fv-sub">${FITRING_VISUAL.running?'MIDIENDO '+(visual[FITRING_VISUAL.metric]?.label||''):'LISTO'}</span></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:7px">${keys.map(k=>`<button class="btn" onclick="openNode('${mode}','${k}')"><span class="fv-minianim ${FITRING_VISUAL.running&&FITRING_VISUAL.metric===k?'live':''}">${visual[k]?.icon||'◉'}</span> ${metricMeta[k]?.[0]||k}</button>`).join('')}</div></div>`;
+ }
+ function refreshMini(){
+   ['general','respira','calma','fitness'].forEach(mode=>{
+     const e=document.querySelector(`[data-fv-mini="${mode}"]`);
+     if(e)e.outerHTML=mini(mode);
+   });
+ }
+ function injectMini(){
+   ['general','respira','calma','fitness'].forEach(mode=>{
+     const root=document.getElementById(mode);if(!root||root.querySelector('[data-fv-mini]'))return;
+     const hero=root.querySelector('.hero');if(hero)hero.insertAdjacentHTML('afterend',mini(mode));
+   });
+ }
+
+ // Wrap node modal: every metric gets its own animation.
+ const oldOpen=window.openNode;
+ if(typeof oldOpen==='function')window.openNode=function(mode,k){
+   oldOpen(mode,k);
+   const run=document.getElementById('measureRun');
+   if(run&&!document.getElementById('fvStage'))run.insertAdjacentHTML('beforebegin',stage(k));
+   else updateStage(k);
+ };
+
+ const oldRun=window.runNodeMeasure;
+ if(typeof oldRun==='function')window.runNodeMeasure=async function(mode,k){
+   fitringVisualStart(k,window.yCmd?'R10M':'DISCOVERY');
+   try{return await oldRun(mode,k)}
+   catch(e){fitringVisualStop(k);throw e}
+ };
+
+ // When a real decoded value arrives, finish the animation automatically.
+ const oldAdd=window.addLive;
+ if(typeof oldAdd==='function')window.addLive=function(data,source){
+   const pending=window.S&&S.pendingTake?S.pendingTake.k:null;
+   const r=oldAdd(data,source);
+   if(pending){
+     const got=pending==='bp'?(data.sys!=null&&data.dia!=null):data[pending]!=null;
+     if(got)fitringVisualDone(pending,source||'R10M_YCBT');
+   }
+   // Steps can update globally whenever decoded later.
+   if(data&&data.steps!=null)fitringVisualDone('steps',source||'R10M_YCBT');
+   return r;
+ };
+
+ // render() rebuilds node HTML, so reinject strips after every render.
+ const oldRender=window.render;
+ if(typeof oldRender==='function')window.render=function(){const r=oldRender();setTimeout(injectMini,0);return r};
+ injectMini();
+
+ if(typeof rawPush==='function')rawPush('VISUAL_ENGINE_READY',{version:'14.9.3',metrics:Object.keys(visual)});
+})();
+</script>
+
+
+<!-- FITRING v14.9.7 · RAW-AWARE ACN26 AUTO DEVELOPMENT -->
+<script>
+(function(){
+ const V='14.9.7';
+ const R=window.ACN26_RAW_AUTO={streamSamples:[],last:null,activity:0,stable:0};
+ function u16(a,i){return (a[i]||0)+((a[i+1]||0)<<8)}
+ function ingestRaw(bytes,source){
+   if(source!=='STREAM'||!bytes||bytes.length<10)return;
+   // Observed R10M type6/cmd0 frames: three little-endian counters. Keep them as RAW features, not physiological labels.
+   if(bytes[0]===6&&bytes[1]===0){
+     const f={t:Date.now(),a:u16(bytes,4),b:u16(bytes,6),c:u16(bytes,8)};
+     const prev=R.last; R.last=f; R.streamSamples.push(f); if(R.streamSamples.length>60)R.streamSamples.shift();
+     if(prev){const da=f.a-prev.a,db=f.b-prev.b,dc=f.c-prev.c;R.activity=Math.abs(da)+Math.abs(db)+Math.abs(dc)*4;R.stable=R.activity<=8?R.stable+1:0;}
+     if(typeof rawPush==='function' && (!prev || R.streamSamples.length%10===0)) rawPush('ACN26_RAW_FEATURE',{version:V,rawFeature:f,activity:R.activity,stable:R.stable});
+   }
+ }
+ const old=window.yingest;
+ if(typeof old==='function')window.yingest=function(d,source){try{ingestRaw(Array.from(d||[]),source)}catch(e){}return old.apply(this,arguments)};
+ // Add raw evidence to the automatic classifier without pretending the counters are HR/SpO2/etc.
+ const A=window.ACN26_AUTO;
+ if(A){
+   A.raw=R;
+   const oldReset=window.acn26AutoReset; window.acn26AutoReset=function(){R.streamSamples=[];R.last=null;R.activity=0;R.stable=0;return oldReset&&oldReset()};
+ }
+ function badge(){const p=document.getElementById('acnAutoBox');if(!p)return;let e=document.getElementById('acnRawEvidence');if(!e){e=document.createElement('div');e.id='acnRawEvidence';e.className='acnAutoMeta';p.appendChild(e)}e.textContent=R.last?`RAW R10M activo · F1 ${R.last.a} · F2 ${R.last.b} · F3 ${R.last.c} · Δ ${R.activity} · estabilidad ${R.stable}`:'RAW R10M: esperando STREAM';}
+ setInterval(badge,1000);
+ if(typeof rawPush==='function')rawPush('ACN26_RAW_AUTO_READY',{version:V,note:'type6/cmd0 retained as unlabeled raw features'});
+})();
+</script>
+
+
+<!-- FITRING v14.9.9 · REAL / RAW-FIRST STRICT TEST -->
+<style>
+.realbox{margin:12px 0;padding:14px;border:1px solid #28506e;border-radius:16px;background:#071522}.realgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.realitem{padding:10px;border:1px solid #173b5a;border-radius:12px;background:#091827}.realok{color:#7ee7c4}.realcand{color:#ffd166}.realno{color:#8aa0b2}.realbig{font-size:22px;font-weight:900}.realmini{font-size:12px;opacity:.8}@media(max-width:560px){.realgrid{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+ const V='14.9.9-REAL-RAW-FIRST';
+ const KEY_REAL='fitring_real_raw_first_v1499';
+ const REAL=window.FITRING_REAL={strict:true,rawA:null,rawB:null,rawC:null,lastRawAt:null,validated:{hr:false,spo2:false,bp:false,hrv:false,stress:false,temp:false,steps:false,sleep:false},device:{firmware:null,battery:null}};
+ // One-time strict reset: remove inherited/demo dashboard numbers. Historical imports remain records, not live R10M values.
+ if(!localStorage.getItem(KEY_REAL)){
+   ['hr','hrv','spo2','stress','temp','steps','sleep','sys','dia','recovery','load'].forEach(k=>{if(window.S&&S.latest)S.latest[k]=null});
+   if(window.S){S.demo=false;S.pendingTake=null;S.records=(S.records||[]).filter(r=>r.source!=='DEMO');if(typeof save==='function')save();}
+   localStorage.setItem(KEY_REAL,new Date().toISOString());
+ }
+ function le16(a,i){return (a[i]||0)+((a[i+1]||0)<<8)}
+ function status(label,val,state,note){const cls=state==='OK'?'realok':state==='CAND'?'realcand':'realno';return `<div class="realitem"><div><b>${label}</b> <span class="${cls}">● ${state==='OK'?'VALIDADO':state==='CAND'?'CANDIDATO':'SIN DECODIFICAR'}</span></div><div class="realbig">${val==null?'—':val}</div><div class="realmini">${note||''}</div></div>`}
+ function panel(){
+   let host=document.getElementById('realRawFirst');
+   if(!host){const g=document.getElementById('general');if(!g)return;host=document.createElement('article');host.id='realRawFirst';host.className='realbox';const hero=g.querySelector('.hero');(hero||g).insertAdjacentElement(hero?'afterend':'afterbegin',host)}
+   const r=REAL;
+   host.innerHTML=`<h3>🔬 R10M REAL · RAW-FIRST</h3><p class="realmini">Sólo mostramos como medición aquello que tenga byte/protocolo R10M validado. Lo demás queda explícitamente en investigación.</p><div class="realgrid">${status('Firmware',r.device.firmware,'OK','R10M')}${status('Batería',r.device.battery,'OK','R10M')}${status('RAW actividad A',r.rawA,'CAND','STREAM 06/00 · no etiquetado aún como pasos')}${status('RAW actividad B',r.rawB,'CAND','STREAM 06/00')}${status('RAW actividad C',r.rawC,'CAND','STREAM 06/00')}${status('FC',r.validated.hr&&S.latest.hr!=null?S.latest.hr:null,r.validated.hr?'OK':'CAND','STREAM candidato; requiere prueba controlada')}${status('SpO₂',null,'NO','Esperando asociación RAW inequívoca')}${status('HRV',null,'NO','Esperando asociación RAW inequívoca')}${status('Presión',null,'NO','Esperando asociación RAW inequívoca')}${status('Estrés',null,'NO','Esperando asociación RAW inequívoca')}${status('Temperatura',null,'NO','Esperando asociación RAW inequívoca')}${status('Pasos',null,'CAND','A/B/C en prueba controlada')}${status('Sueño',null,'NO','Histórico aún sin decoder validado')}</div><div class="alert" style="margin-top:10px"><b>PRUEBA PASOS:</b> anotá A/B/C → caminá 100 pasos → sincronizá → compará ΔA/ΔB/ΔC.</div>`;
+ }
+ function ingest(frame,source){
+   const a=Array.from(frame||[]); if(source==='STREAM'&&a.length>=10&&a[0]===6&&a[1]===0){REAL.rawA=le16(a,4);REAL.rawB=le16(a,6);REAL.rawC=le16(a,8);REAL.lastRawAt=new Date().toISOString(); if(typeof rawPush==='function')rawPush('REAL_RAW_ACTIVITY',{version:V,A:REAL.rawA,B:REAL.rawB,C:REAL.rawC,status:'CANDIDATE_UNLABELED'});panel();}
+ }
+ const oldY=window.yingest;if(typeof oldY==='function')window.yingest=function(v,src){try{const a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));ingest(a,src)}catch(e){}return oldY.apply(this,arguments)};
+ // Device info already has a confirmed parser in this build; mirror it into the strict panel.
+ const oldD=window.ydecode;if(typeof oldD==='function')window.ydecode=function(f,src){const ret=oldD.apply(this,arguments);try{if(f&&f[0]===2&&f[1]===0&&f.length>=10){const p=f.slice(4,-2);if(p.length>=6){REAL.device.battery=p[5];REAL.device.firmware=p[3]+'.'+String(p[2]).padStart(2,'0');panel();}}}catch(e){}return ret};
+ const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(panel,0);return r};
+ // Demo disabled in strict test.
+ const db=document.getElementById('demo');if(db){db.disabled=true;db.textContent='Demo OFF · REAL';db.title='Desactivado en RAW-FIRST';}
+ setTimeout(()=>{panel();if(typeof render==='function')render();},50);
+ if(typeof rawPush==='function')rawPush('REAL_RAW_FIRST_READY',{version:V,strict:true});
+})();
+</script>
+
+
+<!-- v14.12 CLEAN: integrated real-measure module on original v14.9.9 BLE engine -->
+<style>
+#clean1412{margin:12px 0;padding:14px;border:1px solid #285d80;border-radius:18px;background:#061827}
+#clean1412 .g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.c12{padding:11px;border:1px solid #173b5a;border-radius:12px;background:#091827}
+.c12 strong{font-size:24px}.r12{color:#22e58a;font-size:10px;font-weight:900}.m12{color:#ffd166;font-size:10px;font-weight:900}.d12{color:#b59cff;font-size:10px;font-weight:900}
+.a12{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}@media(max-width:560px){#clean1412 .g{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+ const V='14.12-CLEAN',C=window.FITRING_1412={busy:false,temp:{},activity:null,stress:null};
+ const sl=m=>new Promise(r=>setTimeout(r,m)),le=(a,i)=>(a[i]||0)+((a[i+1]||0)<<8),hex=a=>Array.from(a||[]).map(x=>x.toString(16).padStart(2,'0')).join(' ');
+ const ok=()=>{try{return !!(yDev&&yDev.gatt&&yDev.gatt.connected&&yCmd&&yStream)}catch(e){return false}};
+ const raw=(k,d={})=>{try{rawPush(k,{version:V,...d})}catch(e){}};
+ function observe(a,src){
+   if(src==='STREAM'&&a.length>=10&&a[0]===6&&a[1]===0){C.activity={steps:le(a,4),distance_m:le(a,6),kcal:le(a,8),at:new Date().toISOString()};try{Object.assign(S.latest,C.activity)}catch(e){}raw('ACTIVITY_06_00',C.activity)}
+   if(a.length<7)return;let p=a.slice(4,-2),cand=[];
+   for(let i=0;i<p.length;i++){if(p[i]>=25&&p[i]<=45)cand.push({i,f:'u8',v:p[i]});if(i+1<p.length){let x=p[i]|p[i+1]<<8,y=p[i]<<8|p[i+1];for(const [f,v] of [['LE',x],['BE',y]]){if(v>=250&&v<=450)cand.push({i,f:f+'/10',v:v/10});if(v>=2500&&v<=4500)cand.push({i,f:f+'/100',v:v/100})}}}
+   if(cand.length){C.temp[src+':'+a[0]+'/'+a[1]]={hex:hex(p),cand,at:new Date().toISOString()};raw('TEMP_CANDIDATE',{src,type:a[0],cmd:a[1],cand})}
+ }
+ const oi=window.yingest;if(typeof oi==='function')window.yingest=function(v,src){try{observe(new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength)),src)}catch(e){}return oi.apply(this,arguments)};
+ function stress(){
+   let L=S.latest||{},rs=(S.records||[]).filter(x=>x.source!=='DEMO'),mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null,vals=k=>rs.map(x=>x[k]??(x.metric===k?x.value:null)).filter(Number.isFinite).slice(-80),mh=mean(vals('hr')),mv=mean(vals('hrv')),mo=mean(vals('spo2')),z=0,w=0,parts=[];
+   const add=(n,v,q)=>{v=Math.max(0,Math.min(100,v));z+=v*q;w+=q;parts.push([n,Math.round(v)])};
+   if(Number.isFinite(L.hr)&&mh!=null)add('HR',50+(L.hr-mh)*2.2,.3);if(Number.isFinite(L.hrv)&&mv!=null)add('HRV',50+(mv-L.hrv)*1.8,.35);if(Number.isFinite(L.spo2)&&mo!=null)add('SpO2',50+(mo-L.spo2)*7,.1);if(Number.isFinite(L.sys)&&Number.isFinite(L.dia))add('PA',(L.sys-110)*1.1+(L.dia-70)*1.3,.15);
+   C.stress={value:w>=.4?Math.round(z/w):null,confidence:Math.round(Math.min(.95,w)*100),parts};if(C.stress.value!=null)L.stress=C.stress.value;raw('STRESS_DERIVED',C.stress);draw()
+ }
+ async function take(k,ms){S.pendingTake={mode:'general1412',k,at:new Date().toISOString()};try{save()}catch(e){};if(!await ymeasure(k))throw Error(k+' no disponible');await sl(ms)}
+ async function general(){if(C.busy)return;if(!ok())return alert('Conectá primero el R10M');C.busy=true;draw();raw('GENERAL_START');try{for(const [k,t] of [['hr',7000],['spo2',7000],['bp',8500],['hrv',7000]])try{await take(k,t)}catch(e){raw('MEASURE_ERROR',{k,error:e.message})}stress();raw('GENERAL_END',{latest:S.latest,activity:C.activity,stress:C.stress})}finally{C.busy=false;draw()}}
+ async function temp(){if(!ok())return alert('Conectá primero el R10M');raw('TEMP_PROBE_START');try{await discoverNode('temp');await sl(5000)}catch(e){raw('TEMP_ERROR',{error:e.message})}draw()}
+ function draw(){
+  let h=document.getElementById('clean1412');if(!h){let w=document.querySelector('.wrap');if(!w)return;h=document.createElement('section');h.id='clean1412';w.insertBefore(h,w.firstChild)}
+  let L=S.latest||{},tc=Object.values(C.temp);
+  h.innerHTML=`<h2>🧪 FITRING v14.12 CLEAN</h2><div class="sub">BLE/YCBT original v14.9.9 · sin hotfixes 14.11 · toma real + RAW.</div><div class="a12"><button class="btn green" id="cg">${C.busy?'● MIDIENDO…':'▶ TOMA GENERAL R10M'}</button><button class="btn" id="ct">SONDEAR TEMP</button><button class="btn" id="cs">RECALCULAR ESTRÉS</button></div><div class="g">
+  <div class="c12">FC<br><strong>${L.hr??'—'} <small>lpm</small></strong><br><span class="r12">R10M REAL · 06/01</span></div>
+  <div class="c12">SpO₂<br><strong>${L.spo2??'—'} <small>%</small></strong><br><span class="r12">R10M REAL · 06/02</span></div>
+  <div class="c12">Presión<br><strong>${L.sys??'—'}/${L.dia??'—'}</strong><br><span class="r12">R10M REAL · 06/03</span></div>
+  <div class="c12">HRV<br><strong>${L.hrv??'—'} <small>ms</small></strong><br><span class="m12">VALIDAR RESPUESTA</span></div>
+  <div class="c12">Actividad<br><strong>${C.activity?.steps??L.steps??'—'}</strong><br><span class="r12">06/00 REAL</span><div class="sub">${C.activity?C.activity.distance_m+' m · '+C.activity.kcal+' kcal':'esperando stream'}</div></div>
+  <div class="c12">Temperatura<br><strong>— <small>°C</small></strong><br><span class="m12">${tc.length?'CANDIDATOS RAW '+tc.length:'EN MAPEO'}</span></div>
+  <div class="c12">Estrés FITRING<br><strong>${C.stress?.value??'—'} <small>/100</small></strong><br><span class="d12">DERIVADO · conf. ${C.stress?.confidence??0}%</span></div></div>`;
+  h.querySelector('#cg').onclick=general;h.querySelector('#ct').onclick=temp;h.querySelector('#cs').onclick=stress;
+ }
+ function init(){let b=document.querySelector('.brand');if(b)b.innerHTML='◉ FITRING / <b>MAR</b> v14.12 CLEAN';draw();raw('V1412_READY',{bleBase:'v14.9.9-original'})}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- FITRING / MAR v14.15 · DIAGNOSTICO BLE PASIVO
+     No envia comandos adicionales ni fuerza desconexion/reconexion. -->
+<style>
+#bleWatch1415{margin:14px 0;padding:15px;border:1px solid #286083;border-radius:17px;background:#061928;color:#e9f7ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 14px 35px #0004}
+#bleWatch1415 .bm-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+#bleWatch1415 .bm-title{font-size:16px;font-weight:900}
+#bleWatch1415 .bm-status{padding:6px 10px;border:1px solid #36617d;border-radius:20px;font-weight:800;font-size:11px}
+#bleWatch1415 .bm-status.up{color:#87ffc5;border-color:#278b61}
+#bleWatch1415 .bm-status.down{color:#ffacb4;border-color:#90414e}
+#bleWatch1415 .bm-status.pending{color:#ffe08a;border-color:#887044}
+#bleWatch1415 .bm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px}
+#bleWatch1415 .bm-stat{padding:10px;background:#0b2638;border:1px solid #24425b;border-radius:11px;font-size:10px;color:#abc2d3;min-width:0}
+#bleWatch1415 .bm-stat b{display:block;color:#f2fcff;font-size:17px;margin-top:4px;overflow-wrap:anywhere}
+#bleWatch1415 .bm-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+#bleWatch1415 button{background:#102e43;color:#f3faff;border:1px solid #386580;padding:8px 10px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer}
+#bleWatch1415 button:focus-visible{outline:2px solid #21d7e7;outline-offset:2px}
+#bleWatch1415 button.bm-important{border-color:#4da3d7;background:#075086}
+#bleWatch1415 button.bm-smart{border-color:#8b77da;background:#302451}
+#bleWatch1415 button.bm-export{border-color:#32a780;background:#114632}
+#bleWatch1415 .bm-explain{color:#aac3d3;font-size:11px;line-height:1.5;margin-top:10px}
+#bleWatch1415 .bm-event{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;border-top:1px solid #23445b;padding:6px 0;overflow-wrap:anywhere;white-space:pre-wrap}
+#bleWatch1415 details{margin-top:10px}#bleWatch1415 summary{cursor:pointer;font-weight:700;font-size:12px}
+#bleWatch1415 .bm-phase{font-size:11px;color:#decaff;margin-top:6px}
+@media(max-width:760px){#bleWatch1415 .bm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script>
+(function(){
+ 'use strict';
+ const V='14.15-BLE-DIAG', STORE='fitring_mar_ble_diagnostic_v1415', MAX_EVENTS=1200;
+ const iso=()=>new Date().toISOString(), safeError=e=>String(e?.name?e.name+': '+(e?.message||''):e?.message||e);
+ const readStore=()=>{try{return JSON.parse(localStorage.getItem(STORE)||'null')||{}}catch(e){return {}}};
+ const saved=readStore();
+ const counts=Object.assign({rx:0,rxCmd:0,rxStream:0,tx:0,txErrors:0,gattDrops:0,recoveries:0,interruptions:0,timerGaps:0,txNoRx:0},saved.counts||{});
+ const M={version:V,startedAt:iso(),sessionId:String(Date.now()),observations:Array.isArray(saved.observations)?saved.observations.slice(-450):[],
+    counts, state:null,lastDeviceName:null,lastGattUpAt:saved.lastGattUpAt||null,lastGattDownAt:saved.lastGattDownAt||null,
+    lastRxAt:saved.lastRxAt||null,lastCmdAt:saved.lastCmdAt||null,lastStreamAt:saved.lastStreamAt||null,
+    lastTxAt:saved.lastTxAt||null,lastTxOKAt:null,lastRxSource:null,lastRxHex:null,lastTxType:null,lastTxCmd:null,
+    previousSession:saved.sessionId||null,visible:!document.hidden,focused:document.hasFocus?.()??true,
+    phase:saved.phase==='SMARTHEALTH_UPDATE'?'SMARTHEALTH_UPDATE':'FITRING',walking:!!saved.walking,txSinceBoot:false,firstGattUp:false,lastSuspensionAt:null,lastTxNoRxWarnFor:null,
+    lastPollTick:Date.now(),lastSavedAt:0,observedDevice:null,
+    snapshot(){return {app:'FITRING / MAR',version:this.version,exportedAt:iso(),sessionId:this.sessionId,
+      startedAt:this.startedAt,previousSession:this.previousSession,deviceName:this.lastDeviceName,
+      state:this.state,gattConnected:!!(typeof yDev!=='undefined'&&yDev?.gatt?.connected),
+      ycbtReady:!!(typeof yCmd!=='undefined'&&yCmd&&typeof yStream!=='undefined'&&yStream),
+      page:{visibility:document.visibilityState,focused:document.hasFocus?.()??null,phase:this.phase,walking:this.walking},
+      lastGattUpAt:this.lastGattUpAt,lastGattDownAt:this.lastGattDownAt,lastRxAt:this.lastRxAt,
+      lastCmdAt:this.lastCmdAt,lastStreamAt:this.lastStreamAt,lastTxAt:this.lastTxAt,lastTxOKAt:this.lastTxOKAt,
+      lastRxSource:this.lastRxSource,lastRxHex:this.lastRxHex,lastTxType:this.lastTxType,lastTxCmd:this.lastTxCmd,
+      counts:{...this.counts},observations:this.observations.slice()};},
+    mark(label,meta={}){mark(label,meta);},observeDevice(dev,reason='DISCOVERY'){bindDevice(dev,reason);}
+ };
+ window.FITRING_BLE_MONITOR=M;
+ let seen=new WeakSet();
+ const getDev=()=>{try{return typeof yDev!=='undefined'?yDev:null}catch(e){return null}};
+ const getGatt=()=>{try{return !!getDev()?.gatt?.connected}catch(e){return false}};
+ const getReady=()=>{try{return !!(typeof yCmd!=='undefined'&&yCmd&&typeof yStream!=='undefined'&&yStream)}catch(e){return false}};
+ const currentState=()=>!getDev()?'NO_DEVICE':!getGatt()?'GATT_DOWN':!getReady()?'GATT_UP_YCBT_PENDING':'YCBT_READY';
+ const fresh=x=>{if(!x)return '—';const t=Date.parse(x);return Number.isFinite(t)?Math.max(0,Math.round((Date.now()-t)/1000))+' s':'—'};
+ const stamp=x=>x?new Date(x).toLocaleTimeString('es-AR',{hour12:false}):'—';
+ function persist(force=false){
+   if(!force&&Date.now()-M.lastSavedAt<2500)return;
+   M.lastSavedAt=Date.now();
+   try{localStorage.setItem(STORE,JSON.stringify({sessionId:M.sessionId,counts:M.counts,
+      observations:M.observations.slice(-450),phase:M.phase,walking:M.walking,lastRxAt:M.lastRxAt,lastCmdAt:M.lastCmdAt,
+      lastStreamAt:M.lastStreamAt,lastTxAt:M.lastTxAt,lastGattUpAt:M.lastGattUpAt,lastGattDownAt:M.lastGattDownAt}));}
+   catch(e){if(!M.storageWarned){M.storageWarned=true;console.warn('FITRING BLE: almacenamiento no disponible',e)}}
+ }
+ function log(kind,data={},force=false){
+   const entry={at:iso(),ms:Math.round(performance.now()),sessionId:M.sessionId,kind,
+     visibility:document.visibilityState,phase:M.phase,...data};
+   M.observations.push(entry);
+   if(M.observations.length>MAX_EVENTS)M.observations.splice(0,M.observations.length-MAX_EVENTS);
+   try{if(typeof rawPush==='function')rawPush('BLE_DIAG_'+kind,{version:V,visibility:entry.visibility,phase:entry.phase,...data})}catch(e){}
+   persist(force);return entry;
+ }
+ function transition(next,reason){
+   if(M.state===next)return;
+   const previous=M.state;
+   const wasUp=previous==='GATT_UP_YCBT_PENDING'||previous==='YCBT_READY';
+   const nowUp=next==='GATT_UP_YCBT_PENDING'||next==='YCBT_READY';
+   if(wasUp&&!nowUp&&next==='GATT_DOWN'){
+     M.counts.gattDrops++;M.lastGattDownAt=iso();
+     log('GATT_LOSS',{reason,from:previous,lastRxAt:M.lastRxAt,
+       secondsSinceRx:M.lastRxAt?Math.round((Date.now()-Date.parse(M.lastRxAt))/1000):null,
+       note:'Corte GATT detectado; causalidad con SmartHealth no comprobada'},true);
+   }
+   if(nowUp&&!wasUp){
+     if(M.firstGattUp)M.counts.recoveries++;
+     M.firstGattUp=true;M.lastGattUpAt=iso();
+   }
+   M.state=next;log('STATE',{from:previous,to:next,reason},true);
+ }
+ function bindDevice(device,reason){
+   if(!device||seen.has(device))return;
+   seen.add(device);M.observedDevice=device;M.lastDeviceName=device.name||'R10M';
+   log('DEVICE_OBSERVED',{device:M.lastDeviceName,reason},true);
+   device.addEventListener('gattserverdisconnected',()=>{
+     const same=device===getDev();
+     log('GATT_SERVER_DISCONNECTED',{device:device.name||'R10M',currentDevice:same,
+       lastTxAt:M.lastTxAt,lastRxAt:M.lastRxAt,phase:M.phase,
+       note:'Evento nativo; no identifica qué aplicación originó el corte'},true);
+     if(same)transition('GATT_DOWN','gattserverdisconnected');
+     render();
+   });
+ }
+ function poll(reason='POLL'){
+   bindDevice(getDev(),'POLL_DISCOVERY');
+   const state=currentState();transition(state,reason);
+   try{
+     if(getDev()&&getGatt()&&typeof bleConnected!=='undefined'&&!bleConnected){
+       if(M.lastFlagMismatch!==String(state)){M.lastFlagMismatch=String(state);log('STATE_FLAG_MISMATCH',{gatt:true,bleConnected:false,state})}
+     }else M.lastFlagMismatch=null;
+   }catch(e){}
+   if(state==='YCBT_READY'&&!document.hidden&&M.txSinceBoot&&M.lastTxAt&&(!M.lastRxAt||Date.parse(M.lastRxAt)<Date.parse(M.lastTxAt))){
+     const elapsed=Date.now()-Date.parse(M.lastTxAt);
+     if(elapsed>=20000&&M.lastTxNoRxWarnFor!==M.lastTxAt){
+       M.lastTxNoRxWarnFor=M.lastTxAt;M.counts.txNoRx++;
+       log('TX_WITHOUT_SUBSEQUENT_RX',{lastTxAt:M.lastTxAt,waitMs:elapsed,
+         note:'Ausencia de RX después de TX no prueba desconexión'},true);
+     }
+   }
+   render();
+ }
+ function mark(label,meta={}){
+   log('USER_MARK',{label:String(label),...meta},true);
+   try{if(typeof rawMark==='function')rawMark('BLE_DIAG_'+String(label),meta.note||'')}catch(e){}
+   render();
+ }
+ // Observar ambos caminos (botón de conexión y reconexión ya autorizada) sin alterar Web Bluetooth.
+ const connectBtn=document.getElementById('connect');
+ connectBtn?.addEventListener('click',()=>log('CONNECT_BUTTON_CLICK',{phase:M.phase},true),{capture:true});
+ // Envolver RX/TX existentes, preservando absolutamente su decoder, CRC y comandos.
+ const originalRX=window.yingest;
+ if(typeof originalRX==='function')window.yingest=function(v,src){
+   const at=iso();M.counts.rx++;M.lastRxAt=at;M.lastRxSource=src||null;
+   if(src==='CMD'){M.counts.rxCmd++;M.lastCmdAt=at}
+   if(src==='STREAM'){M.counts.rxStream++;M.lastStreamAt=at}
+   try{const a=new Uint8Array(v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength));M.lastRxHex=[...a.slice(0,32)].map(x=>x.toString(16).padStart(2,'0')).join(' ')}catch(e){}
+   if(!getGatt()&&(!M.lastRxMismatchAt||Date.now()-M.lastRxMismatchAt>10000)){
+     M.lastRxMismatchAt=Date.now();log('RX_WHILE_GATT_FLAG_DOWN',{src,
+       note:'Puede deberse a evento en cola o estado desfasado, no demuestra conexión activa'},true);
+   }
+   persist();return originalRX.apply(this,arguments);
+ };
+ const originalTX=window.ysend;
+ if(typeof originalTX==='function')window.ysend=async function(type,cmd,payload){
+   M.lastTxAt=iso();M.lastTxType=type;M.lastTxCmd=cmd;M.counts.tx++;M.txSinceBoot=true;
+   log('TX_BEGIN',{type,cmd,payloadBytes:Array.isArray(payload)?payload.length:null,gattConnected:getGatt()});
+   try{const res=await originalTX.apply(this,arguments);M.lastTxOKAt=iso();return res}
+   catch(e){M.counts.txErrors++;log('TX_ERROR',{type,cmd,error:safeError(e),gattConnected:getGatt()},true);throw e}
+ };
+ function markerAction(action){
+   if(action==='smartStart'){M.phase='SMARTHEALTH_UPDATE';mark('SMARTHEALTH_UPDATE_START',{note:'Marcado por el usuario antes de abrir/actualizar SmartHealth'});return}
+   if(action==='smartEnd'){mark('SMARTHEALTH_UPDATE_END',{note:'Marcado por el usuario al volver a FITRING'});M.phase='FITRING';persist(true);render();return}
+   if(action==='awake'){mark('AWAKE',{note:'Despertar registrado manualmente'});return}
+   if(action==='walk'){M.walking=!M.walking;mark(M.walking?'WALK_START':'WALK_END');return}
+   if(action==='custom'){
+     const label=prompt('Etiqueta para el RAW (ej. R10M_LUZ_VERDE / SMARTHEALTH_DATOS_NUEVOS):');
+     if(label)mark(label.trim().slice(0,70));return;
+   }
+   if(action==='clear'){
+     if(!confirm('¿Vaciar sólo el diagnóstico BLE? No borra mediciones ni el RAW principal.'))return;
+     M.observations=[];Object.keys(M.counts).forEach(k=>M.counts[k]=0);
+     M.startedAt=iso();M.lastTxNoRxWarnFor=null;log('MONITOR_RESET',{},true);render();return;
+   }
+   if(action==='export')exportAll();
+ }
+ function exportAll(){
+   log('DIAG_EXPORT_REQUESTED',{},true);
+   let raw=null;
+   try{if(typeof rawSession!=='undefined')raw={sessionStarted:rawSession.sessionStarted,
+     recording:typeof rawRecording!=='undefined'?rawRecording:null,totalEvents:rawSession.events.length,
+     events:rawSession.events,markers:rawSession.markers,tests:rawSession.tests}}catch(e){}
+   const payload={app:'FITRING / MAR v14.15',exportedAt:iso(),
+     device:{name:getDev()?.name||null,firmware:typeof bleFirmware!=='undefined'?bleFirmware:null,
+       battery:typeof bleBattery!=='undefined'?bleBattery:null,
+       connected:getGatt()},bleDiagnostic:M.snapshot(),rawRecorder:raw,
+     autoScan:typeof S!=='undefined'?{...S.autoScan}:null,
+     dualSync:window.FITRING_DUAL_SYNC?.snapshot?.()||null,
+     note:'Los marcadores SmartHealth son manuales; la página no puede observar eventos internos de otra app.'};
+   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;
+   a.download='fitring-v14.15-ble-diagnostico-'+Date.now()+'.json';a.click();
+   setTimeout(()=>URL.revokeObjectURL(url),3000);
+ }
+ M.exportAll=exportAll;
+ function render(){
+   const root=document.getElementById('bleWatch1415');if(!root)return;
+   const state=document.getElementById('bmState'),a=document.getElementById('bmRx'),b=document.getElementById('bmCmd'),
+     c=document.getElementById('bmTx'),d=document.getElementById('bmCounts'),phase=document.getElementById('bmPhase');
+   const labels={NO_DEVICE:'R10M NO SELECCIONADO',GATT_DOWN:'GATT DESCONECTADO',
+     GATT_UP_YCBT_PENDING:'GATT ACTIVO · YCBT PENDIENTE',YCBT_READY:'GATT + YCBT ACTIVOS'};
+   if(state){state.textContent=labels[M.state]||M.state||'COMPROBANDO…';state.className='bm-status '+(M.state==='YCBT_READY'?'up':M.state==='GATT_DOWN'?'down':'pending')}
+   if(a)a.textContent=fresh(M.lastRxAt);
+   if(b)b.textContent=fresh(M.lastStreamAt);
+   if(c)c.textContent=fresh(M.lastTxAt);
+   if(d)d.textContent=`${M.counts.gattDrops} GATT · ${M.counts.recoveries} recuperaciones · ${M.counts.timerGaps} pausas`;
+   if(phase)phase.textContent='Contexto: '+(M.phase==='SMARTHEALTH_UPDATE'?'Actualizando SmartHealth (marcado manualmente)':'FITRING')+(M.walking?' · caminando':'')+' · pantalla '+(document.hidden?'oculta':'visible');
+   const events=document.getElementById('bmEvents');
+   if(events){events.textContent='';for(const x of M.observations.slice(-18).reverse()){
+     const item=document.createElement('div');item.className='bm-event';
+     item.textContent=`${stamp(x.at)} · ${x.kind}${x.label?' · '+x.label:''}${x.to?' → '+x.to:''}${x.error?' · '+x.error:''}${x.reason?' · '+x.reason:''}`;events.appendChild(item);
+   }}
+   const walking=document.getElementById('bmWalk');if(walking)walking.textContent=M.walking?'FINALIZAR CAMINATA':'INICIAR CAMINATA';
+ }
+ function mount(){
+   if(document.getElementById('bleWatch1415'))return;
+   const host=document.querySelector('.wrap')||document.body;
+   const panel=document.createElement('section');panel.id='bleWatch1415';
+   panel.innerHTML=`<div class="bm-head"><div class="bm-title">⌁ FITRING v14.15 · Monitor BLE y SmartHealth</div><span class="bm-status" id="bmState">COMPROBANDO…</span></div>
+     <div class="bm-grid"><div class="bm-stat">Último RX (CMD + STREAM)<b id="bmRx">—</b></div>
+     <div class="bm-stat">Último STREAM<b id="bmCmd">—</b></div>
+     <div class="bm-stat">Último TX<b id="bmTx">—</b></div>
+     <div class="bm-stat">Cortes y pausas<b id="bmCounts">—</b></div></div>
+     <div class="bm-phase" id="bmPhase">Contexto: FITRING</div>
+     <div class="bm-actions"><button data-bm="awake">ME DESPERTÉ</button><button data-bm="walk" id="bmWalk">INICIAR CAMINATA</button>
+     <button class="bm-smart" data-bm="smartStart">1 · ABRO / ACTUALIZO SMARTHEALTH</button>
+     <button class="bm-smart" data-bm="smartEnd">2 · VOLVÍ A FITRING</button>
+     <button data-bm="custom">+ MARCADOR</button><button class="bm-export" data-bm="export">EXPORTAR DIAGNÓSTICO + RAW</button>
+     <button data-bm="clear">LIMPIAR MONITOR</button></div>
+     <div class="bm-explain">Este módulo sólo observa: no interrumpe BLE ni envía comandos nuevos. Registra GATT, RX/TX, pantalla oculta/visible, pausas del navegador y marcas manuales al usar SmartHealth. <b>No puede conocer automáticamente lo que hace SmartHealth</b>, ni asegurar el origen de una desconexión por coincidencia temporal. Si Android cierra la pestaña, puede faltar el evento exacto.</div>
+     <details><summary>Ver los últimos 18 eventos de diagnóstico</summary><div id="bmEvents"></div></details>`;
+   host.insertBefore(panel,host.firstChild);
+   panel.querySelectorAll('[data-bm]').forEach(btn=>btn.addEventListener('click',()=>markerAction(btn.dataset.bm)));
+   document.title='FITRING / MAR v14.15 BLE DIAGNÓSTICO';
+   const brand=document.querySelector('.brand');if(brand)brand.innerHTML='◉ FITRING / <b>MAR</b> v14.15 BLE DIAG';
+   log('MONITOR_STARTED',{previousSession:M.previousSession||null,availableBluetooth:!!navigator.bluetooth,
+     secureContext:window.isSecureContext,visibility:document.visibilityState},true);
+   poll('INITIAL');
+ }
+ document.addEventListener('visibilitychange',()=>{
+   M.visible=!document.hidden;log(M.visible?'PAGE_VISIBLE':'PAGE_HIDDEN',{
+     visibilityState:document.visibilityState,gattConnected:getGatt(),state:currentState(),lastRxAt:M.lastRxAt},true);
+   poll('VISIBILITY_CHANGE');
+ });
+ window.addEventListener('focus',()=>{M.focused=true;log('WINDOW_FOCUS',{gattConnected:getGatt()});poll('FOCUS')});
+ window.addEventListener('blur',()=>{M.focused=false;log('WINDOW_BLUR',{gattConnected:getGatt()})});
+ window.addEventListener('pagehide',e=>log('PAGEHIDE',{persisted:e.persisted,gattConnected:getGatt(),state:currentState()},true));
+ window.addEventListener('pageshow',e=>{log('PAGESHOW',{persisted:e.persisted,gattConnected:getGatt()},true);poll('PAGESHOW')});
+ document.addEventListener('freeze',()=>log('PAGE_FREEZE',{state:currentState()},true));
+ document.addEventListener('resume',()=>{log('PAGE_RESUME',{state:currentState()},true);poll('RESUME')});
+ window.addEventListener('online',()=>log('NETWORK_ONLINE',{note:'Red de Internet, no BLE'}));
+ window.addEventListener('offline',()=>log('NETWORK_OFFLINE',{note:'Red de Internet, no BLE'}));
+ setInterval(()=>{
+   const now=Date.now(),gap=now-M.lastPollTick;M.lastPollTick=now;
+   if(gap>6500){M.counts.timerGaps++;M.lastSuspensionAt=iso();
+     log('TIMER_GAP',{elapsedMs:gap,pageHidden:document.hidden,
+       note:'Posible suspensión/throttling de JS; no prueba desconexión BLE'},true);
+   }
+   poll();persist();
+ },1500);
+ // Algún módulo heredado cambia el título durante window.load: fijarlo luego sin tocar sus listeners.
+ window.addEventListener('load',()=>setTimeout(()=>{
+   document.title='FITRING / MAR v14.15 BLE DIAGNÓSTICO';
+   const brand=document.querySelector('.brand');if(brand)brand.innerHTML='◉ FITRING / <b>MAR</b> v14.15 BLE DIAG';
+ },100));
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+</script>
+
+</body>
+
+</html>
